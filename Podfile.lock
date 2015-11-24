@@ -1,0 +1,44 @@
+PODS:
+  - Alamofire (3.1.3)
+  - AsyncSwift (1.6.4)
+  - Cartography (0.6.0)
+  - Ji (1.2.0):
+    - Ji/Ji (= 1.2.0)
+  - Ji/Ji (1.2.0):
+    - Ji/Ji-libxml
+  - Ji/Ji-libxml (1.2.0)
+  - Kingfisher (1.8.2)
+  - ObjectMapper (1.0.1)
+  - SQLite.swift (1.0.0)
+  - SwiftyJSON (2.3.1)
+
+DEPENDENCIES:
+  - Alamofire (~> 3.1.3)
+  - AsyncSwift (~> 1.4)
+  - Cartography (~> 0.6.0)
+  - Ji (~> 1.2.0)
+  - Kingfisher (~> 1.8.2)
+  - ObjectMapper (~> 1.0.1)
+  - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
+  - SwiftyJSON (~> 2.3.1)
+
+EXTERNAL SOURCES:
+  SQLite.swift:
+    :git: https://github.com/stephencelis/SQLite.swift.git
+
+CHECKOUT OPTIONS:
+  SQLite.swift:
+    :commit: ac517bff273a0a0801fc22ec2bb54f31de1b04e0
+    :git: https://github.com/stephencelis/SQLite.swift.git
+
+SPEC CHECKSUMS:
+  Alamofire: 9f93b56389e48def9220dd57d1f44b1927229a5a
+  AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
+  Cartography: 70af183a248547694a8cfaa6b989cb7e04589985
+  Ji: ddebb22f9ac445db6e884b66f78ea74fb135fdb7
+  Kingfisher: b39315e9dbed7e8ffe73a9ca1be2ee006d1d57e4
+  ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
+  SQLite.swift: 3bb75f5a650f08673276bc6d3fb1de1b542b8f4d
+  SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
+
+COCOAPODS: 0.39.0
