@@ -16,6 +16,18 @@
 		96AD73F11C04539300753961 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 96AD73EF1C04539300753961 /* LaunchScreen.storyboard */; };
 		96AD73FC1C04539300753961 /* V2EX_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD73FB1C04539300753961 /* V2EX_iOSTests.swift */; };
 		96AD74071C04539300753961 /* V2EX_iOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74061C04539300753961 /* V2EX_iOSUITests.swift */; };
+		96AD74241C05895F00753961 /* NSString+Extention.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74181C05895F00753961 /* NSString+Extention.m */; };
+		96AD74251C05895F00753961 /* UIView+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD741A1C05895F00753961 /* UIView+Extension.m */; };
+		96AD74261C05895F00753961 /* FloodView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD741C1C05895F00753961 /* FloodView.m */; };
+		96AD74271C05895F00753961 /* MenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD741E1C05895F00753961 /* MenuView.m */; };
+		96AD74281C05895F00753961 /* MenuViewBtn.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74201C05895F00753961 /* MenuViewBtn.m */; };
+		96AD74291C05895F00753961 /* ZTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74231C05895F00753961 /* ZTViewController.m */; };
+		96AD742F1C0589FC00753961 /* UIBarButtonItem+Extention.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AD742E1C0589FC00753961 /* UIBarButtonItem+Extention.m */; };
+		96AD74331C058C2F00753961 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74321C058C2F00753961 /* BaseViewController.swift */; };
+		96AD743B1C05A02600753961 /* BaseNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD743A1C05A02600753961 /* BaseNavigationViewController.swift */; };
+		96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD743D1C05A8FF00753961 /* UIImageExtension.swift */; };
+		96AD74401C05B34700753961 /* CommonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD743F1C05B34700753961 /* CommonConfiguration.swift */; };
+		96AD74421C05BF9100753961 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74411C05BF9100753961 /* HomeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +64,27 @@
 		96AD74021C04539300753961 /* V2EX-iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "V2EX-iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		96AD74061C04539300753961 /* V2EX_iOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2EX_iOSUITests.swift; sourceTree = "<group>"; };
 		96AD74081C04539300753961 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		96AD74171C05895F00753961 /* NSString+Extention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Extention.h"; sourceTree = "<group>"; };
+		96AD74181C05895F00753961 /* NSString+Extention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Extention.m"; sourceTree = "<group>"; };
+		96AD74191C05895F00753961 /* UIView+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Extension.h"; sourceTree = "<group>"; };
+		96AD741A1C05895F00753961 /* UIView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extension.m"; sourceTree = "<group>"; };
+		96AD741B1C05895F00753961 /* FloodView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloodView.h; sourceTree = "<group>"; };
+		96AD741C1C05895F00753961 /* FloodView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FloodView.m; sourceTree = "<group>"; };
+		96AD741D1C05895F00753961 /* MenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuView.h; sourceTree = "<group>"; };
+		96AD741E1C05895F00753961 /* MenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuView.m; sourceTree = "<group>"; };
+		96AD741F1C05895F00753961 /* MenuViewBtn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewBtn.h; sourceTree = "<group>"; };
+		96AD74201C05895F00753961 /* MenuViewBtn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewBtn.m; sourceTree = "<group>"; };
+		96AD74211C05895F00753961 /* ZTPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTPage.h; sourceTree = "<group>"; };
+		96AD74221C05895F00753961 /* ZTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTViewController.h; sourceTree = "<group>"; };
+		96AD74231C05895F00753961 /* ZTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTViewController.m; sourceTree = "<group>"; };
+		96AD742D1C0589FC00753961 /* UIBarButtonItem+Extention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+Extention.h"; sourceTree = "<group>"; };
+		96AD742E1C0589FC00753961 /* UIBarButtonItem+Extention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Extention.m"; sourceTree = "<group>"; };
+		96AD74321C058C2F00753961 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		96AD74371C058EDC00753961 /* V2EX-iOS-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "V2EX-iOS-Bridging-Header.h"; sourceTree = "<group>"; };
+		96AD743A1C05A02600753961 /* BaseNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseNavigationViewController.swift; sourceTree = "<group>"; };
+		96AD743D1C05A8FF00753961 /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
+		96AD743F1C05B34700753961 /* CommonConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonConfiguration.swift; sourceTree = "<group>"; };
+		96AD74411C05BF9100753961 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		ECDE37A49E42CEB785D61FD5 /* Pods_V2EX_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_V2EX_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -115,8 +148,14 @@
 		96AD73E21C04539300753961 /* V2EX-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				96AD74141C05895100753961 /* Vendor */,
 				96AD73E31C04539300753961 /* AppDelegate.swift */,
 				96AD73E51C04539300753961 /* ViewController.swift */,
+				96AD74321C058C2F00753961 /* BaseViewController.swift */,
+				96AD74411C05BF9100753961 /* HomeViewController.swift */,
+				96AD74371C058EDC00753961 /* V2EX-iOS-Bridging-Header.h */,
+				96AD743A1C05A02600753961 /* BaseNavigationViewController.swift */,
+				96AD743F1C05B34700753961 /* CommonConfiguration.swift */,
 				96AD73E71C04539300753961 /* Main.storyboard */,
 				96AD73ED1C04539300753961 /* Assets.xcassets */,
 				96AD73EF1C04539300753961 /* LaunchScreen.storyboard */,
@@ -142,6 +181,53 @@
 				96AD74081C04539300753961 /* Info.plist */,
 			);
 			path = "V2EX-iOSUITests";
+			sourceTree = "<group>";
+		};
+		96AD74141C05895100753961 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				96AD743C1C05A8BF00753961 /* Utils */,
+				96AD74151C05895F00753961 /* ZTpage */,
+			);
+			name = Vendor;
+			sourceTree = "<group>";
+		};
+		96AD74151C05895F00753961 /* ZTpage */ = {
+			isa = PBXGroup;
+			children = (
+				96AD74161C05895F00753961 /* Category */,
+				96AD741B1C05895F00753961 /* FloodView.h */,
+				96AD741C1C05895F00753961 /* FloodView.m */,
+				96AD741D1C05895F00753961 /* MenuView.h */,
+				96AD741E1C05895F00753961 /* MenuView.m */,
+				96AD741F1C05895F00753961 /* MenuViewBtn.h */,
+				96AD74201C05895F00753961 /* MenuViewBtn.m */,
+				96AD74211C05895F00753961 /* ZTPage.h */,
+				96AD74221C05895F00753961 /* ZTViewController.h */,
+				96AD74231C05895F00753961 /* ZTViewController.m */,
+			);
+			path = ZTpage;
+			sourceTree = "<group>";
+		};
+		96AD74161C05895F00753961 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				96AD74171C05895F00753961 /* NSString+Extention.h */,
+				96AD74181C05895F00753961 /* NSString+Extention.m */,
+				96AD74191C05895F00753961 /* UIView+Extension.h */,
+				96AD741A1C05895F00753961 /* UIView+Extension.m */,
+				96AD742D1C0589FC00753961 /* UIBarButtonItem+Extention.h */,
+				96AD742E1C0589FC00753961 /* UIBarButtonItem+Extention.m */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		96AD743C1C05A8BF00753961 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				96AD743D1C05A8FF00753961 /* UIImageExtension.swift */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		BB916F715C354937744FAF53 /* Frameworks */ = {
@@ -334,9 +420,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96AD74251C05895F00753961 /* UIView+Extension.m in Sources */,
+				96AD74401C05B34700753961 /* CommonConfiguration.swift in Sources */,
+				96AD74241C05895F00753961 /* NSString+Extention.m in Sources */,
+				96AD74331C058C2F00753961 /* BaseViewController.swift in Sources */,
+				96AD743B1C05A02600753961 /* BaseNavigationViewController.swift in Sources */,
+				96AD74421C05BF9100753961 /* HomeViewController.swift in Sources */,
+				96AD74291C05895F00753961 /* ZTViewController.m in Sources */,
 				96AD73E61C04539300753961 /* ViewController.swift in Sources */,
+				96AD74261C05895F00753961 /* FloodView.m in Sources */,
+				96AD74281C05895F00753961 /* MenuViewBtn.m in Sources */,
 				96AD73E41C04539300753961 /* AppDelegate.swift in Sources */,
+				96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */,
 				96AD73EC1C04539300753961 /* V2EX_iOS.xcdatamodeld in Sources */,
+				96AD74271C05895F00753961 /* MenuView.m in Sources */,
+				96AD742F1C0589FC00753961 /* UIBarButtonItem+Extention.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,6 +581,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ciel.V2EX-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "V2EX-iOS/V2EX-iOS-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -495,6 +594,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ciel.V2EX-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "V2EX-iOS/V2EX-iOS-Bridging-Header.h";
 			};
 			name = Release;
 		};
