@@ -17,9 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        DataManager.loadTabsDataWithTabsPath(HomeTabs.latest.path) { (data, error) -> Void in
-            print(data)
-        }
         return true
     }
 

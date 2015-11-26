@@ -28,7 +28,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SQLite.swift:
-    :commit: ac517bff273a0a0801fc22ec2bb54f31de1b04e0
+    :commit: da2d43422a72ae0e91356fccfde1959d43b97385
     :git: https://github.com/stephencelis/SQLite.swift.git
 
 SPEC CHECKSUMS:

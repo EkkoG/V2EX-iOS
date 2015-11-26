@@ -8,10 +8,12 @@
 
 import UIKit
 import Cartography
+import SwiftyJSON
 
 class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     var type: HomeTabs!
     var topicsTableView: UITableView!
+    var topics: NSArray?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,16 +29,34 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         }
         
         print(type.title)
+        
+        DataManager.loadTabsDataWithTabsPath(HomeTabs.latest.path) { (data, error) -> Void in
+            if let data = data {
+                if let dataFromeString = data.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                    var error: NSError?
+                    let json = JSON(data: dataFromeString, options: NSJSONReadingOptions.AllowFragments, error: &error)
+                    print(json[0])
+                    let arr = json.arrayObject
+                    self.topics = arr
+                    self.topicsTableView.reloadData()
+                }
+            }
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-        cell.textLabel?.text = type.title + " \(indexPath.row)"
+        let dic = topics![indexPath.row] as! NSDictionary
+        cell.textLabel?.text = dic["title"] as? String
+        cell.textLabel?.font = UIFont.systemFontOfSize(15)
         return cell
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        if let arr = topics {
+            return arr.count
+        }
+        return 0
     }
 
     override func didReceiveMemoryWarning() {

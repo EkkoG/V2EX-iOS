@@ -8,7 +8,6 @@
 
 import UIKit
 import Alamofire
-import SwiftyJSON
 
 let V2EX_API_BASE_URL = "https://www.v2ex.com/api"
 let LATEST_PATH = "/topics/latest.json"
