@@ -7,14 +7,36 @@
 //
 
 import UIKit
+import Cartography
 
-class HomeViewController: BaseViewController {
+class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+    var type: HomeTabs!
+    var topicsTableView: UITableView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.view.backgroundColor = UIColor(red: CGFloat(random() % 255) / 255, green: 222 / 255, blue: 222 / 255, alpha: 1)
+        topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
+        topicsTableView.dataSource = self
+        topicsTableView.delegate = self
+        topicsTableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        self.view.addSubview(topicsTableView)
+        constrain(topicsTableView) { (view) -> () in
+            view.edges == inset(view.superview!.edges, 0)
+        }
+        
+        print(type.title)
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
+        cell.textLabel?.text = type.title + " \(indexPath.row)"
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
     }
 
     override func didReceiveMemoryWarning() {

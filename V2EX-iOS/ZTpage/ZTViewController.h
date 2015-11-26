@@ -7,9 +7,19 @@
 //
 #import <UIKit/UIKit.h>
 #import "MenuView.h"
+
+@class ZTViewController;
+@protocol ZTViewControllerProtocol <NSObject>
+
+@optional
+- (void)viewControllerCreated:(UIViewController *)viewController index:(NSInteger)index;
+    
+@end
+
 @interface ZTViewController : UIViewController
 
 @property (nonatomic,assign)MenuViewStyle style;
+@property (nonatomic, weak) id <ZTViewControllerProtocol> delegate;
 
 - (void)loadVC:(NSArray *)viewcontrollerClass AndTitle:(NSArray*)titles;
 

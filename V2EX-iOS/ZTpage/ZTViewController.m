@@ -106,7 +106,7 @@
                 self.style = MenuViewStyleDefault;
                 break;
         }
-}
+    }
     return self;
 }
 
@@ -138,7 +138,7 @@
     }
     
     //如果不是在tabbar中需要将MenuView的y值设置为Y+20（导航控制器高度+状态栏高度）
-//    GFloat y =  NavigationBarHeight
+    //    GFloat y =  NavigationBarHeight
     self.MenuView.frame = CGRectMake(0, 0, ScreenWidth, MenuHeight);
     self.detailScrollView.frame = CGRectMake(0, self.MenuView.y+self.MenuView.height, ScreenWidth,ScreenHeight - self.detailScrollView.y);
     self.detailScrollView.contentSize = CGSizeMake(self.subviewControllers.count * self.detailScrollView.width, 0);
@@ -151,10 +151,15 @@
 {
     Class vclass = self.subviewControllers[index];
     UIViewController *vc = [[vclass alloc]init];
-    vc.view.frame = [self.controllerFrames[index] CGRectValue];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(viewControllerCreated:index:)]) {
+        [self.delegate viewControllerCreated:vc index:index];
+    }
+    
     [self.displayVC setObject:vc forKey:@(index)];
     [self addChildViewController:vc];
     [self.detailScrollView addSubview:vc.view];
+    vc.view.frame = [self.controllerFrames[index] CGRectValue];
     self.selectedViewConTroller = vc;
 }
 
@@ -166,7 +171,7 @@
     
     if ([self.controllerCache objectForKey:@(index)]) return;
     [self.controllerCache setObject:viewController forKey:@(index)];
-  
+    
 }
 
 - (BOOL)isInScreen:(CGRect)frame{
@@ -210,7 +215,7 @@
                 if (vc) {//把内存中的取出来创建，保证此控制器是之前消除的控制器
                     [self addCachedViewController:vc atIndex:i];
                 }else{//再创建
-                 [self addViewControllerViewAtIndex:i];
+                    [self addViewControllerViewAtIndex:i];
                 }
             }
         }else{
@@ -222,26 +227,26 @@
     self.selectedViewConTroller = [self.displayVC objectForKey:@(Page)];
     //滚动使MenuView中的item移动
     [self.MenuView SelectedBtnMoveToCenterWithIndex:index WithRate:rate];
-
+    
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > scrollView.contentSize.width )return;
     int Page = (int)(scrollView.contentOffset.x/self.view.width);
-   
-   //因为我用的UItabbar做的展示，所以切换tabar的时候，会出现控制器不清除的结果，使得通知中心紊乱，其他控制器也可以接收当前控制器发送的通知，所以，我把通知名称设置为唯一的；
+    
+    //因为我用的UItabbar做的展示，所以切换tabar的时候，会出现控制器不清除的结果，使得通知中心紊乱，其他控制器也可以接收当前控制器发送的通知，所以，我把通知名称设置为唯一的；
     NSString *name  = [NSString stringWithFormat:@"scrollViewDidFinished%@",self.MenuView];
     NSDictionary *info = @{
                            @"index":@(Page)};
     [[NSNotificationCenter defaultCenter]postNotificationName:name  object:nil userInfo:info];
-          
+    
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > scrollView.contentSize.width )return;
-   
+    
     int Page = (int)(scrollView.contentOffset.x/ScreenWidth);
     
     if (Page == 0) {
@@ -275,7 +280,7 @@
  *  NSCache的代理方法，打印当前清除对象 */
 //- (void)cache:(NSCache *)cache willEvictObject:(id)obj {
 //    //[NSThread sleepForTimeInterval:0.5];
-// 
+//
 //    NSLog(@"清除了-------> %@", obj);
 //}
 @end
