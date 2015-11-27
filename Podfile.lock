@@ -11,6 +11,9 @@ PODS:
   - ObjectMapper (1.0.1)
   - SQLite.swift (1.0.0)
   - SwiftyJSON (2.3.1)
+  - YYCategories (0.9.2):
+    - YYCategories/no-arc (= 0.9.2)
+  - YYCategories/no-arc (0.9.2)
 
 DEPENDENCIES:
   - Alamofire (~> 3.1.3)
@@ -21,6 +24,7 @@ DEPENDENCIES:
   - ObjectMapper (~> 1.0.1)
   - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
   - SwiftyJSON (~> 2.3.1)
+  - YYCategories
 
 EXTERNAL SOURCES:
   SQLite.swift:
@@ -40,5 +44,6 @@ SPEC CHECKSUMS:
   ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
   SQLite.swift: 3bb75f5a650f08673276bc6d3fb1de1b542b8f4d
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
+  YYCategories: 649a361fea4305451ae1bf9bf750e49af1223995
 
 COCOAPODS: 0.39.0

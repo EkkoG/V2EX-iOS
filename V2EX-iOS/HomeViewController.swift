@@ -30,18 +30,11 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         
         print(type.title)
         
-        DataManager.loadTabsDataWithTabsPath(HomeTabs.latest.path) { (data, error) -> Void in
-            if let data = data {
-                if let dataFromeString = data.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
-                    var error: NSError?
-                    let json = JSON(data: dataFromeString, options: NSJSONReadingOptions.AllowFragments, error: &error)
-                    print(json[0])
-                    let arr = json.arrayObject
-                    self.topics = arr
-                    self.topicsTableView.reloadData()
-                }
-            }
+        DataManager.loadTabsTopicsDataWithTabsPath(type.path) { (response) -> Void in
+            self.topics = response.data
+            self.topicsTableView.reloadData()
         }
+        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

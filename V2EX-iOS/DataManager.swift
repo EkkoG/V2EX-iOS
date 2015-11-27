@@ -8,33 +8,70 @@
 
 import UIKit
 import Alamofire
+import SwiftyJSON
 
 let V2EX_API_BASE_URL = "https://www.v2ex.com/api"
 let LATEST_PATH = "/topics/latest.json"
 
+public struct DataResponse <T> {
+    var data: T?
+    var error: NSError?
+    
+    typealias completion = (completion: DataResponse<T>) -> Void
+    
+    public init(data: T?, error:NSError?) {
+        self.data = data
+        self.error = error
+    }
+}
+
+
 class DataManager: NSObject {
     
-    class func loadTabsDataWithTabsPath(path: String, completion:(data: String?, error:NSError?) -> Void) {
+    class func loadTabsTopicsDataWithTabsPath(path: String, completion: DataResponse<NSArray>.completion) {
         if path == HomeTabs.latest.path {
-            loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH, completion: { (data, error) -> Void in
-                if let data = data {
-                    let string = String.init(data: data, encoding: NSUTF8StringEncoding)
-                    completion(data: string, error: nil)
-                }
-                else {
-                    completion(data: nil, error: error)
-                }
-            })
+            loadLatestTopics(completion)
         }
     }
     
-    class func loadDataFromURL(URL: String, completion:(data: NSData?, error: NSError?) -> Void) {
-        Alamofire.request(.GET, URL).responseData { (response) -> Void in
+    class func loadLatestTopics(completion: DataResponse<NSArray>.completion) {
+        loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH) { (response) -> Void in
+                if let data = response.data {
+                    let json = JSON(data: data)
+                    let tmp = DataResponse<NSArray>(data: json.arrayObject, error: nil)
+                    completion(completion: tmp)
+                }
+                else {
+                    let tmp = DataResponse<NSArray>(data: nil, error: response.error!)
+                    completion(completion: tmp)
+                }
+            
+        }
+    }
+    
+    class func loadStringDataFromURL(URL: String, completion: DataResponse<String>.completion) {
+        Alamofire.request(.GET, URL).responseString { (response) -> Void in
             if response.result.isSuccess {
-                completion(data: response.data, error: nil)
+                let tmp = DataResponse<String>(data: response.result.value, error: nil)
+                completion(completion: tmp)
             }
             else {
-                completion(data: nil, error: response.result.error)
+                let tmp = DataResponse<String>(data: nil, error: response.result.error)
+                completion(completion: tmp)
+            }
+        }
+        
+    }
+    
+    class func loadDataFromURL(URL: String, completion: DataResponse<NSData>.completion) {
+        Alamofire.request(.GET, URL).responseData { (response) -> Void in
+            if response.result.isSuccess {
+                let tmp = DataResponse<NSData>(data: response.data, error: nil)
+                completion(completion: tmp)
+            }
+            else {
+                let tmp = DataResponse<NSData>(data: nil, error: response.result.error!)
+                completion(completion: tmp)
             }
         }
         
