@@ -28,6 +28,8 @@
 		96AD74401C05B34700753961 /* CommonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD743F1C05B34700753961 /* CommonConfiguration.swift */; };
 		96AD74421C05BF9100753961 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74411C05BF9100753961 /* HomeViewController.swift */; };
 		96AD74491C071EF700753961 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74481C071EF700753961 /* DataManager.swift */; };
+		96F91F4D1C0A215D00E4CEDB /* TopicModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F91F4C1C0A215D00E4CEDB /* TopicModel.swift */; };
+		96F91F501C0AFC7500E4CEDB /* V2EXHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F91F4F1C0AFC7500E4CEDB /* V2EXHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +86,8 @@
 		96AD743F1C05B34700753961 /* CommonConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonConfiguration.swift; sourceTree = "<group>"; };
 		96AD74411C05BF9100753961 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		96AD74481C071EF700753961 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		96F91F4C1C0A215D00E4CEDB /* TopicModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicModel.swift; sourceTree = "<group>"; };
+		96F91F4F1C0AFC7500E4CEDB /* V2EXHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = V2EXHelper.swift; sourceTree = "<group>"; };
 		ECDE37A49E42CEB785D61FD5 /* Pods_V2EX_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_V2EX_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -223,6 +227,7 @@
 			isa = PBXGroup;
 			children = (
 				96AD743D1C05A8FF00753961 /* UIImageExtension.swift */,
+				96F91F4F1C0AFC7500E4CEDB /* V2EXHelper.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -249,6 +254,7 @@
 		96AD74451C071E3A00753961 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				96F91F4C1C0A215D00E4CEDB /* TopicModel.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -469,7 +475,9 @@
 				96AD73E61C04539300753961 /* ViewController.swift in Sources */,
 				96AD74261C05895F00753961 /* FloodView.m in Sources */,
 				96AD74281C05895F00753961 /* MenuViewBtn.m in Sources */,
+				96F91F4D1C0A215D00E4CEDB /* TopicModel.swift in Sources */,
 				96AD73E41C04539300753961 /* AppDelegate.swift in Sources */,
+				96F91F501C0AFC7500E4CEDB /* V2EXHelper.swift in Sources */,
 				96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */,
 				96AD73EC1C04539300753961 /* V2EX_iOS.xcdatamodeld in Sources */,
 				96AD74271C05895F00753961 /* MenuView.m in Sources */,

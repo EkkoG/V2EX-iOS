@@ -9,9 +9,13 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Ji
+import ObjectMapper
 
 let V2EX_API_BASE_URL = "https://www.v2ex.com/api"
+let V2EX_BASE_URL = "https://www.v2ex.com/"
 let LATEST_PATH = "/topics/latest.json"
+let HTTP_PREFIX = "https"
 
 public struct DataResponse <T> {
     var data: T?
@@ -32,25 +36,109 @@ class DataManager: NSObject {
         if path == HomeTabs.latest.path {
             loadLatestTopics(completion)
         }
+        else {
+            loadStringDataFromURL(V2EX_BASE_URL + "?tab=\(path)", completion: { (response) -> Void in
+                parseHTMLFromString(response.data!, completion: completion)
+            })
+        }
     }
     
     class func loadLatestTopics(completion: DataResponse<NSArray>.completion) {
         loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH) { (response) -> Void in
-                if let data = response.data {
-                    let json = JSON(data: data)
-                    let tmp = DataResponse<NSArray>(data: json.arrayObject, error: nil)
-                    completion(completion: tmp)
+            if let data = response.data {
+                let json = JSON(data: data)
+                var list = [TopicModel]()
+                for (_, value) in (json.arrayObject?.enumerate())! {
+                    if let topic = Mapper<TopicModel>().map(value) {
+                        list.append(topic)
+                    }
                 }
-                else {
-                    let tmp = DataResponse<NSArray>(data: nil, error: response.error!)
-                    completion(completion: tmp)
-                }
+                let tmp = DataResponse<NSArray>(data: list, error: nil)
+                completion(completion: tmp)
+            }
+            else {
+                let tmp = DataResponse<NSArray>(data: nil, error: response.error!)
+                completion(completion: tmp)
+            }
             
         }
     }
     
+    class func parseHTMLFromString(html: String, completion: DataResponse<NSArray>.completion) {
+        let jiDoc = Ji(htmlString: html)
+        //        let body = jiDoc?.rootNode?.firstChildWithName("body")
+        if let items = jiDoc?.xPath("//div[@class='cell item']") {
+            var list = [TopicModel]()
+            for item in items {
+                let avatar = item.xPath(".//img[@class='avatar']")
+//                print(avatar.first!["src"])
+                let titles = item.xPath(".//span[@class='item_title']")
+                let title = titles.first?.content!
+//                print(title)
+//                print(titles.first?["href"])
+                let url = titles.first!.xPath("./a").first!["href"]
+                let components = url?.componentsSeparatedByString("/")
+                let topicID = components![2].componentsSeparatedByString("#").first
+                
+                let fade = item.xPath(".//span[@class='small fade']")
+                let node = fade[0].xPath(".//a[@class='node']")
+                let nodeName = node.first?.content
+//                print(nodeName)
+//                print(node.first?["href"])
+                let authors = fade[0].xPath(".//strong/a")
+                let author = authors.first?.content
+//                print(author)
+//                print(authorURL)
+                
+                let lastComments = fade[1].xPath(".//strong/a")
+                let last = lastComments.first?.content
+                
+                let fadeContent = fade[1].content
+                let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
+                let lastModifiedText = lastModify?.first
+//                print(last)
+//                print(lastURL)
+                
+                
+                let commentCount = item.xPath(".//a[@class='count_livid']")
+                let count = commentCount.first?.content
+//                print(count)
+                
+                let t = TopicModel()
+                t.title = title
+                t.topicID = Int(topicID!)
+                let nodeModel = Node()
+                nodeModel.name = nodeName
+                nodeModel.url = node.first!["href"]
+                t.node = nodeModel
+                if let count = count {
+                    t.replies = Int(count)
+                }
+                let memberModel = Member()
+                memberModel.username = author
+                memberModel.avatar_normal = avatar.first!["src"]
+                t.member = memberModel
+                
+                t.last_modifiedText = lastModifiedText
+                print(t.last_modifiedText)
+                
+                list.append(t)
+            }
+            if list.count > 0 {
+                let tmp = DataResponse<NSArray>(data: list, error: nil)
+                completion(completion: tmp)
+            }
+            else {
+                let tmp = DataResponse<NSArray>(data: nil, error: nil)
+                completion(completion: tmp)
+            }
+        }
+        
+    }
+    
     class func loadStringDataFromURL(URL: String, completion: DataResponse<String>.completion) {
-        Alamofire.request(.GET, URL).responseString { (response) -> Void in
+        let headers = ["User-Agent" : "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13B143"]
+        Alamofire.request(.GET, URL, headers: headers).responseString { (response) -> Void in
             if response.result.isSuccess {
                 let tmp = DataResponse<String>(data: response.result.value, error: nil)
                 completion(completion: tmp)
@@ -76,5 +164,5 @@ class DataManager: NSObject {
         }
         
     }
-
+    
 }

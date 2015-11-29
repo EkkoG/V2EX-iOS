@@ -29,18 +29,18 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         }
         
         print(type.title)
+//        print(V2EXHelper.dateFormat(1448793443))
         
         DataManager.loadTabsTopicsDataWithTabsPath(type.path) { (response) -> Void in
             self.topics = response.data
             self.topicsTableView.reloadData()
         }
-        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-        let dic = topics![indexPath.row] as! NSDictionary
-        cell.textLabel?.text = dic["title"] as? String
+        let topic = topics![indexPath.row] as! TopicModel
+        cell.textLabel?.text = topic.title
         cell.textLabel?.font = UIFont.systemFontOfSize(15)
         return cell
     }
