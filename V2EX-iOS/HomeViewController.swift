@@ -22,10 +22,10 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
         topicsTableView.dataSource = self
         topicsTableView.delegate = self
-        topicsTableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(topicsTableView)
         constrain(topicsTableView) { (view) -> () in
-            view.edges == inset(view.superview!.edges, 0)
+            view.edges == inset(view.superview!.edges, 0, 0, 0, 0)
         }
         
         print(type.title)
@@ -38,10 +38,14 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! TopicTableViewCell
         let topic = topics![indexPath.row] as! TopicModel
-        cell.textLabel?.text = topic.title
-        cell.textLabel?.font = UIFont.systemFontOfSize(15)
+        cell.title.text = topic.title?.stringByAppendingString("\n")
+        cell.node.text = topic.node?.title
+        cell.member.text = topic.member?.username
+        cell.lastModified.text = topic.lastModifiedText()
+        cell.topic = topic
+//        cell.lastModifyMember.text = topic.last_modified
         return cell
     }
     
@@ -50,6 +54,10 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
             return arr.count
         }
         return 0
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 80
     }
 
     override func didReceiveMemoryWarning() {

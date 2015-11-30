@@ -82,7 +82,9 @@ class DataManager: NSObject {
                 
                 let fade = item.xPath(".//span[@class='small fade']")
                 let node = fade[0].xPath(".//a[@class='node']")
-                let nodeName = node.first?.content
+                let nodeTitle = node.first?.content
+                let nodeName = node.first?["href"]?.stringByReplacingOccurrencesOfString("/go/", withString: "")
+                
 //                print(nodeName)
 //                print(node.first?["href"])
                 let authors = fade[0].xPath(".//strong/a")
@@ -90,8 +92,8 @@ class DataManager: NSObject {
 //                print(author)
 //                print(authorURL)
                 
-                let lastComments = fade[1].xPath(".//strong/a")
-                let last = lastComments.first?.content
+//                let lastComments = fade[1].xPath(".//strong/a")
+//                let last = lastComments.first?.content
                 
                 let fadeContent = fade[1].content
                 let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
@@ -108,6 +110,7 @@ class DataManager: NSObject {
                 t.title = title
                 t.topicID = Int(topicID!)
                 let nodeModel = Node()
+                nodeModel.title = nodeTitle?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
                 nodeModel.name = nodeName
                 nodeModel.url = node.first!["href"]
                 t.node = nodeModel

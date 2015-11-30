@@ -32,6 +32,7 @@ class TopicModel: NSObject, Mappable {
         replies <- map["replies"]
         member <- map["member"]
         node <- map["node"]
+        last_modified <- map["last_modified"]
     }
     
     func lastModifiedText() -> String {
@@ -44,9 +45,17 @@ class TopicModel: NSObject, Mappable {
         }
         return ""
     }
+    
+    func avatarURL() -> String {
+        if !member!.avatar_normal!.hasPrefix("http") {
+            return "https:" + member!.avatar_normal!
+        }
+        return member!.avatar_normal!
+    }
 }
 
 class Node: NSObject, Mappable {
+    var title: String?
     var name: String?
     var url: String?
     
@@ -59,6 +68,7 @@ class Node: NSObject, Mappable {
     }
     
     func mapping(map: Map) {
+        title <- map["title"]
         name <- map["name"]
         url <- map["url"]
     }

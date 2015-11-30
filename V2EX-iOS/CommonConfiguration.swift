@@ -77,6 +77,9 @@ enum HomeTabs {
     static let allValue = [latest, tech, creative, play, apple, jobs, deals, city, qna, hot, all, r2, node]
 }
 
+public let SPACING_BEWTWEEN_COMPONENTS:CGFloat = 5
+public let MARGIN_TO_BOUNDARY:CGFloat = 10
+
 class CommonConfiguration: NSObject {
 
 }

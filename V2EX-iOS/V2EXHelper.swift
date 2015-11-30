@@ -31,8 +31,9 @@ class V2EXHelper: NSObject {
         
         if diff < dayOfSecond {
             let hours = diff / hourOfSecond
-            let min = diff % hourOfSecond
-            return "\(hours)小时 \(min) 分钟前"
+            let min = (diff % hourOfSecond) / minOfSecond
+//            return "\(hours)小时 \(min) 分钟前"
+            return "\(hours)小时前"
         }
         
         if diff < yearOfSecond {
