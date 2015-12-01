@@ -22,8 +22,16 @@ class TopicTableViewCell: UITableViewCell {
     
     var topic: TopicModel? {
         didSet {
-            let url = topic!.avatarURL()
-            avatar.kf_setImageWithURL(NSURL(string:url)!)
+            let url = NSURL(string:topic!.avatarURL())!
+            avatar.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
+                UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
+                UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
+                if let image = image {
+                    image.drawInRect(self.avatar.bounds)
+                }
+                self.avatar.image = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+            }
         }
     }
 
@@ -67,6 +75,8 @@ class TopicTableViewCell: UITableViewCell {
         member.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
         
         node.backgroundColor = UIColor.init(hexString: "#F5F5F5")
+        node.layer.cornerRadius = 3
+        node.layer.masksToBounds = true
         
         title.numberOfLines = 0
         
@@ -98,6 +108,7 @@ class TopicTableViewCell: UITableViewCell {
             v1.bottom == v2.top
             v2.height >= 20 ~ 60
         }
+        
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

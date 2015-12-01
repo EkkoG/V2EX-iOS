@@ -71,11 +71,10 @@ class DataManager: NSObject {
             var list = [TopicModel]()
             for item in items {
                 let avatar = item.xPath(".//img[@class='avatar']")
-//                print(avatar.first!["src"])
+                
                 let titles = item.xPath(".//span[@class='item_title']")
                 let title = titles.first?.content!
-//                print(title)
-//                print(titles.first?["href"])
+                
                 let url = titles.first!.xPath("./a").first!["href"]
                 let components = url?.componentsSeparatedByString("/")
                 let topicID = components![2].componentsSeparatedByString("#").first
@@ -85,12 +84,8 @@ class DataManager: NSObject {
                 let nodeTitle = node.first?.content
                 let nodeName = node.first?["href"]?.stringByReplacingOccurrencesOfString("/go/", withString: "")
                 
-//                print(nodeName)
-//                print(node.first?["href"])
                 let authors = fade[0].xPath(".//strong/a")
                 let author = authors.first?.content
-//                print(author)
-//                print(authorURL)
                 
 //                let lastComments = fade[1].xPath(".//strong/a")
 //                let last = lastComments.first?.content
@@ -98,19 +93,15 @@ class DataManager: NSObject {
                 let fadeContent = fade[1].content
                 let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
                 let lastModifiedText = lastModify?.first
-//                print(last)
-//                print(lastURL)
-                
                 
                 let commentCount = item.xPath(".//a[@class='count_livid']")
                 let count = commentCount.first?.content
-//                print(count)
                 
                 let t = TopicModel()
                 t.title = title
                 t.topicID = Int(topicID!)
                 let nodeModel = Node()
-                nodeModel.title = nodeTitle?.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+                nodeModel.title = nodeTitle
                 nodeModel.name = nodeName
                 nodeModel.url = node.first!["href"]
                 t.node = nodeModel

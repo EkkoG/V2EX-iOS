@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		93C45365EFF7991C08204AC9 /* Pods_V2EX_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECDE37A49E42CEB785D61FD5 /* Pods_V2EX_iOS.framework */; };
+		96ACAE4C1C0D521A002C0260 /* TopicDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */; };
 		96AD73E41C04539300753961 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD73E31C04539300753961 /* AppDelegate.swift */; };
 		96AD73E61C04539300753961 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD73E51C04539300753961 /* ViewController.swift */; };
 		96AD73E91C04539300753961 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 96AD73E71C04539300753961 /* Main.storyboard */; };
@@ -53,6 +54,7 @@
 /* Begin PBXFileReference section */
 		1F29D56C410199F61487DCF8 /* Pods-V2EX-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-V2EX-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-V2EX-iOS/Pods-V2EX-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		24FBDE6BD4D74478D3DDCDD3 /* Pods-V2EX-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-V2EX-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-V2EX-iOS/Pods-V2EX-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicDetailViewController.swift; sourceTree = "<group>"; };
 		96AD73E01C04539300753961 /* V2EX-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "V2EX-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		96AD73E31C04539300753961 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		96AD73E51C04539300753961 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -241,6 +243,7 @@
 				96AD73E51C04539300753961 /* ViewController.swift */,
 				96AD74321C058C2F00753961 /* BaseViewController.swift */,
 				96AD74411C05BF9100753961 /* HomeViewController.swift */,
+				96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -473,6 +476,7 @@
 				96AD74241C05895F00753961 /* NSString+Extention.m in Sources */,
 				96AD74331C058C2F00753961 /* BaseViewController.swift in Sources */,
 				96AD743B1C05A02600753961 /* BaseNavigationViewController.swift in Sources */,
+				96ACAE4C1C0D521A002C0260 /* TopicDetailViewController.swift in Sources */,
 				96AD74421C05BF9100753961 /* HomeViewController.swift in Sources */,
 				96F91F521C0B46C100E4CEDB /* TopicTableViewCell.swift in Sources */,
 				96AD74291C05895F00753961 /* ZTViewController.m in Sources */,
