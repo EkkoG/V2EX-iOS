@@ -9,6 +9,7 @@
 #import "ZTViewController.h"
 #import "UIView+Extension.h"
 #import "ZTPage.h"
+#import <TTTAttributedLabel/TTTAttributedLabel.h>
 
 
 @interface ZTViewController ()<UIScrollViewDelegate,MenuViewDelegate,NSCacheDelegate>
@@ -86,7 +87,6 @@
     
     [super viewDidLoad];
     self.navigationItem.title = @"新闻";
-    
 }
 
 - (instancetype)initWithMneuViewStyle:(MenuViewStyle)style

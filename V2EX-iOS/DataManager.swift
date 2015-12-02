@@ -17,6 +17,18 @@ let V2EX_BASE_URL = "https://www.v2ex.com/"
 let LATEST_PATH = "/topics/latest.json"
 let HTTP_PREFIX = "https"
 
+struct V2EXAPI {
+    static let V2EXAPIBaseURL = "https://www.v2ex.com/api"
+    
+    static var TopicDetailContent: String {
+        return V2EXAPIBaseURL + "/topics/show.json?id="
+    }
+    
+    static var TopicReplesContent: String {
+        return V2EXAPIBaseURL + "/replies/show.json?topic_id="
+    }
+}
+
 public struct DataResponse <T> {
     var data: T?
     var error: NSError?
@@ -159,4 +171,23 @@ class DataManager: NSObject {
         
     }
     
+}
+
+extension DataManager {
+    class func loadTopicDetailContent(topicID: Int, completionHander: DataResponse<TopicDetailModel>.completion) {
+        loadDataFromURL(V2EXAPI.TopicDetailContent + "\(topicID)") { (response) -> Void in
+            if let data = response.data {
+                let json = JSON(data: data)
+                if let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) {
+                    
+                    let tmp = DataResponse<TopicDetailModel>(data: model, error: nil)
+                    completionHander(completion: tmp)
+                }
+                else {
+                    let tmp = DataResponse<TopicDetailModel>(data: nil, error: nil)
+                    completionHander(completion: tmp)
+                }
+            }
+        }
+    }
 }
