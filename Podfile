@@ -13,7 +13,8 @@ pod 'Kingfisher', '~> 1.8.2'
 pod 'Ji', '~> 1.2.0'
 pod 'AsyncSwift', '~> 1.4'
 pod 'ObjectMapper' , '~> 1.0.1'
-pod "YYCategories"
+pod 'YYCategories'
+pod 'EZSwiftExtensions'
 
 end
 

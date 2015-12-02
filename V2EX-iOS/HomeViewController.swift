@@ -19,6 +19,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
         topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
         topicsTableView.dataSource = self
         topicsTableView.delegate = self
