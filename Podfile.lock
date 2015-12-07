@@ -24,6 +24,7 @@ PODS:
   - SQLite.swift (1.0.0)
   - SwiftyJSON (2.3.1)
   - TTTAttributedLabel (1.13.4)
+  - UITableView+FDTemplateLayoutCell (1.4.beta)
   - YYCategories (0.9.3):
     - YYCategories/no-arc (= 0.9.3)
   - YYCategories/no-arc (0.9.3)
@@ -40,6 +41,7 @@ DEPENDENCIES:
   - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
   - SwiftyJSON (~> 2.3.1)
   - TTTAttributedLabel (~> 1.13.4)
+  - UITableView+FDTemplateLayoutCell (~> 1.4.beta)
   - YYCategories
 
 EXTERNAL SOURCES:
@@ -64,6 +66,7 @@ SPEC CHECKSUMS:
   SQLite.swift: 3bb75f5a650f08673276bc6d3fb1de1b542b8f4d
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
   TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
+  UITableView+FDTemplateLayoutCell: 9d20bf0518f3c01e42ae614243b97f1161063d27
   YYCategories: 44fa4213d3d0ebc7fc165f3b56e9f745e2ab8afb
 
 COCOAPODS: 0.39.0

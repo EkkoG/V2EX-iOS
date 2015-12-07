@@ -10,57 +10,94 @@ import UIKit
 import TTTAttributedLabel
 import DTCoreText
 import Kingfisher
+import UITableView_FDTemplateLayoutCell
 
-class TopicDetailViewController: BaseViewController, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate {
+class TopicDetailViewController: BaseViewController, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UITableViewDataSource, UITableViewDelegate {
     var topicID:Int?
     var topicDetailModel: TopicDetailModel?
-    var dt: DTAttributedLabel?
+    var dt: DTAttributedTextView?
+    var tableView: UITableView?
+    
+    let topicDetailContentCellIdentifier = "com.cielpy.v2ex.detailcontent"
+    
+    var replies = [TopicReplyModel]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor.whiteColor()
-//        DataManager.loadStringDataFromURL("http://news.163.com/") { (completion) -> Void in
-//            do {
-//                var dic = [String: AnyObject]()
-//                dic[NSDocumentTypeDocumentAttribute] = NSHTMLTextDocumentType
-//                dic[NSCharacterEncodingDocumentAttribute] = "\(NSUTF8StringEncoding)"
-//                
-//                let attributedString = try NSAttributedString(data: (completion.data!.dataUsingEncoding(NSUTF8StringEncoding))!, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: "\(NSUTF8StringEncoding)"], documentAttributes: nil)
-//                
-//                let dt = DTAttributedLabel(frame: self.view.bounds)
-//                dt.delegate = self
-//                dt.shouldDrawImages = false
-//                dt.attributedString = attributedString
-//                dt.shouldLayoutCustomSubviews = true
-//                self.view.addSubview(dt)
-//            }
-//            catch {
-//                
-//                }
-//            
-//        }
         
-        DataManager.loadTopicDetailContent(240498) { (completion) -> Void in
+        tableView = UITableView(frame: self.view.bounds, style: .Plain)
+        tableView?.dataSource = self
+        tableView?.delegate = self
+        self.view.addSubview(tableView!)
+        
+        tableView?.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
+        
+        let dt = DTAttributedTextView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
+        self.dt = dt
+        self.view.addSubview(dt)
+        
+        topicID = 241009
+        
+        DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
             
             var dic = [String: AnyObject]()
             dic[NSDocumentTypeDocumentAttribute] = NSHTMLTextDocumentType
             dic[NSCharacterEncodingDocumentAttribute] = "\(NSUTF8StringEncoding)"
             
-//                let attributedString = try NSAttributedString(data: (self.topicDetailModel?.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding))!, options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute: "\(NSUTF8StringEncoding)"], documentAttributes: nil)
+            let options = [DTDefaultFontSize: NSNumber(float: 15),
+                DTMaxImageSize: NSValue.init(CGSize: CGSizeMake(self.view.bounds.width - 20, self.view.bounds.height - 60)),
+                NSBaseURLDocumentOption: NSURL.fileURLWithPath(V2EX_BASE_URL, isDirectory: true),
+                DTDefaultLinkColor: "#778087"
+            ]
             
-            let att = DTHTMLAttributedStringBuilder(HTML: self.topicDetailModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: [NSBaseURLDocumentOption: [NSURL .fileURLWithPath("https://www.v2ex.com", isDirectory: true)], DTMaxImageSize: NSValue.init(CGSize: CGSizeMake(300, 200))], documentAttributes: nil)
-            let dt = DTAttributedLabel(frame: self.view.bounds)
+            let att = DTHTMLAttributedStringBuilder(HTML: self.topicDetailModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
             dt.delegate = self
+            dt.attributedTextContentView.delegate = self
             dt.shouldDrawImages = false
-            dt.shouldLayoutCustomSubviews = true
+//            dt.shouldLayoutCustomSubviews = true
             dt.attributedString = att.generatedAttributedString()
-            self.dt = dt
-            self.view.addSubview(dt)
         }
         
+        
+//        DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
+//            if let arr = completion.data as NSArray! {
+//                if arr.count > 0 {
+//                    self.replies = arr as! [TopicReplyModel]
+//                    self.tableView?.reloadData()
+//                }
+//                
+//            }
+//        }
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(topicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
+        configurationCell(cell, indexPath: indexPath)
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return replies.count
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let height = tableView.fd_heightForCellWithIdentifier(topicDetailContentCellIdentifier, configuration: { (cell) -> Void in
+            if let c = cell as! TopicReplyTableViewCell? {
+                self.configurationCell(c, indexPath: indexPath)
+            }
+        })
+        print(height)
+        return height
+    }
+    
+    func configurationCell(cell: TopicReplyTableViewCell, indexPath: NSIndexPath) {
+        cell.fd_enforceFrameLayout = true
+        let reply = self.replies[indexPath.row] as TopicReplyModel
+        cell.replyModel = reply
     }
     
     func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, viewForAttachment attachment: DTTextAttachment!, frame: CGRect) -> UIView! {
@@ -78,31 +115,28 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         let url = lazyImageView.url
         let pred = NSPredicate(format: "contentURL == %@", url)
         
-        if let res = self.dt?.layoutFrame.textAttachmentsWithPredicate(pred) {
-            for index in 0...res.count-1 {
-                var att = res[index] as! DTTextAttachment
+        if let res = self.dt?.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
+            for index in 0..<res.count {
+                let att = res[index] as! DTTextAttachment
                 att.originalSize = size
             }
         }
         
-        self.dt?.layouter = nil
+        self.dt?.attributedTextContentView.layouter = nil
         self.dt?.relayoutText()
     }
-
+    
+    func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
+        var f:CGRect = self.dt!.frame
+        f.size.height = layoutFrame.frame.size.height
+        self.dt?.frame = f
+        tableView?.tableHeaderView = self.dt!
+        
+        print(layoutFrame.frame.size.height)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

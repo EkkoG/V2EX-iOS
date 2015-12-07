@@ -190,4 +190,29 @@ extension DataManager {
             }
         }
     }
+    
+    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<NSArray>.completion) {
+        loadDataFromURL(V2EXAPI.TopicReplesContent + "\(topicID)") { (completion) -> Void in
+            if let data = completion.data {
+                let json = JSON(data: data)
+                var list = [TopicReplyModel]()
+                if json.arrayObject?.count > 0 {
+                    for (_, value) in json.arrayObject!.enumerate() {
+                        if let model = Mapper<TopicReplyModel>().map(value) {
+                            list.append(model)
+                        }
+                    }
+                    
+                }
+                if list.count > 0 {
+                    let tmp = DataResponse<NSArray>(data: list, error: nil)
+                    completionHandler(completion: tmp)
+                }
+                else {
+                    let tmp = DataResponse<NSArray>(data: nil, error: nil)
+                    completionHandler(completion: tmp)
+                }
+            }
+        }
+    }
 }

@@ -9,29 +9,86 @@
 import UIKit
 import Cartography
 import Kingfisher
+import Async
 
 class TopicTableViewCell: UITableViewCell {
     
-    var avatar = UIImageView()
-    var title = UILabel()
-    var node = UILabel()
-    var lastModified = UILabel()
-    var member = UILabel()
-    var lastModifyMember = UILabel()
-    var replies = UILabel()
+    let smallFont:CGFloat = 13
+    let avatarWidth:CGFloat = 60
+    
+    lazy var avatar: UIImageView = {
+        let imageView = UIImageView()
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    lazy var title: CLTopAlignLabel = {
+        let title = CLTopAlignLabel()
+        
+        title.numberOfLines = 0
+        let font = UIFont.systemFontOfSize(15)
+        title.font = font
+        title.translatesAutoresizingMaskIntoConstraints = false
+        return title
+    }()
+    lazy var node: UILabel = {
+        let node = UILabel()
+        
+        node.backgroundColor = UIColor.init(hexString: "#F5F5F5")
+        node.layer.cornerRadius = 3
+        node.layer.masksToBounds = true
+        
+        node.font = UIFont.systemFontOfSize(self.smallFont)
+        node.translatesAutoresizingMaskIntoConstraints = false
+        return node
+    }()
+    lazy var lastModified: UILabel = {
+        let label = UILabel()
+        
+        label.font = UIFont.systemFontOfSize(self.smallFont)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    lazy var member: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFontOfSize(self.smallFont)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    lazy var lastModifyMember: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+   lazy var replies: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     
     var topic: TopicModel? {
-        didSet {
+        willSet(topic){
             let url = NSURL(string:topic!.avatarURL())!
             avatar.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
-                UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
-                UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
                 if let image = image {
-                    image.drawInRect(self.avatar.bounds)
+                    Async.main(block: { () -> Void in
+                        UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
+                        UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
+                        image.drawInRect(self.avatar.bounds)
+                        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
+                        self.avatar.image = finalImage
+                        UIGraphicsEndImageContext()
+                    })
                 }
-                self.avatar.image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
             }
+            
+            self.title.text = topic!.title
+            self.node.text = topic!.node?.title
+            self.member.text = topic!.member?.username
+            self.lastModified.text = topic!.lastModifiedText()
+            setNeedsUpdateConstraints()
         }
     }
 
@@ -42,21 +99,19 @@ class TopicTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.addSubview(avatar)
-        self.addSubview(title)
-        self.addSubview(node)
-        self.addSubview(lastModified)
-        self.addSubview(member)
-        self.addSubview(lastModifyMember)
-        self.addSubview(replies)
+        contentView.addSubview(avatar)
+        contentView.addSubview(title)
+        contentView.addSubview(node)
+        contentView.addSubview(lastModified)
+        contentView.addSubview(member)
+        contentView.addSubview(lastModifyMember)
+        contentView.addSubview(replies)
         
 //        title.backgroundColor = UIColor.grayColor()
 //        avatar.backgroundColor = UIColor.redColor()
 //        node.backgroundColor = UIColor.blueColor()
 //        lastModified.backgroundColor = UIColor.greenColor()
 //        member.backgroundColor = UIColor.purpleColor()
-        UILayout()
-        
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -64,51 +119,44 @@ class TopicTableViewCell: UITableViewCell {
     }
     
     func UILayout() {
-        let font = UIFont.systemFontOfSize(15)
-        title.font = font
-        let smallFont = UIFont.systemFontOfSize(13)
-        node.font = smallFont
-        lastModified.font = smallFont
-        member.font = smallFont
-        
-        node.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-        member.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-        
-        node.backgroundColor = UIColor.init(hexString: "#F5F5F5")
-        node.layer.cornerRadius = 3
-        node.layer.masksToBounds = true
-        
-        title.numberOfLines = 0
         
         constrain(avatar) { view in
-            let width: CGFloat = 60
-            view.width == width
-            view.height == width
-            view.centerY == view.superview!.centerY
-            view.left == view.superview!.left + SPACING_BEWTWEEN_COMPONENTS
+            view.width == self.avatarWidth
+            view.height == self.avatarWidth
+            view.top == view.superview!.top + MARGIN_TO_BOUNDARY
+            view.left == view.superview!.left + MARGIN_TO_BOUNDARY
         }
         
         constrain(title, avatar) { view1, view2 in
             view1.left == view2.right + SPACING_BEWTWEEN_COMPONENTS
             view1.top == view2.top
             view1.right == view1.superview!.right - MARGIN_TO_BOUNDARY
+            /*
+            For node label to align to avatar's bottom
+            node's height is 16
+            the hard code minHeight is avatar's height - node's label's height
+            */
+            let minHeight:CGFloat = self.avatarWidth - 16
+            view1.height >= minHeight ~ 1000
         }
         
-        constrain(node, member, lastModified, lastModifyMember, avatar) {v1, v2, v3, v4, v5 in
-            align(bottom: v5, v4, v3, v2, v1)
-            
-            v1.left == v5.right + SPACING_BEWTWEEN_COMPONENTS
+        constrain(node, member, lastModified, lastModifyMember, title) {v1, v2, v3, v4, v5 in
+            v1.left == v5.left
             v2.left == v1.right + SPACING_BEWTWEEN_COMPONENTS
 //            v3.left == v2.right + SPACING_BEWTWEEN_COMPONENTS
 //            v4.left == v3.right + SPACING_BEWTWEEN_COMPONENTS
             v3.right == v3.superview!.right - MARGIN_TO_BOUNDARY
+            
+            v5.bottom == v1.top
+            
+            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+            align(bottom: v1, v2, v3, v4)
         }
-        
-        constrain(title, node) { v1, v2 in
-            v1.bottom == v2.top
-            v2.height >= 20 ~ 60
-        }
-        
+    }
+    
+    override func updateConstraints() {
+        UILayout()
+        super.updateConstraints()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

@@ -9,6 +9,7 @@
 import UIKit
 import Cartography
 import SwiftyJSON
+import Async
 
 class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     var type: HomeTabs!
@@ -23,6 +24,8 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
         topicsTableView.dataSource = self
         topicsTableView.delegate = self
+        topicsTableView.estimatedRowHeight = 100
+        topicsTableView.rowHeight = UITableViewAutomaticDimension
         topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(topicsTableView)
         constrain(topicsTableView) { (view) -> () in
@@ -41,10 +44,6 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! TopicTableViewCell
         let topic = topics![indexPath.row] as! TopicModel
-        cell.title.text = topic.title?.stringByAppendingString("\n")
-        cell.node.text = topic.node?.title
-        cell.member.text = topic.member?.username
-        cell.lastModified.text = topic.lastModifiedText()
         cell.topic = topic
 //        cell.lastModifyMember.text = topic.last_modified
         return cell
@@ -57,9 +56,9 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         return 0
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 80
-    }
+//    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+//        return 80
+//    }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let topic = topics![indexPath.row] as! TopicModel

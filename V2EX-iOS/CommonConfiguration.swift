@@ -78,7 +78,7 @@ enum HomeTabs {
 }
 
 public let SPACING_BEWTWEEN_COMPONENTS:CGFloat = 5
-public let MARGIN_TO_BOUNDARY:CGFloat = 10
+public let MARGIN_TO_BOUNDARY:CGFloat = 5
 
 class CommonConfiguration: NSObject {
 
