@@ -17,6 +17,7 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
     var topicDetailModel: TopicDetailModel?
     lazy var headerView: DTAttributedTextView = {
         [unowned self] in
+        
         let dt = DTAttributedTextView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
         dt.delegate = self
         dt.attributedTextContentView.delegate = self
@@ -27,6 +28,7 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
     }()
     lazy var tableView: UITableView = {
         [unowned self] in
+        
         let tableView = UITableView(frame: self.view.bounds, style: .Plain)
         tableView.dataSource = self
         tableView.delegate = self
@@ -42,11 +44,11 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.view.backgroundColor = UIColor.whiteColor()
+        view.backgroundColor = UIColor.whiteColor()
         
         tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
         
-//        topicID = 241009
+        topicID = 241009
         
         DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
@@ -95,7 +97,7 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
     
     func configurationCell(cell: TopicReplyTableViewCell, indexPath: NSIndexPath) {
         cell.fd_enforceFrameLayout = true
-        let reply = self.replies[indexPath.row] as TopicReplyModel
+        let reply = replies[indexPath.row] as TopicReplyModel
         cell.replyModel = reply
     }
     
@@ -114,7 +116,7 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         let pred = NSPredicate(format: "contentURL == %@", url)
         
         var didUpdate = false
-        if let res = self.headerView.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
+        if let res = headerView.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
             for index in 0..<res.count {
                 let att = res[index] as! DTTextAttachment
                 att.originalSize = size
@@ -123,16 +125,16 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         }
         
         if didUpdate {
-            self.headerView.attributedTextContentView.layouter = nil
-            self.headerView.relayoutText()
+            headerView.attributedTextContentView.layouter = nil
+            headerView.relayoutText()
         }
     }
     
     func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
-        var f:CGRect = self.headerView.frame
+        var f:CGRect = headerView.frame
         f.size.height = layoutFrame.frame.size.height
-        self.headerView.frame = f
-        tableView.tableHeaderView = self.headerView
+        headerView.frame = f
+        tableView.tableHeaderView = headerView
         
         print(layoutFrame.frame.size.height)
     }
