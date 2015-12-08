@@ -15,8 +15,24 @@ import UITableView_FDTemplateLayoutCell
 class TopicDetailViewController: BaseViewController, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UITableViewDataSource, UITableViewDelegate {
     var topicID:Int?
     var topicDetailModel: TopicDetailModel?
-    var dt: DTAttributedTextView?
-    var tableView: UITableView?
+    lazy var headerView: DTAttributedTextView = {
+        [unowned self] in
+        let dt = DTAttributedTextView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
+        dt.delegate = self
+        dt.attributedTextContentView.delegate = self
+        dt.shouldDrawImages = false
+        dt.attributedTextContentView.shouldLayoutCustomSubviews = true
+        self.view.addSubview(dt)
+        return dt
+    }()
+    lazy var tableView: UITableView = {
+        [unowned self] in
+        let tableView = UITableView(frame: self.view.bounds, style: .Plain)
+        tableView.dataSource = self
+        tableView.delegate = self
+        self.view.addSubview(tableView)
+        return tableView
+    }()
     
     let topicDetailContentCellIdentifier = "com.cielpy.v2ex.detailcontent"
     
@@ -28,40 +44,23 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor.whiteColor()
         
-        tableView = UITableView(frame: self.view.bounds, style: .Plain)
-        tableView?.dataSource = self
-        tableView?.delegate = self
-        self.view.addSubview(tableView!)
+        tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
         
-        tableView?.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
-        
-        let dt = DTAttributedTextView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
-        self.dt = dt
-        self.view.addSubview(dt)
-        
-        topicID = 241009
+//        topicID = 241009
         
         DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
-            
-            var dic = [String: AnyObject]()
-            dic[NSDocumentTypeDocumentAttribute] = NSHTMLTextDocumentType
-            dic[NSCharacterEncodingDocumentAttribute] = "\(NSUTF8StringEncoding)"
+            self.title = self.topicDetailModel!.title
             
             let options = [DTDefaultFontSize: NSNumber(float: 15),
-                DTMaxImageSize: NSValue.init(CGSize: CGSizeMake(self.view.bounds.width - 20, self.view.bounds.height - 60)),
+                DTMaxImageSize: NSValue.init(CGSize: CGSizeMake(self.view.bounds.width - 20, 10000)),
                 NSBaseURLDocumentOption: NSURL.fileURLWithPath(V2EX_BASE_URL, isDirectory: true),
                 DTDefaultLinkColor: "#778087"
             ]
             
             let att = DTHTMLAttributedStringBuilder(HTML: self.topicDetailModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
-            dt.delegate = self
-            dt.attributedTextContentView.delegate = self
-            dt.shouldDrawImages = false
-//            dt.shouldLayoutCustomSubviews = true
-            dt.attributedString = att.generatedAttributedString()
+            self.headerView.attributedString = att.generatedAttributedString()
         }
-        
         
 //        DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
 //            if let arr = completion.data as NSArray! {
@@ -106,7 +105,6 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
             imageView.delegate = self
             imageView.url = attachment.contentURL
             return imageView
-            
         }
         return nil
     }
@@ -115,22 +113,26 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         let url = lazyImageView.url
         let pred = NSPredicate(format: "contentURL == %@", url)
         
-        if let res = self.dt?.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
+        var didUpdate = false
+        if let res = self.headerView.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
             for index in 0..<res.count {
                 let att = res[index] as! DTTextAttachment
                 att.originalSize = size
+                didUpdate = true
             }
         }
         
-        self.dt?.attributedTextContentView.layouter = nil
-        self.dt?.relayoutText()
+        if didUpdate {
+            self.headerView.attributedTextContentView.layouter = nil
+            self.headerView.relayoutText()
+        }
     }
     
     func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
-        var f:CGRect = self.dt!.frame
+        var f:CGRect = self.headerView.frame
         f.size.height = layoutFrame.frame.size.height
-        self.dt?.frame = f
-        tableView?.tableHeaderView = self.dt!
+        self.headerView.frame = f
+        tableView.tableHeaderView = self.headerView
         
         print(layoutFrame.frame.size.height)
     }

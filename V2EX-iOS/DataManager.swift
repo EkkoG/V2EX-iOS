@@ -179,7 +179,7 @@ extension DataManager {
             if let data = response.data {
                 let json = JSON(data: data)
                 if let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) {
-                    
+                    model.content_rendered = model.content_rendered?.stringByReplacingOccurrencesOfString("//i.v2ex", withString: "https://i.v2ex")
                     let tmp = DataResponse<TopicDetailModel>(data: model, error: nil)
                     completionHander(completion: tmp)
                 }
@@ -202,7 +202,6 @@ extension DataManager {
                             list.append(model)
                         }
                     }
-                    
                 }
                 if list.count > 0 {
                     let tmp = DataResponse<NSArray>(data: list, error: nil)
