@@ -17,7 +17,7 @@ pod 'YYCategories'
 pod 'EZSwiftExtensions'
 pod 'TTTAttributedLabel', '~> 1.13.4'
 pod 'DTCoreText', '~> 1.6.16'
-pod 'UITableView+FDTemplateLayoutCell', '~> 1.4.beta'
+#pod 'UITableView+FDTemplateLayoutCell', '~> 1.4.beta'
 
 end
 

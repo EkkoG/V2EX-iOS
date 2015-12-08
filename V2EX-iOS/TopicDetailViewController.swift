@@ -10,7 +10,7 @@ import UIKit
 import TTTAttributedLabel
 import DTCoreText
 import Kingfisher
-import UITableView_FDTemplateLayoutCell
+//import UITableView_FDTemplateLayoutCell
 
 class TopicDetailViewController: BaseViewController, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UITableViewDataSource, UITableViewDelegate {
     var topicID:Int?
@@ -39,16 +39,18 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
     let topicDetailContentCellIdentifier = "com.cielpy.v2ex.detailcontent"
     
     var replies = [TopicReplyModel]()
+    var cellRowHeightDictionary = [NSIndexPath: CGFloat]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
 
         // Do any additional setup after loading the view.
         view.backgroundColor = UIColor.whiteColor()
         
         tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
         
-        topicID = 182391
+//        topicID = 182391
         
         DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
@@ -68,6 +70,11 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
             if let arr = completion.data as NSArray! {
                 if arr.count > 0 {
                     self.replies = arr as! [TopicReplyModel]
+//                    let a = arr as! [TopicReplyModel]
+//                    self.replies.append(a.first!)
+                    while self.replies.count > 2 {
+                        self.replies.removeLast()
+                    }
                     self.tableView.reloadData()
                 }
             }
@@ -85,18 +92,49 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let height = tableView.fd_heightForCellWithIdentifier(topicDetailContentCellIdentifier, configuration: { (cell) -> Void in
-            if let c = cell as! TopicReplyTableViewCell? {
-                self.configurationCell(c, indexPath: indexPath)
+//        let height = tableView.fd_heightForCellWithIdentifier(topicDetailContentCellIdentifier, configuration: { (cell) -> Void in
+//            if let c = cell as! TopicReplyTableViewCell? {
+//                self.configurationCell(c, indexPath: indexPath)
+//            }
+//        })
+//        print(height)
+        if let height = cellRowHeightDictionary[indexPath] {
+            let returnHeight = height + SPACING_BEWTWEEN_COMPONENTS + MARGIN_TO_BOUNDARY
+            print("\(indexPath.row)   return height \(returnHeight)")
+            return returnHeight
+        }
+        else {
+            return 0
+        }
+    }
+    
+    func cellContentHasNewHeight(notification: NSNotification) {
+        let info = notification.userInfo as! [NSIndexPath: CGFloat]
+        let indexPath = info.keys.first!
+        print("----->> \(indexPath.row)")
+        print("----->> \(info[indexPath])")
+        if cellRowHeightDictionary[indexPath] == nil{
+            let newHeight = info[indexPath]
+            cellRowHeightDictionary[indexPath] = newHeight
+            tableView.reloadData()
+//            tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
+        }
+        else {
+            let oldHeight = cellRowHeightDictionary[indexPath]
+            let newHeight = info[indexPath]
+            if oldHeight == newHeight {
+                print("same height, nothin to do")
             }
-        })
-        print(height)
-        return 500
-//        return height
+            else {
+                cellRowHeightDictionary[indexPath] = newHeight
+                tableView.reloadData()
+//                tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
+            }
+        }
     }
     
     func configurationCell(cell: TopicReplyTableViewCell, indexPath: NSIndexPath) {
-        cell.fd_enforceFrameLayout = true
+        cell.indexPath = indexPath
         let reply = replies[indexPath.row] as TopicReplyModel
         cell.replyModel = reply
     }

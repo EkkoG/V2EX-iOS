@@ -12,7 +12,12 @@ import Cartography
 import Kingfisher
 import Async
 
+public let TopicReplyCellContentHasNewHeightNotification = "com.cielpy.v2ex.topicreplycontenthasnewheight"
+public let TopicContentNewHeightIndexPathKey = "com.cielpy.v2ex.topiccontentnewheight"
+public let TopicContentNewHeightHeightKey = "com.cielpy.v2ex.topiccontentnewheightheight"
+
 class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UIScrollViewDelegate {
+    var indexPath: NSIndexPath?
     var avatarImageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
@@ -37,7 +42,9 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
     
     lazy var contentLabel: DTAttributedTextView = {
         [unowned self] in
-        let label = DTAttributedTextView(frame: CGRectMake(0, 0, self.bounds.size.width, 500))
+        let x = MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
+        let width = self.bounds.size.width - x - MARGIN_TO_BOUNDARY
+        let label = DTAttributedTextView(frame: CGRectMake(x, 0, width, 500))
         label.delegate = self
         label.attributedTextContentView.delegate = self
         label.shouldDrawImages = false
@@ -46,6 +53,8 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
     }()
     
     var contentLabelHeight: CGFloat = 1
+    
+    let contentLabelHeightGroup = ConstraintGroup()
     
     var replyModel: TopicReplyModel? {
         willSet(replyModel){
@@ -138,15 +147,22 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
 ////            v2.height == v1.height
 //        }
         
-        constrain(contentLabel ) { v1 in
-//            align(left: v1, v2)
-//            v1.height == self.contentLabelHeight
-            v1.height >= 20 ~ 1000
-            v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
-            v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
-            v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
-//            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+        Async.main { () -> Void in
+            constrain(self.contentLabel ) { v1 in
+    //            align(left: v1, v2)
+    //            v1.height == self.contentLabelHeight
+                v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
+                v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
+                v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
+    //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+            }
+            
+            constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
+                v1.height == 10
+            }
+                
         }
+        
     }
     
     
@@ -181,23 +197,22 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
     }
     
     func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
-        contentLabelHeight = layoutFrame.frame.size.height
-        var f:CGRect = self.contentLabel.frame
-        f.size.height = layoutFrame.frame.size.height
-//        self.contentLabel.frame = f
-        constrain(contentLabel) { v1 in
-            v1.height == f.size.height
+//        contentLabelHeight = layoutFrame.frame.size.height
+//        var f:CGRect = self.contentLabel.frame
+//        f.size.height = layoutFrame.frame.size.height
+////        self.contentLabel.frame = f
+        Async.main { () -> Void in
+            constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
+                v1.height == layoutFrame.frame.size.height
+            }
         }
         
-        let width = self.bounds.width - MARGIN_TO_BOUNDARY * 2 - 50 - SPACING_BEWTWEEN_COMPONENTS
-        let size = contentLabel.attributedTextContentView.suggestedFrameSizeToFitEntireStringConstraintedToWidth(width)
-        contentLabelHeight = size.height
-//        print(layoutFrame.frame.size.height)
-//        self.sizeToFit()
         print("=======>>> \(layoutFrame.frame.size.height)")
-        print("")
-        self.setNeedsLayout()
-        self.setNeedsUpdateConstraints()
+//        let indexPathInfo = [TopicContentNewHeightIndexPathKey: indexPath]
+//        let heightInfo = [TopicContentNewHeightHeightKey: layoutFrame.]
+        print("===\(indexPath!.row)")
+        let info:[NSIndexPath: CGFloat] = [indexPath!: layoutFrame.frame.size.height]
+        NSNotificationCenter.defaultCenter().postNotificationName(TopicReplyCellContentHasNewHeightNotification, object: nil, userInfo: info)
     }
     
     override func sizeThatFits(size: CGSize) -> CGSize {
