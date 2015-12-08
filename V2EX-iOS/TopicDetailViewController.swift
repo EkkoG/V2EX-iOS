@@ -48,7 +48,7 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         
         tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
         
-        topicID = 241009
+        topicID = 182391
         
         DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
@@ -64,15 +64,14 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
             self.headerView.attributedString = att.generatedAttributedString()
         }
         
-//        DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
-//            if let arr = completion.data as NSArray! {
-//                if arr.count > 0 {
-//                    self.replies = arr as! [TopicReplyModel]
-//                    self.tableView?.reloadData()
-//                }
-//                
-//            }
-//        }
+        DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
+            if let arr = completion.data as NSArray! {
+                if arr.count > 0 {
+                    self.replies = arr as! [TopicReplyModel]
+                    self.tableView.reloadData()
+                }
+            }
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -92,7 +91,8 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
             }
         })
         print(height)
-        return height
+        return 500
+//        return height
     }
     
     func configurationCell(cell: TopicReplyTableViewCell, indexPath: NSIndexPath) {

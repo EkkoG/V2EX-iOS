@@ -12,7 +12,7 @@ import Cartography
 import Kingfisher
 import Async
 
-class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate {
+class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UIScrollViewDelegate {
     var avatarImageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
@@ -35,12 +35,13 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
         return label
     }()
     
-    lazy var contentLabel: DTAttributedLabel = {
+    lazy var contentLabel: DTAttributedTextView = {
         [unowned self] in
-        let label = DTAttributedLabel(frame: CGRectMake(0, 0, self.bounds.size.width, 10))
+        let label = DTAttributedTextView(frame: CGRectMake(0, 0, self.bounds.size.width, 500))
         label.delegate = self
+        label.attributedTextContentView.delegate = self
         label.shouldDrawImages = false
-        label.shouldLayoutCustomSubviews = true
+        label.attributedTextContentView.shouldLayoutCustomSubviews = true
         return label
     }()
     
@@ -137,15 +138,15 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
 ////            v2.height == v1.height
 //        }
         
-//        constrain(contentLabel ) { v1 in
-////            align(left: v1, v2)
-////            v1.height == self.contentLabelHeight
-//            v1.height >= 20 ~ 1000
-//            v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
-//            v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
-//            v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
+        constrain(contentLabel ) { v1 in
+//            align(left: v1, v2)
+//            v1.height == self.contentLabelHeight
+            v1.height >= 20 ~ 1000
+            v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
+            v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
+            v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
 //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
-//        }
+        }
     }
     
     
@@ -164,35 +165,42 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
         let url = lazyImageView.url
         let pred = NSPredicate(format: "contentURL == %@", url)
         
-        if let res = contentLabel.layoutFrame.textAttachmentsWithPredicate(pred) {
+        var didUpdate = false
+        if let res = contentLabel.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
             for index in 0..<res.count {
                 let att = res[index] as! DTTextAttachment
                 att.originalSize = size
+                didUpdate = true
             }
         }
         
-        contentLabel.layouter = nil
-        contentLabel.relayoutText()
+        if didUpdate {
+            contentLabel.attributedTextContentView.layouter = nil
+            contentLabel.relayoutText()
+        }
     }
     
     func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
         contentLabelHeight = layoutFrame.frame.size.height
         var f:CGRect = self.contentLabel.frame
         f.size.height = layoutFrame.frame.size.height
-        self.contentLabel.frame = f
+//        self.contentLabel.frame = f
+        constrain(contentLabel) { v1 in
+            v1.height == f.size.height
+        }
         
         let width = self.bounds.width - MARGIN_TO_BOUNDARY * 2 - 50 - SPACING_BEWTWEEN_COMPONENTS
-        let size = contentLabel.suggestedFrameSizeToFitEntireStringConstraintedToWidth(width)
+        let size = contentLabel.attributedTextContentView.suggestedFrameSizeToFitEntireStringConstraintedToWidth(width)
         contentLabelHeight = size.height
 //        print(layoutFrame.frame.size.height)
 //        self.sizeToFit()
         print("=======>>> \(layoutFrame.frame.size.height)")
         print("")
+        self.setNeedsLayout()
+        self.setNeedsUpdateConstraints()
     }
     
     override func sizeThatFits(size: CGSize) -> CGSize {
-        
-        
         var totalHeight: CGFloat = 0
         totalHeight += MARGIN_TO_BOUNDARY
         totalHeight += 18
