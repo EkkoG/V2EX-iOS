@@ -61,16 +61,16 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
             
             let url = NSURL(string:replyModel!.avatarURL())!
             avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
-                if let image = image {
-                    Async.main(block: { () -> Void in
-                        UIGraphicsBeginImageContextWithOptions(self.avatarImageView.bounds.size, false, 1.0)
-                        UIBezierPath.init(roundedRect: self.avatarImageView.bounds, cornerRadius: 3.0).addClip()
-                        image.drawInRect(self.avatarImageView.bounds)
-                        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
-                        self.avatarImageView.image = finalImage
-                        UIGraphicsEndImageContext()
-                    })
-                }
+//                if let image = image {
+//                    Async.main(block: { () -> Void in
+//                        UIGraphicsBeginImageContextWithOptions(self.avatarImageView.bounds.size, false, 1.0)
+//                        UIBezierPath.init(roundedRect: self.avatarImageView.bounds, cornerRadius: 3.0).addClip()
+//                        image.drawInRect(self.avatarImageView.bounds)
+//                        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
+//                        self.avatarImageView.image = finalImage
+//                        UIGraphicsEndImageContext()
+//                    })
+//                }
             }
             
             memberButton.setTitle(replyModel!.member?.username, forState: .Normal)
@@ -89,8 +89,10 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
                 DTDefaultLinkColor: "#778087"
             ]
             
-            let att = DTHTMLAttributedStringBuilder(HTML: replyModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
-            contentLabel.attributedString = att.generatedAttributedString()
+            Async.main { () -> Void in
+                let att = DTHTMLAttributedStringBuilder(HTML: replyModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
+                self.contentLabel.attributedString = att.generatedAttributedString()
+            }
 //            let width = self.bounds.width - MARGIN_TO_BOUNDARY * 2 - 50 - SPACING_BEWTWEEN_COMPONENTS
 //            let size = self.contentLabel!.suggestedFrameSizeToFitEntireStringConstraintedToWidth(width)
 //            self.contentLabelHeight = size.height
@@ -147,21 +149,21 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
 ////            v2.height == v1.height
 //        }
         
-        Async.main { () -> Void in
-            constrain(self.contentLabel ) { v1 in
-    //            align(left: v1, v2)
-    //            v1.height == self.contentLabelHeight
-                v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
-                v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
-                v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
-    //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
-            }
-            
-            constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
-                v1.height == 10
-            }
-                
-        }
+//        Async.main { () -> Void in
+//            constrain(self.contentLabel ) { v1 in
+//    //            align(left: v1, v2)
+//    //            v1.height == self.contentLabelHeight
+//                v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
+//                v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
+//                v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
+//    //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+//            }
+//            
+//            constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
+//                v1.height == 10
+//            }
+//                
+//        }
         
     }
     
@@ -172,7 +174,6 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
             imageView.delegate = self
             imageView.url = attachment.contentURL
             return imageView
-            
         }
         return nil
     }
@@ -197,10 +198,13 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
     }
     
     func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
-//        contentLabelHeight = layoutFrame.frame.size.height
-//        var f:CGRect = self.contentLabel.frame
-//        f.size.height = layoutFrame.frame.size.height
-////        self.contentLabel.frame = f
+        let info:[NSIndexPath: CGFloat] = [indexPath!: layoutFrame.frame.size.height]
+        NSNotificationCenter.defaultCenter().postNotificationOnMainThreadWithName(TopicReplyCellContentHasNewHeightNotification, object: nil, userInfo: info)
+        
+        contentLabelHeight = layoutFrame.frame.size.height
+        var f:CGRect = self.contentLabel.frame
+        f.size.height = layoutFrame.frame.size.height
+        self.contentLabel.frame = f
         Async.main { () -> Void in
             constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
                 v1.height == layoutFrame.frame.size.height
@@ -211,8 +215,6 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
 //        let indexPathInfo = [TopicContentNewHeightIndexPathKey: indexPath]
 //        let heightInfo = [TopicContentNewHeightHeightKey: layoutFrame.]
         print("===\(indexPath!.row)")
-        let info:[NSIndexPath: CGFloat] = [indexPath!: layoutFrame.frame.size.height]
-        NSNotificationCenter.defaultCenter().postNotificationName(TopicReplyCellContentHasNewHeightNotification, object: nil, userInfo: info)
     }
     
     override func sizeThatFits(size: CGSize) -> CGSize {

@@ -11,6 +11,7 @@ import Alamofire
 import SwiftyJSON
 import Ji
 import ObjectMapper
+import Async
 
 let V2EX_API_BASE_URL = "https://www.v2ex.com/api"
 let V2EX_BASE_URL = "https://www.v2ex.com/"
@@ -147,11 +148,15 @@ class DataManager: NSObject {
         Alamofire.request(.GET, URL, headers: headers).responseString { (response) -> Void in
             if response.result.isSuccess {
                 let tmp = DataResponse<String>(data: response.result.value, error: nil)
-                completion(completion: tmp)
+                Async.main(block: { () -> Void in
+                    completion(completion: tmp)
+                })
             }
             else {
                 let tmp = DataResponse<String>(data: nil, error: response.result.error)
-                completion(completion: tmp)
+                Async.main(block: { () -> Void in
+                    completion(completion: tmp)
+                })
             }
         }
         
@@ -161,11 +166,15 @@ class DataManager: NSObject {
         Alamofire.request(.GET, URL).responseData { (response) -> Void in
             if response.result.isSuccess {
                 let tmp = DataResponse<NSData>(data: response.data, error: nil)
-                completion(completion: tmp)
+                Async.main(block: { () -> Void in
+                    completion(completion: tmp)
+                })
             }
             else {
                 let tmp = DataResponse<NSData>(data: nil, error: response.result.error!)
-                completion(completion: tmp)
+                Async.main(block: { () -> Void in
+                    completion(completion: tmp)
+                })
             }
         }
         

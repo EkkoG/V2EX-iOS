@@ -10,6 +10,7 @@ import UIKit
 import TTTAttributedLabel
 import DTCoreText
 import Kingfisher
+import Async
 //import UITableView_FDTemplateLayoutCell
 
 class TopicDetailViewController: BaseViewController, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UITableViewDataSource, UITableViewDelegate {
@@ -32,7 +33,6 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         let tableView = UITableView(frame: self.view.bounds, style: .Plain)
         tableView.dataSource = self
         tableView.delegate = self
-        self.view.addSubview(tableView)
         return tableView
     }()
     
@@ -46,9 +46,10 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
 
         // Do any additional setup after loading the view.
+        self.view.addSubview(tableView)
         view.backgroundColor = UIColor.whiteColor()
         
-        tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
         
 //        topicID = 182391
         
@@ -63,27 +64,31 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
             ]
             
             let att = DTHTMLAttributedStringBuilder(HTML: self.topicDetailModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
-            self.headerView.attributedString = att.generatedAttributedString()
+            Async.main(block: { () -> Void in
+                self.headerView.attributedString = att.generatedAttributedString()
+            })
         }
-        
+//
         DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
             if let arr = completion.data as NSArray! {
                 if arr.count > 0 {
                     self.replies = arr as! [TopicReplyModel]
 //                    let a = arr as! [TopicReplyModel]
 //                    self.replies.append(a.first!)
-                    while self.replies.count > 2 {
-                        self.replies.removeLast()
-                    }
-                    self.tableView.reloadData()
+//                    while self.replies.count > 2 {
+//                        self.replies.removeLast()
+//                    }
                 }
+                Async.main(block: { () -> Void in
+                    self.tableView.reloadData()
+                })
             }
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(topicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
-        configurationCell(cell, indexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier(topicDetailContentCellIdentifier, forIndexPath: indexPath) 
+//        configurationCell(cell, indexPath: indexPath)
         return cell
     }
     
@@ -98,6 +103,7 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
 //            }
 //        })
 //        print(height)
+        return 100
         if let height = cellRowHeightDictionary[indexPath] {
             let returnHeight = height + SPACING_BEWTWEEN_COMPONENTS + MARGIN_TO_BOUNDARY
             print("\(indexPath.row)   return height \(returnHeight)")
