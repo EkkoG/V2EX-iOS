@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import DTCoreText
 import Cartography
 import Kingfisher
 import Async
@@ -16,7 +15,7 @@ public let TopicReplyCellContentHasNewHeightNotification = "com.cielpy.v2ex.topi
 public let TopicContentNewHeightIndexPathKey = "com.cielpy.v2ex.topiccontentnewheight"
 public let TopicContentNewHeightHeightKey = "com.cielpy.v2ex.topiccontentnewheightheight"
 
-class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UIScrollViewDelegate {
+class TopicReplyTableViewCell: UITableViewCell {
     var indexPath: NSIndexPath?
     var avatarImageView: UIImageView = {
         let imageView = UIImageView()
@@ -37,18 +36,6 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
     lazy var thanksLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFontOfSize(15)
-        return label
-    }()
-    
-    lazy var contentLabel: DTAttributedTextView = {
-        [unowned self] in
-        let x = MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
-        let width = self.bounds.size.width - x - MARGIN_TO_BOUNDARY
-        let label = DTAttributedTextView(frame: CGRectMake(x, 0, width, 500))
-        label.delegate = self
-        label.attributedTextContentView.delegate = self
-        label.shouldDrawImages = false
-        label.attributedTextContentView.shouldLayoutCustomSubviews = true
         return label
     }()
     
@@ -82,20 +69,6 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
             var dic = [String: AnyObject]()
             dic[NSDocumentTypeDocumentAttribute] = NSHTMLTextDocumentType
             dic[NSCharacterEncodingDocumentAttribute] = "\(NSUTF8StringEncoding)"
-            
-            let options = [DTDefaultFontSize: NSNumber(float: 15),
-                DTMaxImageSize: NSValue.init(CGSize: CGSizeMake(self.bounds.width - 20, self.bounds.height - 60)),
-                NSBaseURLDocumentOption: NSURL.fileURLWithPath(V2EX_BASE_URL, isDirectory: true),
-                DTDefaultLinkColor: "#778087"
-            ]
-            
-            Async.main { () -> Void in
-                let att = DTHTMLAttributedStringBuilder(HTML: replyModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
-                self.contentLabel.attributedString = att.generatedAttributedString()
-            }
-//            let width = self.bounds.width - MARGIN_TO_BOUNDARY * 2 - 50 - SPACING_BEWTWEEN_COMPONENTS
-//            let size = self.contentLabel!.suggestedFrameSizeToFitEntireStringConstraintedToWidth(width)
-//            self.contentLabelHeight = size.height
         }
     }
 
@@ -114,13 +87,11 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
 //        addSubview(memberButton)
 //        addSubview(createdTimeLabel)
 //        addSubview(thanksLabel)
-        addSubview(contentLabel)
-//        
+//
 ////        avatarImageView!.backgroundColor = UIColor.redColor()
 //        memberButton.backgroundColor = UIColor.greenColor()
 //        createdTimeLabel.backgroundColor = UIColor.grayColor()
 //        thanksLabel.backgroundColor = UIColor.blueColor()
-        contentLabel.backgroundColor = UIColor.yellowColor()
 //
 //        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
 //        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Vertical)
@@ -168,65 +139,16 @@ class TopicReplyTableViewCell: UITableViewCell, DTAttributedTextContentViewDeleg
     }
     
     
-    func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, viewForAttachment attachment: DTTextAttachment!, frame: CGRect) -> UIView! {
-        if attachment.isKindOfClass(DTImageTextAttachment){
-            let imageView = DTLazyImageView(frame: frame)
-            imageView.delegate = self
-            imageView.url = attachment.contentURL
-            return imageView
-        }
-        return nil
-    }
-    
-    func lazyImageView(lazyImageView: DTLazyImageView!, didChangeImageSize size: CGSize) {
-        let url = lazyImageView.url
-        let pred = NSPredicate(format: "contentURL == %@", url)
-        
-        var didUpdate = false
-        if let res = contentLabel.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
-            for index in 0..<res.count {
-                let att = res[index] as! DTTextAttachment
-                att.originalSize = size
-                didUpdate = true
-            }
-        }
-        
-        if didUpdate {
-            contentLabel.attributedTextContentView.layouter = nil
-            contentLabel.relayoutText()
-        }
-    }
-    
-    func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
-        let info:[NSIndexPath: CGFloat] = [indexPath!: layoutFrame.frame.size.height]
-        NSNotificationCenter.defaultCenter().postNotificationOnMainThreadWithName(TopicReplyCellContentHasNewHeightNotification, object: nil, userInfo: info)
-        
-        contentLabelHeight = layoutFrame.frame.size.height
-        var f:CGRect = self.contentLabel.frame
-        f.size.height = layoutFrame.frame.size.height
-        self.contentLabel.frame = f
-        Async.main { () -> Void in
-            constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
-                v1.height == layoutFrame.frame.size.height
-            }
-        }
-        
-        print("=======>>> \(layoutFrame.frame.size.height)")
-//        let indexPathInfo = [TopicContentNewHeightIndexPathKey: indexPath]
-//        let heightInfo = [TopicContentNewHeightHeightKey: layoutFrame.]
-        print("===\(indexPath!.row)")
-    }
-    
-    override func sizeThatFits(size: CGSize) -> CGSize {
-        var totalHeight: CGFloat = 0
-        totalHeight += MARGIN_TO_BOUNDARY
-        totalHeight += 18
-        totalHeight += SPACING_BEWTWEEN_COMPONENTS
-        totalHeight += contentLabelHeight
-        totalHeight += MARGIN_TO_BOUNDARY
-        
-        return CGSizeMake(size.width, totalHeight)
-    }
+//    override func sizeThatFits(size: CGSize) -> CGSize {
+//        var totalHeight: CGFloat = 0
+//        totalHeight += MARGIN_TO_BOUNDARY
+//        totalHeight += 18
+//        totalHeight += SPACING_BEWTWEEN_COMPONENTS
+//        totalHeight += contentLabelHeight
+//        totalHeight += MARGIN_TO_BOUNDARY
+//        
+//        return CGSizeMake(size.width, totalHeight)
+//    }
     
     required init?(coder aDecoder: NSCoder) {
        super.init(coder: aDecoder)

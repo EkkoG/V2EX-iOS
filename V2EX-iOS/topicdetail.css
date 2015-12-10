@@ -1,0 +1,45 @@
+body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #000;
+    word-wrap: break-word;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 100%;
+    margin: 5px 0px 20px 0px;
+    padding: 0px;
+    word-wrap: break-word;
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 100%;
+    margin: 20px 0px 20px 0px;
+    padding: 0px 0px 8px 0px;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+h3 {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 100%;
+    margin: 5px 0px 20px 0px;
+    padding: 0px;
+}
+
+p{
+    
+}
+
+img{
+    width:100%;
+    height:auto;
+}
+
+a{
+    color: #778087;
+}

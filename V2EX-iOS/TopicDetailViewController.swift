@@ -8,24 +8,18 @@
 
 import UIKit
 import TTTAttributedLabel
-import DTCoreText
 import Kingfisher
 import Async
 //import UITableView_FDTemplateLayoutCell
 
-class TopicDetailViewController: BaseViewController, DTAttributedTextContentViewDelegate, DTLazyImageViewDelegate, UITableViewDataSource, UITableViewDelegate {
+class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate {
     var topicID:Int?
     var topicDetailModel: TopicDetailModel?
-    lazy var headerView: DTAttributedTextView = {
+    lazy var headerWebView: UIWebView = {
         [unowned self] in
-        
-        let dt = DTAttributedTextView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
-        dt.delegate = self
-        dt.attributedTextContentView.delegate = self
-        dt.shouldDrawImages = false
-        dt.attributedTextContentView.shouldLayoutCustomSubviews = true
-        self.view.addSubview(dt)
-        return dt
+        let webView = UIWebView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
+        webView.delegate = self
+        return webView
     }()
     lazy var tableView: UITableView = {
         [unowned self] in
@@ -46,27 +40,31 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
 
         // Do any additional setup after loading the view.
+        self.view.addSubview(self.headerWebView)
         self.view.addSubview(tableView)
         view.backgroundColor = UIColor.whiteColor()
         
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
         
-//        topicID = 182391
+//        topicID = 85402
         
         DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
             self.title = self.topicDetailModel!.title
-            
-            let options = [DTDefaultFontSize: NSNumber(float: 15),
-                DTMaxImageSize: NSValue.init(CGSize: CGSizeMake(self.view.bounds.width - 20, 10000)),
-                NSBaseURLDocumentOption: NSURL.fileURLWithPath(V2EX_BASE_URL, isDirectory: true),
-                DTDefaultLinkColor: "#778087"
-            ]
-            
-            let att = DTHTMLAttributedStringBuilder(HTML: self.topicDetailModel!.content_rendered?.dataUsingEncoding(NSUTF8StringEncoding), options: options, documentAttributes: nil)
-            Async.main(block: { () -> Void in
-                self.headerView.attributedString = att.generatedAttributedString()
-            })
+            if let content = self.topicDetailModel?.content_rendered {
+                
+                do {
+                    let htmlPath = NSBundle.mainBundle().pathForResource("topic", ofType: "html")
+                    let htmlTemplate = try NSString.init(contentsOfFile: htmlPath!, encoding: NSUTF8StringEncoding)
+                    let path = NSBundle.mainBundle().bundlePath
+                    let baseURL = NSURL(fileURLWithPath: path)
+                    let html = htmlTemplate.stringByReplacingOccurrencesOfString("CONTENT_BODY", withString: content)
+                    self.headerWebView.loadHTMLString(html as String, baseURL: baseURL)
+                }
+                catch {
+                    
+                }
+            }
         }
 //
         DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
@@ -104,40 +102,32 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
 //        })
 //        print(height)
         return 100
-        if let height = cellRowHeightDictionary[indexPath] {
-            let returnHeight = height + SPACING_BEWTWEEN_COMPONENTS + MARGIN_TO_BOUNDARY
-            print("\(indexPath.row)   return height \(returnHeight)")
-            return returnHeight
-        }
-        else {
-            return 0
-        }
     }
     
-    func cellContentHasNewHeight(notification: NSNotification) {
-        let info = notification.userInfo as! [NSIndexPath: CGFloat]
-        let indexPath = info.keys.first!
-        print("----->> \(indexPath.row)")
-        print("----->> \(info[indexPath])")
-        if cellRowHeightDictionary[indexPath] == nil{
-            let newHeight = info[indexPath]
-            cellRowHeightDictionary[indexPath] = newHeight
-            tableView.reloadData()
-//            tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
-        }
-        else {
-            let oldHeight = cellRowHeightDictionary[indexPath]
-            let newHeight = info[indexPath]
-            if oldHeight == newHeight {
-                print("same height, nothin to do")
-            }
-            else {
-                cellRowHeightDictionary[indexPath] = newHeight
-                tableView.reloadData()
-//                tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
-            }
-        }
-    }
+//    func cellContentHasNewHeight(notification: NSNotification) {
+//        let info = notification.userInfo as! [NSIndexPath: CGFloat]
+//        let indexPath = info.keys.first!
+//        print("----->> \(indexPath.row)")
+//        print("----->> \(info[indexPath])")
+//        if cellRowHeightDictionary[indexPath] == nil{
+//            let newHeight = info[indexPath]
+//            cellRowHeightDictionary[indexPath] = newHeight
+//            tableView.reloadData()
+////            tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
+//        }
+//        else {
+//            let oldHeight = cellRowHeightDictionary[indexPath]
+//            let newHeight = info[indexPath]
+//            if oldHeight == newHeight {
+//                print("same height, nothin to do")
+//            }
+//            else {
+//                cellRowHeightDictionary[indexPath] = newHeight
+//                tableView.reloadData()
+////                tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
+//            }
+//        }
+//    }
     
     func configurationCell(cell: TopicReplyTableViewCell, indexPath: NSIndexPath) {
         cell.indexPath = indexPath
@@ -145,42 +135,11 @@ class TopicDetailViewController: BaseViewController, DTAttributedTextContentView
         cell.replyModel = reply
     }
     
-    func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, viewForAttachment attachment: DTTextAttachment!, frame: CGRect) -> UIView! {
-        if attachment.isKindOfClass(DTImageTextAttachment){
-            let imageView = DTLazyImageView(frame: frame)
-            imageView.delegate = self
-            imageView.url = attachment.contentURL
-            return imageView
-        }
-        return nil
-    }
-    
-    func lazyImageView(lazyImageView: DTLazyImageView!, didChangeImageSize size: CGSize) {
-        let url = lazyImageView.url
-        let pred = NSPredicate(format: "contentURL == %@", url)
-        
-        var didUpdate = false
-        if let res = headerView.attributedTextContentView.layoutFrame.textAttachmentsWithPredicate(pred) {
-            for index in 0..<res.count {
-                let att = res[index] as! DTTextAttachment
-                att.originalSize = size
-                didUpdate = true
-            }
-        }
-        
-        if didUpdate {
-            headerView.attributedTextContentView.layouter = nil
-            headerView.relayoutText()
-        }
-    }
-    
-    func attributedTextContentView(attributedTextContentView: DTAttributedTextContentView!, didDrawLayoutFrame layoutFrame: DTCoreTextLayoutFrame!, inContext context: CGContext!) {
-        var f:CGRect = headerView.frame
-        f.size.height = layoutFrame.frame.size.height
-        headerView.frame = f
-        tableView.tableHeaderView = headerView
-        
-        print(layoutFrame.frame.size.height)
+    func webViewDidFinishLoad(webView: UIWebView) {
+        var f: CGRect = webView.frame
+        f.size.height = webView.scrollView.contentSize.height
+        headerWebView.frame = f
+        tableView.tableHeaderView = headerWebView
     }
     
     override func didReceiveMemoryWarning() {
