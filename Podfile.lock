@@ -1,29 +1,18 @@
 PODS:
-  - Alamofire (3.1.3)
+  - Alamofire (3.1.4)
   - AsyncSwift (1.6.4)
   - Cartography (0.6.0)
-  - DTCoreText (1.6.16):
-    - DTFoundation/Core (~> 1.7.5)
-    - DTFoundation/DTAnimatedGIF (~> 1.7.5)
-    - DTFoundation/DTHTMLParser (~> 1.7.5)
-    - DTFoundation/UIKit (~> 1.7.5)
-  - DTFoundation/Core (1.7.8)
-  - DTFoundation/DTAnimatedGIF (1.7.8)
-  - DTFoundation/DTHTMLParser (1.7.8):
-    - DTFoundation/Core
-  - DTFoundation/UIKit (1.7.8):
-    - DTFoundation/Core
-  - EZSwiftExtensions (0.9)
+  - EZSwiftExtensions (1.0.1)
   - Ji (1.2.0):
     - Ji/Ji (= 1.2.0)
   - Ji/Ji (1.2.0):
     - Ji/Ji-libxml
   - Ji/Ji-libxml (1.2.0)
-  - Kingfisher (1.8.3)
+  - Kingfisher (1.8.5)
   - ObjectMapper (1.0.1)
   - SQLite.swift (1.0.0)
   - SwiftyJSON (2.3.2)
-  - TTTAttributedLabel (1.13.4)
+  - UITableView+FDTemplateLayoutCell (1.4.beta)
   - YYCategories (0.9.3):
     - YYCategories/no-arc (= 0.9.3)
   - YYCategories/no-arc (0.9.3)
@@ -32,14 +21,13 @@ DEPENDENCIES:
   - Alamofire (~> 3.1.3)
   - AsyncSwift (~> 1.4)
   - Cartography (~> 0.6.0)
-  - DTCoreText (~> 1.6.16)
   - EZSwiftExtensions
   - Ji (~> 1.2.0)
   - Kingfisher (~> 1.8.2)
   - ObjectMapper (~> 1.0.1)
   - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
   - SwiftyJSON (~> 2.3.1)
-  - TTTAttributedLabel (~> 1.13.4)
+  - UITableView+FDTemplateLayoutCell (~> 1.4.beta)
   - YYCategories
 
 EXTERNAL SOURCES:
@@ -52,18 +40,16 @@ CHECKOUT OPTIONS:
     :git: https://github.com/stephencelis/SQLite.swift.git
 
 SPEC CHECKSUMS:
-  Alamofire: 9f93b56389e48def9220dd57d1f44b1927229a5a
+  Alamofire: fbc829692f351fa1d8a31dd75fd7f7f56fea31fb
   AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
   Cartography: 70af183a248547694a8cfaa6b989cb7e04589985
-  DTCoreText: 934a16fe9ffdd169c96261721b39dc312b75713d
-  DTFoundation: 46e2b2fafe78d67febfd8d1f85fe9845a093f00e
-  EZSwiftExtensions: e9a6220cf2236cf715b6e8c07b2a87941fc5e8a4
+  EZSwiftExtensions: 28cd397f5202f708b6dd19fa02874dd140bb48f7
   Ji: ddebb22f9ac445db6e884b66f78ea74fb135fdb7
-  Kingfisher: ead91e9dbeb7e5a2e8b7af3bd8a294104cbcc3f9
+  Kingfisher: 780fed0fa82692a3bd59d53329ae2b85cdd354a5
   ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
   SQLite.swift: 3bb75f5a650f08673276bc6d3fb1de1b542b8f4d
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
-  TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
+  UITableView+FDTemplateLayoutCell: 9d20bf0518f3c01e42ae614243b97f1161063d27
   YYCategories: 44fa4213d3d0ebc7fc165f3b56e9f745e2ab8afb
 
 COCOAPODS: 0.39.0

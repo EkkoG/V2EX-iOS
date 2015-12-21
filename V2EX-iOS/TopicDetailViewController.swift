@@ -10,10 +10,10 @@ import UIKit
 import TTTAttributedLabel
 import Kingfisher
 import Async
-//import UITableView_FDTemplateLayoutCell
+import UITableView_FDTemplateLayoutCell
 
 class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate {
-    var topicID:Int?
+    var topicID:Int!
     var topicDetailModel: TopicDetailModel?
     lazy var headerWebView: UIWebView = {
         [unowned self] in
@@ -27,6 +27,8 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         let tableView = UITableView(frame: self.view.bounds, style: .Plain)
         tableView.dataSource = self
         tableView.delegate = self
+//        tableView.backgroundColor = UIColor.yellowColor()
+//        tableView.fd_debugLogEnabled = true
         return tableView
     }()
     
@@ -34,24 +36,32 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     
     var replies = [TopicReplyModel]()
     var cellRowHeightDictionary = [NSIndexPath: CGFloat]()
+    
+    var cellHeightCeche = [String :CoreTextData]()
+    
+    deinit {
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.cellHeightCeche[self.topicID] = nil
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
 
         // Do any additional setup after loading the view.
         self.view.addSubview(self.headerWebView)
-        self.view.addSubview(tableView)
+        self.view.addSubview(self.tableView)
         view.backgroundColor = UIColor.whiteColor()
         
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
+        self.tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
         
-//        topicID = 85402
+//        self.topicID = 182391
+//        self.topicID = 245188
         
-        DataManager.loadTopicDetailContent(topicID!) { (completion) -> Void in
+        DataManager.loadTopicDetailContent(self.topicID!) { (completion) -> Void in
             self.topicDetailModel = completion.data
             self.title = self.topicDetailModel!.title
-            if let content = self.topicDetailModel?.content_rendered {
+            if let content = self.topicDetailModel!.content_rendered {
                 
                 do {
                     let htmlPath = NSBundle.mainBundle().pathForResource("topic", ofType: "html")
@@ -66,16 +76,11 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
                 }
             }
         }
-//
-        DataManager.loadTopicDetailReplies(topicID!) { (completion) -> Void in
+        
+        DataManager.loadTopicDetailReplies(self.topicID!) { (completion) -> Void in
             if let arr = completion.data as NSArray! {
                 if arr.count > 0 {
                     self.replies = arr as! [TopicReplyModel]
-//                    let a = arr as! [TopicReplyModel]
-//                    self.replies.append(a.first!)
-//                    while self.replies.count > 2 {
-//                        self.replies.removeLast()
-//                    }
                 }
                 Async.main(block: { () -> Void in
                     self.tableView.reloadData()
@@ -85,8 +90,8 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(topicDetailContentCellIdentifier, forIndexPath: indexPath) 
-//        configurationCell(cell, indexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier(topicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
+        configurationCell(cell, indexPath: indexPath)
         return cell
     }
     
@@ -95,42 +100,27 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-//        let height = tableView.fd_heightForCellWithIdentifier(topicDetailContentCellIdentifier, configuration: { (cell) -> Void in
-//            if let c = cell as! TopicReplyTableViewCell? {
-//                self.configurationCell(c, indexPath: indexPath)
-//            }
-//        })
-//        print(height)
-        return 100
+        let height = tableView.fd_heightForCellWithIdentifier(topicDetailContentCellIdentifier, cacheByIndexPath: indexPath) { (cell) -> Void in
+            if let c = cell as! TopicReplyTableViewCell? {
+                self.configurationCell(c, indexPath: indexPath)
+            }
+        }
+//        print("indexPath \(indexPath.row) height \(height)")
+        return height
     }
     
-//    func cellContentHasNewHeight(notification: NSNotification) {
-//        let info = notification.userInfo as! [NSIndexPath: CGFloat]
-//        let indexPath = info.keys.first!
-//        print("----->> \(indexPath.row)")
-//        print("----->> \(info[indexPath])")
-//        if cellRowHeightDictionary[indexPath] == nil{
-//            let newHeight = info[indexPath]
-//            cellRowHeightDictionary[indexPath] = newHeight
-//            tableView.reloadData()
-////            tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
-//        }
-//        else {
-//            let oldHeight = cellRowHeightDictionary[indexPath]
-//            let newHeight = info[indexPath]
-//            if oldHeight == newHeight {
-//                print("same height, nothin to do")
-//            }
-//            else {
-//                cellRowHeightDictionary[indexPath] = newHeight
-//                tableView.reloadData()
-////                tableView.reloadRowAtIndexPath(indexPath, withRowAnimation: UITableViewRowAnimation.None)
-//            }
-//        }
-//    }
+    func cellContentHasNewHeight(notification: NSNotification) {
+        let info = notification.object as! NSIndexPath
+        self.tableView.fd_indexPathHeightCache.invalidateHeightAtIndexPath(info)
+//        self.tableView.reloadRow(UInt(info.row), inSection: UInt(info.section), withRowAnimation: UITableViewRowAnimation.None)
+        self.tableView.reloadData()
+    }
     
     func configurationCell(cell: TopicReplyTableViewCell, indexPath: NSIndexPath) {
+        cell.selectionStyle = UITableViewCellSelectionStyle.None
+        cell.fd_enforceFrameLayout = true
         cell.indexPath = indexPath
+        cell.topicID = self.topicID
         let reply = replies[indexPath.row] as TopicReplyModel
         cell.replyModel = reply
     }
@@ -138,8 +128,8 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     func webViewDidFinishLoad(webView: UIWebView) {
         var f: CGRect = webView.frame
         f.size.height = webView.scrollView.contentSize.height
-        headerWebView.frame = f
-        tableView.tableHeaderView = headerWebView
+        self.headerWebView.frame = f
+        self.tableView.tableHeaderView = headerWebView
     }
     
     override func didReceiveMemoryWarning() {

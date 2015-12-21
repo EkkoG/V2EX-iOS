@@ -8,6 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		93C45365EFF7991C08204AC9 /* Pods_V2EX_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECDE37A49E42CEB785D61FD5 /* Pods_V2EX_iOS.framework */; };
+		9611CA191C268B3100C2B2E3 /* CoreTextData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA101C268B3100C2B2E3 /* CoreTextData.swift */; };
+		9611CA1A1C268B3100C2B2E3 /* CoreTextImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA111C268B3100C2B2E3 /* CoreTextImageData.swift */; };
+		9611CA1B1C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA131C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m */; };
+		9611CA1C1C268B3100C2B2E3 /* CoreTextLinkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA141C268B3100C2B2E3 /* CoreTextLinkData.swift */; };
+		9611CA1D1C268B3100C2B2E3 /* CoreTextLinkUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA151C268B3100C2B2E3 /* CoreTextLinkUtils.swift */; };
+		9611CA1E1C268B3100C2B2E3 /* CTFrameParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */; };
+		9611CA1F1C268B3100C2B2E3 /* CTFrameParserConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */; };
+		9611CA201C268B3100C2B2E3 /* CTLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA181C268B3100C2B2E3 /* CTLabel.swift */; };
 		963FD0021C19202500CAC9EC /* topicdetail.css in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0011C19202500CAC9EC /* topicdetail.css */; };
 		963FD0041C19257F00CAC9EC /* topic.html in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0031C19257F00CAC9EC /* topic.html */; };
 		965007A01C101C8700096F73 /* TopicReplyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9650079F1C101C8700096F73 /* TopicReplyTableViewCell.swift */; };
@@ -61,6 +69,15 @@
 /* Begin PBXFileReference section */
 		1F29D56C410199F61487DCF8 /* Pods-V2EX-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-V2EX-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-V2EX-iOS/Pods-V2EX-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		24FBDE6BD4D74478D3DDCDD3 /* Pods-V2EX-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-V2EX-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-V2EX-iOS/Pods-V2EX-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		9611CA101C268B3100C2B2E3 /* CoreTextData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextData.swift; sourceTree = "<group>"; };
+		9611CA111C268B3100C2B2E3 /* CoreTextImageData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextImageData.swift; sourceTree = "<group>"; };
+		9611CA121C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreTextImageRunDelegateHelper.h; sourceTree = "<group>"; };
+		9611CA131C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreTextImageRunDelegateHelper.m; sourceTree = "<group>"; };
+		9611CA141C268B3100C2B2E3 /* CoreTextLinkData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextLinkData.swift; sourceTree = "<group>"; };
+		9611CA151C268B3100C2B2E3 /* CoreTextLinkUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextLinkUtils.swift; sourceTree = "<group>"; };
+		9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTFrameParser.swift; sourceTree = "<group>"; };
+		9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTFrameParserConfig.swift; sourceTree = "<group>"; };
+		9611CA181C268B3100C2B2E3 /* CTLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTLabel.swift; sourceTree = "<group>"; };
 		963FD0011C19202500CAC9EC /* topicdetail.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = topicdetail.css; sourceTree = "<group>"; };
 		963FD0031C19257F00CAC9EC /* topic.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = topic.html; sourceTree = "<group>"; };
 		9650079F1C101C8700096F73 /* TopicReplyTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicReplyTableViewCell.swift; sourceTree = "<group>"; };
@@ -145,6 +162,22 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		9611CA0F1C268B1200C2B2E3 /* CTLabel */ = {
+			isa = PBXGroup;
+			children = (
+				9611CA101C268B3100C2B2E3 /* CoreTextData.swift */,
+				9611CA111C268B3100C2B2E3 /* CoreTextImageData.swift */,
+				9611CA121C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.h */,
+				9611CA131C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m */,
+				9611CA141C268B3100C2B2E3 /* CoreTextLinkData.swift */,
+				9611CA151C268B3100C2B2E3 /* CoreTextLinkUtils.swift */,
+				9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */,
+				9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */,
+				9611CA181C268B3100C2B2E3 /* CTLabel.swift */,
+			);
+			name = CTLabel;
+			sourceTree = "<group>";
+		};
 		96AD73D71C04539300753961 = {
 			isa = PBXGroup;
 			children = (
@@ -209,6 +242,7 @@
 		96AD74141C05895100753961 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				9611CA0F1C268B1200C2B2E3 /* CTLabel */,
 				96AD74151C05895F00753961 /* ZTpage */,
 				963FD0011C19202500CAC9EC /* topicdetail.css */,
 				963FD0031C19257F00CAC9EC /* topic.html */,
@@ -499,20 +533,28 @@
 				96AD74401C05B34700753961 /* CommonConfiguration.swift in Sources */,
 				96AD74241C05895F00753961 /* NSString+Extention.m in Sources */,
 				96AD74331C058C2F00753961 /* BaseViewController.swift in Sources */,
+				9611CA191C268B3100C2B2E3 /* CoreTextData.swift in Sources */,
 				96AD743B1C05A02600753961 /* BaseNavigationViewController.swift in Sources */,
+				9611CA1D1C268B3100C2B2E3 /* CoreTextLinkUtils.swift in Sources */,
+				9611CA1C1C268B3100C2B2E3 /* CoreTextLinkData.swift in Sources */,
 				96ACAE4C1C0D521A002C0260 /* TopicDetailViewController.swift in Sources */,
 				96AD74421C05BF9100753961 /* HomeViewController.swift in Sources */,
 				96F91F521C0B46C100E4CEDB /* TopicTableViewCell.swift in Sources */,
 				96AD74291C05895F00753961 /* ZTViewController.m in Sources */,
 				96AD73E61C04539300753961 /* ViewController.swift in Sources */,
+				9611CA1A1C268B3100C2B2E3 /* CoreTextImageData.swift in Sources */,
 				96AD74261C05895F00753961 /* FloodView.m in Sources */,
+				9611CA1B1C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m in Sources */,
 				96AD74281C05895F00753961 /* MenuViewBtn.m in Sources */,
 				96F91F4D1C0A215D00E4CEDB /* TopicModel.swift in Sources */,
+				9611CA1E1C268B3100C2B2E3 /* CTFrameParser.swift in Sources */,
 				969A75421C118982002F513D /* CLTopAlignLabel.swift in Sources */,
 				96AD73E41C04539300753961 /* AppDelegate.swift in Sources */,
 				96ACAE8F1C0EDE2B002C0260 /* TopicReplyModel.swift in Sources */,
+				9611CA201C268B3100C2B2E3 /* CTLabel.swift in Sources */,
 				96F91F501C0AFC7500E4CEDB /* V2EXHelper.swift in Sources */,
 				96ACAE8D1C0EDCCD002C0260 /* TopicDetailModel.swift in Sources */,
+				9611CA1F1C268B3100C2B2E3 /* CTFrameParserConfig.swift in Sources */,
 				96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */,
 				96AD73EC1C04539300753961 /* V2EX_iOS.xcdatamodeld in Sources */,
 				965007A01C101C8700096F73 /* TopicReplyTableViewCell.swift in Sources */,

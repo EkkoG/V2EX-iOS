@@ -12,6 +12,7 @@ import Kingfisher
 import Async
 
 public let TopicReplyCellContentHasNewHeightNotification = "com.cielpy.v2ex.topicreplycontenthasnewheight"
+
 public let TopicContentNewHeightIndexPathKey = "com.cielpy.v2ex.topiccontentnewheight"
 public let TopicContentNewHeightHeightKey = "com.cielpy.v2ex.topiccontentnewheightheight"
 
@@ -39,15 +40,23 @@ class TopicReplyTableViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var contentLabel: CTLabel = {
+        let ctLabel = CTLabel()
+        ctLabel.backgroundColor = UIColor.whiteColor()
+        return ctLabel
+    }()
+    
     var contentLabelHeight: CGFloat = 1
     
     let contentLabelHeightGroup = ConstraintGroup()
+    
+    var topicID: Int?
     
     var replyModel: TopicReplyModel? {
         willSet(replyModel){
             
             let url = NSURL(string:replyModel!.avatarURL())!
-            avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
+            self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
 //                if let image = image {
 //                    Async.main(block: { () -> Void in
 //                        UIGraphicsBeginImageContextWithOptions(self.avatarImageView.bounds.size, false, 1.0)
@@ -60,15 +69,43 @@ class TopicReplyTableViewCell: UITableViewCell {
 //                }
             }
             
-            memberButton.setTitle(replyModel!.member?.username, forState: .Normal)
-            createdTimeLabel.text = V2EXHelper.dateFormat(replyModel!.created!)
+            self.memberButton.setTitle(replyModel!.member?.username, forState: .Normal)
+            
+            self.createdTimeLabel.text = V2EXHelper.dateFormat(replyModel!.created!)
             if let thanks = replyModel!.thanks {
-                thanksLabel.text = "\(thanks)"
+                self.thanksLabel.text = "\(thanks)"
             }
             
-            var dic = [String: AnyObject]()
-            dic[NSDocumentTypeDocumentAttribute] = NSHTMLTextDocumentType
-            dic[NSCharacterEncodingDocumentAttribute] = "\(NSUTF8StringEncoding)"
+            let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
+            let config = CTFrameParserConfig(width: width, fontSize: 15, lineSpace: 5, textColor: UIColor.blackColor())
+            
+            if !replyModel!.content_rendered!.hasPrefix("<p>") {
+                replyModel?.content_rendered = "<p>\(replyModel!.content_rendered!)</p>"
+            }
+            
+            let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
+            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            if var cache = delegate.cellHeightCeche[self.topicID!] {
+                if let object = cache[key] {
+                    self.contentLabel.data = object
+                    self.refreshContentLabelHeight(object.height)
+                }
+                else {
+                    let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
+                    self.contentLabel.data = data
+                    self.refreshContentLabelHeight(data.height)
+                    cache[key] = data
+                }
+            }
+            else {
+                delegate.cellHeightCeche[self.topicID!] = [String: CoreTextData]()
+                var cache = delegate.cellHeightCeche[self.topicID!]
+                let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
+                self.contentLabel.data = data
+                self.refreshContentLabelHeight(data.height)
+                
+                cache![key] = data
+            }
         }
     }
 
@@ -77,78 +114,104 @@ class TopicReplyTableViewCell: UITableViewCell {
         // Initialization code
     }
     
+    deinit {
+        self.contentLabel.removeObserver(self, forKeyPath: "textHeight")
+    }
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        UILayout()
+        self.contentLabel.addObserver(self, forKeyPath: "textHeight", options: NSKeyValueObservingOptions.New, context: nil)
+        
+        self.UILayout()
+    }
+    
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        if let change = change {
+            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
+            print("indexpath \(self.indexPath!.row) + \(obj)")
+            
+            self.refreshContentLabelHeight(self.contentLabel.data!.height)
+            NSNotificationCenter.defaultCenter().postNotificationName(TopicReplyCellContentHasNewHeightNotification, object: self.indexPath)
+        }
     }
     
     func UILayout() {
-//        addSubview(avatarImageView)
-//        addSubview(memberButton)
-//        addSubview(createdTimeLabel)
-//        addSubview(thanksLabel)
-//
-////        avatarImageView!.backgroundColor = UIColor.redColor()
-//        memberButton.backgroundColor = UIColor.greenColor()
-//        createdTimeLabel.backgroundColor = UIColor.grayColor()
-//        thanksLabel.backgroundColor = UIColor.blueColor()
-//
+        self.addSubview(self.avatarImageView)
+        self.addSubview(self.memberButton)
+        self.addSubview(self.createdTimeLabel)
+        self.addSubview(self.thanksLabel)
+        self.addSubview(self.contentLabel)
+        
+//        avatarImageView!.backgroundColor = UIColor.redColor()
+//        self.memberButton.backgroundColor = UIColor.greenColor()
+//        self.createdTimeLabel.backgroundColor = UIColor.grayColor()
+//        self.thanksLabel.backgroundColor = UIColor.blueColor()
+//        self.contentLabel.backgroundColor = UIColor.redColor()
+        
 //        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
 //        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Vertical)
 //        
 //        createdTimeLabel.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
 //        thanksLabel.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-//        
-//        constrain(avatarImageView) { v in
-//            let width: CGFloat = 50
-//            v.width == width
-//            v.height == width
-//            v.top == v.superview!.top + MARGIN_TO_BOUNDARY
-//            v.left == v.superview!.left + MARGIN_TO_BOUNDARY
-//        }
-//        
-//        
-//        constrain(memberButton, createdTimeLabel, thanksLabel, avatarImageView) { v1, v2, v3, v4 in
-//            align(top: v1, v2, v3, v4)
-//            
-//            v1.left == v4.right + SPACING_BEWTWEEN_COMPONENTS
-//            v2.left == v1.right + SPACING_BEWTWEEN_COMPONENTS
-//            
-//            v3.right == v3.superview!.right - MARGIN_TO_BOUNDARY
-//            
-////            v1.height == 18
-////            v2.height == v1.height
-//        }
         
-//        Async.main { () -> Void in
-//            constrain(self.contentLabel ) { v1 in
-//    //            align(left: v1, v2)
-//    //            v1.height == self.contentLabelHeight
-//                v1.left == v1.superview!.left + MARGIN_TO_BOUNDARY + 50 + SPACING_BEWTWEEN_COMPONENTS
-//                v1.top == v1.superview!.top + SPACING_BEWTWEEN_COMPONENTS
-//                v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
-//    //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
-//            }
-//            
-//            constrain(self.contentLabel, replace: self.contentLabelHeightGroup) {v1 in
-//                v1.height == 10
-//            }
-//                
-//        }
+        constrain(self.avatarImageView) { v in
+            let width: CGFloat = 50
+            v.width == width
+            v.height == width
+            v.top == v.superview!.top + MARGIN_TO_BOUNDARY
+            v.left == v.superview!.left + MARGIN_TO_BOUNDARY
+        }
         
+        constrain(self.memberButton, self.createdTimeLabel, self.thanksLabel, self.avatarImageView) { v1, v2, v3, v4 in
+            align(top: v1, v2, v3, v4)
+            
+            v1.left == v4.right + SPACING_BEWTWEEN_COMPONENTS
+            v2.left == v1.right + SPACING_BEWTWEEN_COMPONENTS
+            
+            v3.right == v3.superview!.right - MARGIN_TO_BOUNDARY
+            
+            v1.height == 18
+            v2.height == v1.height
+        }
+        
+        constrain(self.contentLabel, self.memberButton) { v1, v2 in
+            align(left: v1, v2)
+            v1.top == v2.bottom + SPACING_BEWTWEEN_COMPONENTS
+            v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
+//            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+        }
+        
+        self.refreshContentLabelHeight(15)
     }
     
-    
-//    override func sizeThatFits(size: CGSize) -> CGSize {
-//        var totalHeight: CGFloat = 0
-//        totalHeight += MARGIN_TO_BOUNDARY
-//        totalHeight += 18
-//        totalHeight += SPACING_BEWTWEEN_COMPONENTS
-//        totalHeight += contentLabelHeight
-//        totalHeight += MARGIN_TO_BOUNDARY
-//        
-//        return CGSizeMake(size.width, totalHeight)
-//    }
+    func refreshContentLabelHeight(height: CGFloat) {
+        constrain(self.contentLabel, replace: self.contentLabelHeightGroup) { v1 in
+            v1.height == height
+        }
+        
+        self.contentLabel.setNeedsDisplay()
+        self.sizeToFit()
+    }
+    override func sizeThatFits(size: CGSize) -> CGSize {
+        var totalHeight: CGFloat = 0
+        totalHeight += MARGIN_TO_BOUNDARY
+        totalHeight += 18
+        totalHeight += SPACING_BEWTWEEN_COMPONENTS
+        if let data = self.contentLabel.data {
+            totalHeight += data.height
+        }
+        else {
+            totalHeight += 15
+        }
+        totalHeight += MARGIN_TO_BOUNDARY
+        
+        let minHeight = 50 + MARGIN_TO_BOUNDARY * 2
+        if totalHeight < minHeight {
+            totalHeight = minHeight
+        }
+        
+        return CGSizeMake(size.width, totalHeight)
+    }
     
     required init?(coder aDecoder: NSCoder) {
        super.init(coder: aDecoder)
@@ -159,5 +222,4 @@ class TopicReplyTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
 }
