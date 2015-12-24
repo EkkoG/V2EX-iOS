@@ -11,6 +11,7 @@ import TTTAttributedLabel
 import Kingfisher
 import Async
 import UITableView_FDTemplateLayoutCell
+import EZSwiftExtensions
 
 class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate {
     var topicID:Int!
@@ -39,9 +40,11 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     
     var cellHeightCeche = [String :CoreTextData]()
     
+    var contentWebViewLoaed = false
+    
     deinit {
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        delegate.cellHeightCeche[self.topicID] = nil
+//        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+//        delegate.cellHeightCeche[self.topicID] = nil
     }
 
     override func viewDidLoad() {
@@ -96,6 +99,9 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard self.contentWebViewLoaed == true else {
+            return 0
+        }
         return replies.count
     }
     
@@ -129,7 +135,13 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         var f: CGRect = webView.frame
         f.size.height = webView.scrollView.contentSize.height
         self.headerWebView.frame = f
+        
+        self.headerWebView.addBorderBottom(size: 1, color: UIColor.init(hexString: "#e2e2e2"))
+        
         self.tableView.tableHeaderView = headerWebView
+        
+        self.contentWebViewLoaed = true
+        self.tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {

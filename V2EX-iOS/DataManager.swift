@@ -127,7 +127,7 @@ class DataManager: NSObject {
                 t.member = memberModel
                 
                 t.last_modifiedText = lastModifiedText
-                print(t.last_modifiedText)
+//                print(t.last_modifiedText)
                 
                 list.append(t)
             }

@@ -34,15 +34,12 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
         if let data = self.data {
             if let imageArray = data.imageArray {
                 for imageData in imageArray {
-                    if imageData is CoreTextImageData {
-                        let imageData = imageData as! CoreTextImageData
-                        let imageRect = imageData.imagePosition!
-                        var imagePosition:CGPoint = imageRect.origin
-                        imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
-                        let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
-                        if CGRectContainsPoint(rect, point) {
-                            print("点击了图片\(imageData.imageURL)")
-                        }
+                    let imageRect = imageData.imagePosition!
+                    var imagePosition:CGPoint = imageRect.origin
+                    imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
+                    let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
+                    if CGRectContainsPoint(rect, point) {
+                        print("点击了图片\(imageData.imageURL)")
                     }
                 }
             }
@@ -56,7 +53,7 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if let change = change {
             let obj = change[NSKeyValueChangeNewKey] as! CGFloat
-            print("========>>> \(obj)")
+//            print("========>>> \(obj)")
             self.textHeight = obj
         }
     }
@@ -80,13 +77,10 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
         if let data = self.data {
             CTFrameDraw(data.ctFrame, context)
             
-            if let _ = data.imageArray {
-                for imageData in data.imageArray {
-                    if imageData is CoreTextImageData {
-                        let img = imageData as! CoreTextImageData
-                        if let image = img.image {
-                            CGContextDrawImage(context, img.imagePosition!, image.CGImage)
-                        }
+            if let imageArray = data.imageArray {
+                for imageData in imageArray {
+                    if let image = imageData.image {
+                        CGContextDrawImage(context, imageData.imagePosition!, image.CGImage)
                     }
                 }
             }

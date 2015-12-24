@@ -85,7 +85,7 @@ class TopicReplyTableViewCell: UITableViewCell {
             
             let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
             let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            if var cache = delegate.cellHeightCeche[self.topicID!] {
+            if let cache = delegate.cellHeightCeche[self.topicID!] {
                 if let object = cache[key] {
                     self.contentLabel.data = object
                     self.refreshContentLabelHeight(object.height)
@@ -94,17 +94,21 @@ class TopicReplyTableViewCell: UITableViewCell {
                     let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
                     self.contentLabel.data = data
                     self.refreshContentLabelHeight(data.height)
-                    cache[key] = data
+//                    cache[key] = data
+                    
+                    var c = cache
+                    c[key] = data
+                    delegate.cellHeightCeche[self.topicID!] = c
                 }
             }
             else {
-                delegate.cellHeightCeche[self.topicID!] = [String: CoreTextData]()
-                var cache = delegate.cellHeightCeche[self.topicID!]
+                var cache = [String: CoreTextData]()
                 let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
                 self.contentLabel.data = data
                 self.refreshContentLabelHeight(data.height)
                 
-                cache![key] = data
+                cache[key] = data
+                delegate.cellHeightCeche[self.topicID!] = cache
             }
         }
     }
@@ -126,9 +130,9 @@ class TopicReplyTableViewCell: UITableViewCell {
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        if let change = change {
-            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
-            print("indexpath \(self.indexPath!.row) + \(obj)")
+        if let _ = change {
+//            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
+//            print("indexpath \(self.indexPath!.row) + \(obj)")
             
             self.refreshContentLabelHeight(self.contentLabel.data!.height)
             NSNotificationCenter.defaultCenter().postNotificationName(TopicReplyCellContentHasNewHeightNotification, object: self.indexPath)

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 
 class ViewController: UIViewController, ZTViewControllerProtocol {
@@ -28,7 +29,9 @@ class ViewController: UIViewController, ZTViewControllerProtocol {
         
         let nav = BaseNavigationViewController(rootViewController: vc)
         vc.title = "V2EX"
+        vc.view.frame = nav.view.bounds
         self.addChildViewController(nav)
+        
         self.view.addSubview(nav.view)
     }
     

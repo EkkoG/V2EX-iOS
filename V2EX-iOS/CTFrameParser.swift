@@ -9,34 +9,40 @@
 import UIKit
 import Ji
 
+enum TagName: String {
+    case A = "a"
+    case BR = "br"
+    case IMG = "img"
+    case NONE = "none"
+}
+
 let ImageHasDownloadedNotification = "com.cielpy.coretext.imagehasdownloaded"
 
 class CTFrameParser: NSObject {
     
     class func parseHTMLString(html: String, config: CTFrameParserConfig) -> CoreTextData {
-        let imageArray = NSMutableArray()
-        let linkArray = NSMutableArray()
         
-        let attributedString = self.parseHTMLString(html, imageArray: imageArray, linkArray: linkArray, config: config)
+        let tuple = self.parseHTML(html, config: config)
         
-        let data = self.parseAttributedContent(attributedString, config: config)
+        let data = self.parseAttributedContent(tuple.2, config: config)
         
-        data.imageArray = imageArray
-        data.linkArray = linkArray
-        data.content = NSMutableAttributedString(attributedString: attributedString)
-        
+        data.imageArray = tuple.0
+        data.linkArray = tuple.1
+        data.content = NSMutableAttributedString(attributedString: tuple.2)
         return data
     }
     
-    class func parseHTMLString(html: String, imageArray: NSMutableArray, linkArray: NSMutableArray, config: CTFrameParserConfig) -> NSAttributedString {
+    class func parseHTML(html: String, config: CTFrameParserConfig) -> ([CoreTextImageData], [CoreTextLinkData], NSAttributedString) {
         let doc = Ji(htmlString: html)
         
         let attributedString = NSMutableAttributedString()
         
+        var imageArray = [CoreTextImageData]()
+        var linkArray = [CoreTextLinkData]()
         if let allNode = doc?.xPath("//body/*/node()") {
             
             for node in allNode {
-//                print(node.rawContent)
+                //                print(node.rawContent)
                 if node.tag == "a" {
                     let startPosition = attributedString.length
                     
@@ -44,20 +50,18 @@ class CTFrameParser: NSObject {
                     linkData.title = node.content
                     linkData.url = node["href"]
                     
-                    let dic = NSDictionary(objects: ["blue", NSNumber(float: 16) , node.content!], forKeys: ["color", "size", "content"])
-                    let attribute = self.parseAttributedContentFromDictionary(dic, config: config)
+                    let attribute = self.attributedStringWithTagName(node.content!, config: config, tagName: .A)
                     attributedString.appendAttributedString(attribute)
                     
                     let length = attributedString.length - startPosition
                     let linkRange = NSMakeRange(startPosition, length)
                     linkData.range = linkRange
-                    linkArray.addObject(linkData)
+                    linkArray.append(linkData)
                     continue
                 }
                 else if node.tag == "br" {
-                    let dic = NSDictionary(objects: ["", NSNumber(float: 15) , "\n"], forKeys: ["color", "size", "content"])
-                    let attribute = self.parseAttributedContentFromDictionary(dic, config: config)
-                attributedString.appendAttributedString(attribute)
+                    let attribute = self.attributedStringWithTagName(node.content!, config: config, tagName: .BR)
+                    attributedString.appendAttributedString(attribute)
                     continue
                 }
                 else if node.tag == "img" {
@@ -67,86 +71,21 @@ class CTFrameParser: NSObject {
                     
                     
                     imageData.image = UIImage(named: "ic_launcher144")
-                    imageArray.addObject(imageData)
-                    let attribute = CoreTextImageRunDelegateHelper.parseImageDataFromNSDictionary(imageData.image)
+                    imageArray.append(imageData)
+                    let attribute = CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(imageData.image!)
                     attributedString.appendAttributedString(attribute)
                     continue
                 }
                 
-                let dic = NSDictionary(objects: ["", NSNumber(float: 15) , node.content!], forKeys: ["color", "size", "content"])
-                let attribute = self.parseAttributedContentFromDictionary(dic, config: config)
+                let attribute = self.attributedStringWithTagName(node.content!, config: config, tagName: .NONE)
                 attributedString.appendAttributedString(attribute)
             }
         }
         
-        return attributedString
+        return (imageArray, linkArray, attributedString)
     }
     
-    
-    class func parseTemplateFile(path: String, config: CTFrameParserConfig) -> CoreTextData {
-        let imageArray = NSMutableArray()
-        let linkArray = NSMutableArray()
-        
-        let content = self.loadTemplateFile(path, imageArray: imageArray,linkArray: linkArray, config: config)
-        let imageData = self.parseAttributedContent(content, config: config)
-        imageData.imageArray = imageArray
-        imageData.linkArray = linkArray
-        return imageData
-    }
-    
-    class func loadTemplateFile(path: String, imageArray:NSMutableArray, linkArray: NSMutableArray, config: CTFrameParserConfig) -> NSAttributedString {
-        let data = NSData(contentsOfFile: path)
-        let result = NSMutableAttributedString()
-        if let d = data {
-            do {
-                let array = try NSJSONSerialization.JSONObjectWithData(d, options: NSJSONReadingOptions.AllowFragments)
-                if array is NSArray {
-                    for dict in array as! NSArray {
-                        if dict is NSDictionary {
-                            let dic = dict as! NSDictionary
-                            let type = dic["type"] as! String
-                            if type == "txt" {
-                                let attributeString = self.parseAttributedContentFromDictionary(dic, config: config)
-                                result.appendAttributedString(attributeString)
-                            }
-                            else if type == "img" {
-                                let imageData = CoreTextImageData()
-                                imageData.name = dic["name"] as? String
-                                imageData.position = result.length
-                                if let image = UIImage(named: dic["name"] as! String) {
-                                    imageData.image = image
-                                }
-                                else {
-                                    imageData.image = UIImage(named: "ic_launcher144")
-                                }
-                                imageArray.addObject(imageData)
-                                let attribute = CoreTextImageRunDelegateHelper.parseImageDataFromNSDictionary(imageData.image)
-                                result.appendAttributedString(attribute)
-                            }
-                            else if type == "link" {
-                                let startPosition = result.length
-                                let attribute = self.parseAttributedContentFromDictionary(dic, config: config)
-                                result.appendAttributedString(attribute)
-                                let length = result.length - startPosition
-                                let linkRange = NSMakeRange(startPosition, length)
-                                let linkData = CoreTextLinkData()
-                                linkData.title = dic["content"] as? String
-                                linkData.url = dic["url"] as? String
-                                linkData.range = linkRange
-                                linkArray.addObject(linkData)
-                            }
-                        }
-                    }
-                }
-            }
-            catch {
-                
-            }
-        }
-        return result
-    }
-    
-    class func parseImageDataFromDictionary(image: UIImage, config:CTFrameParserConfig) -> NSAttributedString {
+    class func parseImageDataFromDictionary(image: UIImage) -> NSAttributedString {
         var img = image
         var  imageCallback =  CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
             }, getAscent: { ( refCon) -> CGFloat in
@@ -163,42 +102,38 @@ class CTFrameParser: NSObject {
         
         var objectReplacementChar:unichar = 0xFFFC
         let content = NSString(characters: &objectReplacementChar, length: 1)
-        let attribute = self.attributesWithConfig(config)
-        let space = NSMutableAttributedString(string: content as String, attributes: attribute)
+        let space = NSMutableAttributedString(string: content as String)
         CFAttributedStringSetAttribute(space, CFRangeMake(0, 1), kCTRunDelegateAttributeName, delegate)
         return space
     }
     
-    class func parseAttributedContentFromDictionary(dict: NSDictionary, config: CTFrameParserConfig) -> NSAttributedString {
-        var attributes = self.attributesWithConfig(config)
+    class func attributedStringWithTagName(content: String, config: CTFrameParserConfig?, tagName: TagName) -> NSAttributedString {
+        var attributes = self.attributesWithConfig(config!)
         
-        if let colorString = dict["color"] {
-            let color = self.colorFromTemplate(colorString as! String)
-            attributes[kCTForegroundColorAttributeName as String] = color.CGColor
-        }
-        
-        if let fontSize = dict["size"] {
-            let fontRef = CTFontCreateWithName("ArialMT", fontSize as! CGFloat, nil)
+        func tagAttributes(colorHex: String, fontSize: CGFloat) {
+            
+            attributes[kCTForegroundColorAttributeName as String] = UIColor.init(hexString: colorHex).CGColor
+            
+            let fontRef = CTFontCreateWithName("ArialMT", fontSize, nil)
             attributes[kCTFontAttributeName as String] = fontRef
         }
         
-        let content = dict["content"] as! String
-        return NSAttributedString(string: content, attributes: attributes)
+        switch tagName {
+        case .A:
+            tagAttributes("#778087", fontSize: 15)
+            return NSAttributedString(string: content, attributes: attributes)
+        case .BR:
+            tagAttributes("#778087", fontSize: 15)
+            return NSAttributedString(string: content, attributes: attributes)
+        case .IMG:
+            tagAttributes("#778087", fontSize: 15)
+            return NSAttributedString(string: content, attributes: attributes)
+        case .NONE:
+            return NSAttributedString(string: content, attributes: attributes)
+        }
     }
     
-    internal class func colorFromTemplate(name: String) -> UIColor {
-        if name == "blue" {
-            return UIColor.blueColor()
-        }
-        else if name == "red" {
-            return UIColor.redColor()
-        }
-        else {
-            return UIColor.blackColor()
-        }
-        
-    }
-
+    
     class func attributesWithConfig(config: CTFrameParserConfig) -> [String: AnyObject]{
         let fontSize = config.fontSize
         let fontRef = CTFontCreateWithName("ArialMT", fontSize, nil)
@@ -246,8 +181,6 @@ class CTFrameParser: NSObject {
         
         return coreTextData
     }
-    
-//    class func createCoreTextData
     
     internal class func createFrameWithFramesetter(settter: CTFramesetterRef, config: CTFrameParserConfig, height: CGFloat) ->  CTFrameRef {
         let path = CGPathCreateMutable()

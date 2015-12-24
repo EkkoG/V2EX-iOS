@@ -14,8 +14,8 @@ class CoreTextData: NSObject {
     var ctFrame: CTFrameRef!
     dynamic var height:CGFloat = 0
     var content: NSMutableAttributedString?
-    var linkArray: NSMutableArray?
-    var imageArray: NSMutableArray! {
+    var linkArray: [CoreTextLinkData]?
+    var imageArray: [CoreTextImageData]? {
         didSet {
             self.fillImagePosition()
             self.downloadImages()
@@ -23,20 +23,19 @@ class CoreTextData: NSObject {
     }
     
     internal func downloadImages() {
-        for item in self.imageArray {
-            let item = item as! CoreTextImageData
+        for item in self.imageArray! {
             if !item.webImageDownloaded {
                 ImageDownloader.defaultDownloader.downloadImageWithURL(NSURL(string: item.imageURL!)!, progressBlock: { (receivedSize, totalSize) -> () in
                     
                     }, completionHandler: { (image, error, imageURL, originalData) -> () in
                         if let image = image {
-                            item.webImageDownloaded = true
                             Async.main(block: { () -> Void in
+                                item.webImageDownloaded = true
                                 item.image = image
-                                let attribute = CoreTextImageRunDelegateHelper.parseImageDataFromNSDictionary(item.image)
+                                let attribute = CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(image)
                                 if let content = self.content {
                                     content.beginEditing()
-                                    content.replaceCharactersInRange(NSMakeRange(item.position!, 1), withAttributedString: attribute!)
+                                    content.replaceCharactersInRange(NSMakeRange(item.position!, 1), withAttributedString: attribute)
                                     content.endEditing()
                                     
                                     let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
@@ -55,7 +54,7 @@ class CoreTextData: NSObject {
     }
     
     internal func fillImagePosition() {
-        if self.imageArray.count == 0 {
+        if self.imageArray!.count == 0 {
             return
         }
         let lines = CTFrameGetLines(self.ctFrame) as NSArray
@@ -64,7 +63,7 @@ class CoreTextData: NSObject {
         CTFrameGetLineOrigins(self.ctFrame, CFRangeMake(0, 0), &lineOrigins)
         
         var imageIndex = 0
-        var imageData = self.imageArray.firstObject as? CoreTextImageData
+        var imageData = self.imageArray?.first
         
         for i in 0..<lineCount {
             let line = lines[i] as! CTLineRef
@@ -90,12 +89,12 @@ class CoreTextData: NSObject {
                     let delegateBounds = CGRectOffset(runBounds, colRect.origin.x, colRect.origin.y)
                     imageData?.imagePosition = delegateBounds
                     imageIndex++
-                    if imageIndex == self.imageArray.count {
+                    if imageIndex == self.imageArray!.count {
                         imageData = nil
                         break
                     }
                     else {
-                        imageData = self.imageArray[imageIndex] as? CoreTextImageData
+                        imageData = self.imageArray![imageIndex]
                     }
                     
                 }
