@@ -338,12 +338,23 @@ extension DataManager {
 extension DataManager {
     class func loadUserProfileInfo(username: String, completion: DataResponse<MemberProfileModel>.dataResponse) {
         self.requestData(.GET, url: V2EXAPI.MemberProfileURL + username) { (dataResponse) -> Void in
-            if let data = dataResponse.data {
-                let json = JSON(data: data)
-                if let model = Mapper<MemberProfileModel>().map(json.dictionaryObject) {
-                    print(model.username)
-                }
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
             }
+            
+            let json = JSON(data: data)
+            guard let model = Mapper<MemberProfileModel>().map(json.dictionaryObject) else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            guard model.status != "notfound" else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            completion(dataResponse: DataResponse<MemberProfileModel>(data: model, error: nil))
         }
     }
 }

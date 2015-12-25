@@ -19,6 +19,5 @@ extension UIImage {
         let img = UIGraphicsGetImageFromCurrentImageContext()
         self.init(CGImage: img.CGImage!)
         UIGraphicsEndImageContext()
-        
     }
 }
