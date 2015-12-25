@@ -35,10 +35,10 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         print(type.title)
 //        print(V2EXHelper.dateFormat(1448793443))
         
-        DataManager.loadTabsTopicsDataWithTabsPath(type.path) { (response) -> Void in
-            self.topics = response.data
-            self.topicsTableView.reloadData()
-        }
+//        DataManager.loadTabsTopicsDataWithTabsPath(type.path) { (response) -> Void in
+//            self.topics = response.data
+//            self.topicsTableView.reloadData()
+//        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

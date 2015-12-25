@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TTTAttributedLabel
 import Kingfisher
 import Async
 import UITableView_FDTemplateLayoutCell
