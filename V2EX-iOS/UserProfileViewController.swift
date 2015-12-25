@@ -15,6 +15,8 @@ class UserProfileViewController: BaseViewController {
 
         // Do any additional setup after loading the view.
         self.title = "2"
+        
+        
     }
 
     override func didReceiveMemoryWarning() {

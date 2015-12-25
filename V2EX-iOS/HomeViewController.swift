@@ -39,6 +39,10 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
             self.topics = response.data
             self.topicsTableView.reloadData()
         }
+        
+        DataManager.loadUserProfileInfo("cielpy") { (dataResponse) -> Void in
+            
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

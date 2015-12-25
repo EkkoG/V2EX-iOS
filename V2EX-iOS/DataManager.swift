@@ -21,17 +21,14 @@ let HTTP_PREFIX = "https"
 let UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13B143"
 
 struct V2EXAPI {
-    static let V2EXAPIBaseURL = "https://www.v2ex.com/api"
     
-    static var TopicDetailContent: String {
-        return V2EXAPIBaseURL + "/topics/show.json?id="
-    }
+    static var TopicDetailContent = V2EX_API_BASE_URL + "/topics/show.json?id="
     
-    static var TopicReplesContent: String {
-        return V2EXAPIBaseURL + "/replies/show.json?topic_id="
-    }
+    static let TopicReplesContent = V2EX_API_BASE_URL + "/replies/show.json?topic_id="
     
     static let SignInURL = V2EX_BASE_URL + "signin"
+    
+    static let MemberProfileURL = V2EX_API_BASE_URL + "/members/show.json?username="
 }
 
 public struct DataResponse <T> {
@@ -74,7 +71,9 @@ class DataManager: NSObject {
             requestMethod = .POST
         }
         
-        Alamofire.request(requestMethod, url, parameters: parameters, encoding: .URL, headers: customHeaders).responseString { (response) -> Void in
+        let request = self.getRequest(requestMethod, url: url, parameters: parameters, customHeaders: customHeaders)
+        
+        request.responseString { (response) -> Void in
             if response.result.isSuccess {
                 let tmp = DataResponse<String>(data: response.result.value, error: nil)
                 Async.main(block: { () -> Void in
@@ -90,26 +89,42 @@ class DataManager: NSObject {
         }
     }
     
+    
+    class func requestData(method: RequestMethod, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil, completeHandler: DataResponse<NSData>.dataResponse) {
+        var requestMethod: Alamofire.Method = .GET
+        if method == .POST {
+            requestMethod = .POST
+        }
+        
+        let request = self.getRequest(requestMethod, url: url, parameters: parameters, customHeaders: customHeaders)
+        
+        request.responseData{ (response) -> Void in
+            if response.result.isSuccess {
+                let tmp = DataResponse<NSData>(data: response.result.value, error: nil)
+                Async.main(block: { () -> Void in
+                    completeHandler(dataResponse: tmp)
+                })
+            }
+            else {
+                let tmp = DataResponse<NSData>(data: nil, error: response.result.error)
+                Async.main(block: { () -> Void in
+                    completeHandler(dataResponse: tmp)
+                })
+            }
+        }
+    }
+    
+    class func getRequest(method: Alamofire.Method, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil) -> Request {
+       return Alamofire.request(method, url, parameters: parameters, encoding: .URL, headers: customHeaders)
+    }
+    
     class func loadStringDataFromURL(URL: String, dataResponse: DataResponse<String>.dataResponse) {
         let headers = [HTTPHeaderKey.UserAgent: UserAgent]
         self.request(.GET, url: URL, parameters: nil, customHeaders: headers, completeHandler: dataResponse)
     }
     
-    class func loadDataFromURL(URL: String, dataResponse: DataResponse<NSData>.dataResponse) {
-        Alamofire.request(.GET, URL).responseData { (response) -> Void in
-            if response.result.isSuccess {
-                let tmp = DataResponse<NSData>(data: response.data, error: nil)
-                Async.main(block: { () -> Void in
-                    dataResponse(dataResponse: tmp)
-                })
-            }
-            else {
-                let tmp = DataResponse<NSData>(data: nil, error: response.result.error!)
-                Async.main(block: { () -> Void in
-                    dataResponse(dataResponse: tmp)
-                })
-            }
-        }
+    class func loadDataFromURL(URL: String, parameters:[String: AnyObject]? = nil, dataResponse: DataResponse<NSData>.dataResponse) {
+        self.requestData(.GET, url: URL, parameters: parameters, customHeaders: nil, completeHandler: dataResponse)
     }
 }
 
@@ -117,17 +132,17 @@ extension DataManager {
     
     class func loadTabsTopicsDataWithTabsPath(path: String, dataResponse: DataResponse<NSArray>.dataResponse) {
         if path == HomeTabs.latest.path {
-            loadLatestTopics(dataResponse)
+            self.loadLatestTopics(dataResponse)
         }
         else {
-            loadStringDataFromURL(V2EX_BASE_URL + "?tab=\(path)", dataResponse: { (response) -> Void in
+            self.loadStringDataFromURL(V2EX_BASE_URL + "?tab=\(path)", dataResponse: { (response) -> Void in
                 parseHTMLFromString(response.data!, dataResponse: dataResponse)
             })
         }
     }
     
     class func loadLatestTopics(dataResponse: DataResponse<NSArray>.dataResponse) {
-        loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH) { (response) -> Void in
+        self.loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH) { (response) -> Void in
             if let data = response.data {
                 let json = JSON(data: data)
                 var list = [TopicModel]()
@@ -315,6 +330,19 @@ extension DataManager {
                         completion(dataResponse: DataResponse(data: false, error: nil))
                     }
                 })
+            }
+        }
+    }
+}
+
+extension DataManager {
+    class func loadUserProfileInfo(username: String, completion: DataResponse<MemberProfileModel>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.MemberProfileURL + username) { (dataResponse) -> Void in
+            if let data = dataResponse.data {
+                let json = JSON(data: data)
+                if let model = Mapper<MemberProfileModel>().map(json.dictionaryObject) {
+                    print(model.username)
+                }
             }
         }
     }

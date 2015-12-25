@@ -1,5 +1,5 @@
 //
-//  UserProfileView.swift
+//  MemberProfileView.swift
 //  V2EX-iOS
 //
 //  Created by ciel on 15/12/25.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class UserProfileView: UIView {
+class MemberProfileView: UIView {
 
     /*
     // Only override drawRect: if you perform custom drawing.
