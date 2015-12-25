@@ -29,6 +29,8 @@ struct V2EXAPI {
     static let SignInURL = V2EX_BASE_URL + "signin"
     
     static let MemberProfileURL = V2EX_API_BASE_URL + "/members/show.json?username="
+    
+    static let MemberLatestTopicsURL = V2EX_API_BASE_URL + "/topics/show.json?username="
 }
 
 public struct DataResponse <T> {
@@ -355,6 +357,33 @@ extension DataManager {
             }
             
             completion(dataResponse: DataResponse<MemberProfileModel>(data: model, error: nil))
+        }
+    }
+}
+
+extension DataManager {
+    class func loadMemberLatestTopics(username: String, completion: DataResponse<Array<TopicModel>>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.MemberLatestTopicsURL + username) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse<Array<TopicModel>>(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [TopicModel]()
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                if let topic = Mapper<TopicModel>().map(value) {
+                    list.append(topic)
+                }
+            }
+            
+            guard list.count != 0 else {
+                completion(dataResponse: DataResponse<Array<TopicModel>>(data: nil, error: nil))
+                return
+            }
+            
+            let tmp = DataResponse<Array<TopicModel>>(data: list, error: nil)
+            completion(dataResponse: tmp)
         }
     }
 }

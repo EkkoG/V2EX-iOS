@@ -24,7 +24,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
         topicsTableView.dataSource = self
         topicsTableView.delegate = self
-        topicsTableView.estimatedRowHeight = 100
+        topicsTableView.estimatedRowHeight = 60
         topicsTableView.rowHeight = UITableViewAutomaticDimension
         topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(topicsTableView)
