@@ -16,6 +16,8 @@
 		9611CA1E1C268B3100C2B2E3 /* CTFrameParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */; };
 		9611CA1F1C268B3100C2B2E3 /* CTFrameParserConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */; };
 		9611CA201C268B3100C2B2E3 /* CTLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA181C268B3100C2B2E3 /* CTLabel.swift */; };
+		961CC1911C2D4A1F0088A986 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */; };
+		961CC1931C2D53460088A986 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1921C2D53460088A986 /* UserProfileView.swift */; };
 		96257ED31C2CDC6600C52332 /* V2EXShareDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96257ED21C2CDC6600C52332 /* V2EXShareDataManager.swift */; };
 		963FD0021C19202500CAC9EC /* topicdetail.css in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0011C19202500CAC9EC /* topicdetail.css */; };
 		963FD0041C19257F00CAC9EC /* topic.html in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0031C19257F00CAC9EC /* topic.html */; };
@@ -80,6 +82,8 @@
 		9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTFrameParser.swift; sourceTree = "<group>"; };
 		9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTFrameParserConfig.swift; sourceTree = "<group>"; };
 		9611CA181C268B3100C2B2E3 /* CTLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTLabel.swift; sourceTree = "<group>"; };
+		961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
+		961CC1921C2D53460088A986 /* UserProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileView.swift; sourceTree = "<group>"; };
 		96257ED21C2CDC6600C52332 /* V2EXShareDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = V2EXShareDataManager.swift; sourceTree = "<group>"; };
 		963FD0011C19202500CAC9EC /* topicdetail.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = topicdetail.css; sourceTree = "<group>"; };
 		963FD0031C19257F00CAC9EC /* topic.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = topic.html; sourceTree = "<group>"; };
@@ -301,6 +305,7 @@
 				96AD74321C058C2F00753961 /* BaseViewController.swift */,
 				96AD74411C05BF9100753961 /* HomeViewController.swift */,
 				96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */,
+				961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -337,6 +342,7 @@
 				96F91F511C0B46C100E4CEDB /* TopicTableViewCell.swift */,
 				9650079F1C101C8700096F73 /* TopicReplyTableViewCell.swift */,
 				969A75411C118982002F513D /* CLTopAlignLabel.swift */,
+				961CC1921C2D53460088A986 /* UserProfileView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -562,10 +568,12 @@
 				9611CA201C268B3100C2B2E3 /* CTLabel.swift in Sources */,
 				96F91F501C0AFC7500E4CEDB /* V2EXHelper.swift in Sources */,
 				96ACAE8D1C0EDCCD002C0260 /* TopicDetailModel.swift in Sources */,
+				961CC1931C2D53460088A986 /* UserProfileView.swift in Sources */,
 				9611CA1F1C268B3100C2B2E3 /* CTFrameParserConfig.swift in Sources */,
 				96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */,
 				96AD73EC1C04539300753961 /* V2EX_iOS.xcdatamodeld in Sources */,
 				965007A01C101C8700096F73 /* TopicReplyTableViewCell.swift in Sources */,
+				961CC1911C2D4A1F0088A986 /* UserProfileViewController.swift in Sources */,
 				96AD74271C05895F00753961 /* MenuView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

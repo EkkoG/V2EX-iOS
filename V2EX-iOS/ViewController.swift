@@ -29,10 +29,14 @@ class ViewController: UIViewController, ZTViewControllerProtocol {
         
         let nav = BaseNavigationViewController(rootViewController: vc)
         vc.title = "V2EX"
-        vc.view.frame = nav.view.bounds
-        self.addChildViewController(nav)
         
-        self.view.addSubview(nav.view)
+        let userProfile = UserProfileViewController()
+        let nav1 = BaseNavigationViewController(rootViewController: userProfile)
+        
+        let tab = UITabBarController()
+        tab.setViewControllers([nav, nav1], animated: true)
+        self.addChildViewController(tab)
+        self.view.addSubview(tab.view)
     }
     
     func viewControllerCreated(viewController: UIViewController!, index: Int) {
