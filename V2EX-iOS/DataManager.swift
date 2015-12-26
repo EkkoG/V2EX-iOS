@@ -13,17 +13,14 @@ import Ji
 import ObjectMapper
 import Async
 
-let LATEST_PATH = "/topics/latest.json"
-let HTTP_PREFIX = "https"
-
-let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
-let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
-
-let UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13B143"
-
 struct V2EXAPI {
+    static let LATEST_PATH = "/topics/latest.json"
+    static let HTTP_PREFIX = "https"
+
+    static let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
+    static let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
     
-    static var TopicDetailContent = V2EX_API_BASE_URL + "/topics/show.json?id="
+    static let TopicDetailContent = V2EX_API_BASE_URL + "/topics/show.json?id="
     
     static let TopicReplesContent = V2EX_API_BASE_URL + "/replies/show.json?topic_id="
     
@@ -37,6 +34,8 @@ struct V2EXAPI {
     static let SignInURL = V2EX_BASE_URL + "signin"
     
     static let TabTopicsURL = V2EX_BASE_URL + "?tab="
+    
+    static let UserAgent = DataManager.getWebViewUserAgent()
 }
 
 public struct DataResponse <T> {
@@ -122,12 +121,17 @@ class DataManager: NSObject {
     }
     
     class func loadStringDataFromURL(URL: String, dataResponse: DataResponse<String>.dataResponse) {
-        let headers = [HTTPHeaderKey.UserAgent: UserAgent]
+        let headers = [HTTPHeaderKey.UserAgent: V2EXAPI.UserAgent]
         self.request(.GET, url: URL, parameters: nil, customHeaders: headers, completeHandler: dataResponse)
     }
     
     class func loadDataFromURL(URL: String, parameters:[String: AnyObject]? = nil, dataResponse: DataResponse<NSData>.dataResponse) {
         self.requestData(.GET, url: URL, parameters: parameters, customHeaders: nil, completeHandler: dataResponse)
+    }
+    
+    class func getWebViewUserAgent() -> String {
+        let webView = UIWebView(frame: CGRectZero)
+        return webView.stringByEvaluatingJavaScriptFromString("navigator.userAgent")!
     }
 }
 
@@ -306,7 +310,7 @@ extension DataManager {
             if let once = dataResponse.data {
                 let header = [
                     HTTPHeaderKey.Referer: V2EXAPI.SignInURL,
-                    HTTPHeaderKey.UserAgent: UserAgent,
+                    HTTPHeaderKey.UserAgent: V2EXAPI.UserAgent,
                     "accept-encoding": "gzip;q=1.0,compress;q=0.5",
                     "accept-language": "en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2",
                     "content-type": "application/x-www-form-urlencoded"
