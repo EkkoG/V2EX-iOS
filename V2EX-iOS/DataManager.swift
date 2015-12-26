@@ -13,10 +13,11 @@ import Ji
 import ObjectMapper
 import Async
 
-let V2EX_API_BASE_URL = "https://www.v2ex.com/api"
-let V2EX_BASE_URL = "https://www.v2ex.com/"
 let LATEST_PATH = "/topics/latest.json"
 let HTTP_PREFIX = "https"
+
+let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
+let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
 
 let UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13B143"
 
@@ -26,9 +27,16 @@ struct V2EXAPI {
     
     static let TopicReplesContent = V2EX_API_BASE_URL + "/replies/show.json?topic_id="
     
+    static let MemberProfileURL = V2EX_API_BASE_URL + "/members/show.json?username="
+    
+    static let MemberLatestTopicsURL = V2EX_API_BASE_URL + "/topics/show.json?username="
+    
+    static let LatestTopicsURL = V2EX_API_BASE_URL + LATEST_PATH
+    
+    
     static let SignInURL = V2EX_BASE_URL + "signin"
     
-    static let MemberProfileURL = V2EX_API_BASE_URL + "/members/show.json?username="
+    static let TabTopicsURL = V2EX_BASE_URL + "?tab="
 }
 
 public struct DataResponse <T> {
@@ -61,10 +69,6 @@ struct ParameterKey {
 
 class DataManager: NSObject {
     
-    class func postRequest(method: RequestMethod, url: String, parameters: [String: AnyObject]?, completeHandler: DataResponse<String>.dataResponse) {
-        self.request(method, url: url, parameters: parameters, customHeaders: nil, completeHandler: completeHandler)
-    }
-    
     class func request(method: RequestMethod, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil, completeHandler: DataResponse<String>.dataResponse) {
         var requestMethod: Alamofire.Method = .GET
         if method == .POST {
@@ -88,7 +92,6 @@ class DataManager: NSObject {
             }
         }
     }
-    
     
     class func requestData(method: RequestMethod, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil, completeHandler: DataResponse<NSData>.dataResponse) {
         var requestMethod: Alamofire.Method = .GET
@@ -135,14 +138,14 @@ extension DataManager {
             self.loadLatestTopics(dataResponse)
         }
         else {
-            self.loadStringDataFromURL(V2EX_BASE_URL + "?tab=\(path)", dataResponse: { (response) -> Void in
-                parseHTMLFromString(response.data!, dataResponse: dataResponse)
+            self.loadStringDataFromURL(V2EXAPI.TabTopicsURL + path, dataResponse: { (response) -> Void in
+                self.parseHTMLFromString(response.data!, dataResponse: dataResponse)
             })
         }
     }
     
     class func loadLatestTopics(dataResponse: DataResponse<NSArray>.dataResponse) {
-        self.loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH) { (response) -> Void in
+        self.loadDataFromURL(V2EXAPI.LatestTopicsURL) { (response) -> Void in
             if let data = response.data {
                 let json = JSON(data: data)
                 var list = [TopicModel]()
@@ -338,12 +341,50 @@ extension DataManager {
 extension DataManager {
     class func loadUserProfileInfo(username: String, completion: DataResponse<MemberProfileModel>.dataResponse) {
         self.requestData(.GET, url: V2EXAPI.MemberProfileURL + username) { (dataResponse) -> Void in
-            if let data = dataResponse.data {
-                let json = JSON(data: data)
-                if let model = Mapper<MemberProfileModel>().map(json.dictionaryObject) {
-                    print(model.username)
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            guard let model = Mapper<MemberProfileModel>().map(json.dictionaryObject) else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            guard model.status != "notfound" else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            completion(dataResponse: DataResponse<MemberProfileModel>(data: model, error: nil))
+        }
+    }
+}
+
+extension DataManager {
+    class func loadMemberLatestTopics(username: String, completion: DataResponse<Array<TopicModel>>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.MemberLatestTopicsURL + username) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse<Array<TopicModel>>(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [TopicModel]()
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                if let topic = Mapper<TopicModel>().map(value) {
+                    list.append(topic)
                 }
             }
+            
+            guard list.count != 0 else {
+                completion(dataResponse: DataResponse<Array<TopicModel>>(data: nil, error: nil))
+                return
+            }
+            
+            let tmp = DataResponse<Array<TopicModel>>(data: list, error: nil)
+            completion(dataResponse: tmp)
         }
     }
 }
