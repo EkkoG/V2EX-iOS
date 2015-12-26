@@ -8,6 +8,7 @@
 
 import UIKit
 import EZSwiftExtensions
+import SafariServices
 
 let ProfileInfoCellIdentifier = "com.cielpy.profileinfocellidentifier"
 let MemberLatestTopicsIdentifier = "com.cielpy.memberlatesttopicsidentifier"
@@ -68,12 +69,15 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCellWithIdentifier(ProfileInfoCellIdentifier, forIndexPath: indexPath) as! MemberSoicalInfoTableViewCell
+            cell.selectionStyle = .None
             let info = self.memberProfile!.memberSoicalInfo[indexPath.row]
             cell.memberSocialInfoModel = info
             return cell
         }
         else {
             let cell = tableView.dequeueReusableCellWithIdentifier(MemberLatestTopicsIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
+            cell.selectionStyle = .None
+            cell.avatarHidden = true
             cell.topic = self.memberLatestTopics[indexPath.row]
             return cell
         }
@@ -100,17 +104,35 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//        if section == 1 {
-//            return 44
-//        }
+        if section == 1 {
+            return 25
+        }
         return 0
     }
     
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView()
-        view.backgroundColor = UIColor.redColor()
+        let view = TextTableViewHeader(frame: CGRectZero)
+        view.backgroundColor = UIColor(hexString: "#f2f2f2")
+        view.text = "最近主题"
         
         return view
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0{
+            let info = self.memberProfile?.memberSoicalInfo[indexPath.row]
+            
+            let sf = SFSafariViewController(URL: NSURL(string: info!.URL!)!)
+//            self.navigationController!.pushViewController(sf, animated: true)
+            self.presentVC(sf)
+        }
+        
+        if indexPath.section == 1 {
+            let topic = self.memberLatestTopics[indexPath.row]
+            let detail = TopicDetailViewController()
+            detail.topicID = topic.topicID
+            navigationController?.pushViewController(detail, animated: true)
+        }
     }
 
     override func didReceiveMemoryWarning() {

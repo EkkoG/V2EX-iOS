@@ -43,7 +43,7 @@ class MemberProfileModel: NSObject,Mappable {
             return "加入于 " + string
         }
     }
-
+    
     required init?(_ map: Map) {
         
     }
@@ -70,7 +70,7 @@ class MemberProfileModel: NSObject,Mappable {
         var socialArray = [MemberSocialInfo]()
         
         if let str = self.website where self.website?.length > 0 {
-           let social = MemberSocialInfo(type: .WebSite, URL: str)
+            let social = MemberSocialInfo(type: .WebSite, URL: str)
             social.title = str
             socialArray.append(social)
         }
@@ -107,7 +107,14 @@ class MemberSocialInfo {
     convenience init(type: SocialType, URL: String) {
         self.init()
         self.type = type
-        self.URL = URL
+        var url = ""
+        if !URL.hasPrefix("http") {
+            url = "http://" + URL
+        }
+        else {
+            url = URL
+        }
+        self.URL = url
         self.iconImage = self.iconImage(type)
     }
     

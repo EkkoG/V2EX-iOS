@@ -19,6 +19,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         [unowned self] in
         let webView = UIWebView(frame: CGRectMake(0, 0, self.view.bounds.width, 1))
         webView.delegate = self
+        webView.scrollView.scrollEnabled = false
         return webView
     }()
     lazy var tableView: UITableView = {
