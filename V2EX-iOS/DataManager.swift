@@ -20,6 +20,8 @@ struct V2EXAPI {
     static let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
     static let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
     
+    static let V2EX_TOPIC_URL_PREFIX = V2EX_BASE_URL + "t/"
+    
     static let TopicDetailContent = V2EX_API_BASE_URL + "/topics/show.json?id="
     
     static let TopicReplesContent = V2EX_API_BASE_URL + "/replies/show.json?topic_id="
@@ -305,39 +307,24 @@ extension DataManager {
             }
         }
         
-        self.getOnceString(V2EXAPI.SignInURL) { (dataResponse) -> Void in
-            
-            if let once = dataResponse.data {
-                let header = [
-                    HTTPHeaderKey.Referer: V2EXAPI.SignInURL,
-                    HTTPHeaderKey.UserAgent: V2EXAPI.UserAgent,
-                    "accept-encoding": "gzip;q=1.0,compress;q=0.5",
-                    "accept-language": "en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2",
-                    "content-type": "application/x-www-form-urlencoded"
-                ]
-                
-                let para = [
-                    ParameterKey.Once: once,
-                    ParameterKey.Next: "/",
-                    "p": password,
-                    "u": username,
-                ]
-                
-                self.request(.POST, url: V2EXAPI.SignInURL, parameters: para, customHeaders: header, completeHandler: { (dataResponse) -> Void in
-//                    print(dataResponse.data)
-                    if let data = dataResponse.data {
-                        if data.containsString("/notifications") {
-                            completion(dataResponse: DataResponse(data: true, error: nil))
-                        }
-                        else {
-                            completion(dataResponse: DataResponse(data: false, error: nil))
-                        }
-                    }
-                    else {
-                        completion(dataResponse: DataResponse(data: false, error: nil))
-                    }
-                })
+        let para = [
+            ParameterKey.Next: "/",
+            "p": password,
+            "u": username,
+        ]
+        
+        self.submitForm(V2EXAPI.SignInURL, parameters: para) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse(data: false, error: nil))
+                return
             }
+            
+            guard !data.containsString("/notifications") else {
+                completion(dataResponse: DataResponse(data: false, error: nil))
+                return
+            }
+            
+            completion(dataResponse: DataResponse(data: true, error: nil))
         }
     }
 }
@@ -389,6 +376,50 @@ extension DataManager {
             
             let tmp = DataResponse<Array<TopicModel>>(data: list, error: nil)
             completion(dataResponse: tmp)
+        }
+    }
+}
+
+extension DataManager {
+    class func defaultHeader(URL: String) -> [String: String] {
+        let header = [
+            HTTPHeaderKey.Referer: URL,
+            HTTPHeaderKey.UserAgent: V2EXAPI.UserAgent,
+            "accept-encoding": "gzip, deflate",
+            "accept-language": "en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2",
+            "content-type": "application/x-www-form-urlencoded"
+        ]
+        
+        return header
+    }
+    
+    class func submitForm(URL: String, parameters: [String: AnyObject], completeHander: DataResponse<String>.dataResponse) {
+        self.getOnceString(URL) { (dataResponse) -> Void in
+            guard let once = dataResponse.data else {
+                return
+            }
+            
+            var para = parameters
+            para[ParameterKey.Once] = once
+            
+            let header = self.defaultHeader(URL)
+            
+            self.request(.POST, url: URL, parameters: para, customHeaders: header, completeHandler: completeHander)
+        }
+    }
+}
+
+extension DataManager {
+    class func reply(content: String, topicID: Int, completeHander: DataResponse<Bool>.dataResponse) {
+        let URL = V2EXAPI.V2EX_TOPIC_URL_PREFIX + String(topicID)
+        let para = ["content": content]
+        self.submitForm(URL, parameters: para) { (dataResponse) -> Void in
+            guard let _ = dataResponse.data else {
+                completeHander(dataResponse: DataResponse(data: false, error: nil))
+                return
+            }
+            
+            completeHander(dataResponse: DataResponse(data: true, error: nil))
         }
     }
 }
