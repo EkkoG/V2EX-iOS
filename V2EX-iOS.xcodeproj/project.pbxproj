@@ -24,6 +24,8 @@
 		961CC19C1C2DA4180088A986 /* social_twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 961CC1991C2DA4180088A986 /* social_twitter.png */; };
 		961CC19E1C2DA8B10088A986 /* MemberSoicalInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC19D1C2DA8B10088A986 /* MemberSoicalInfoTableViewCell.swift */; };
 		961CC1A01C2E76CF0088A986 /* TextTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC19F1C2E76CF0088A986 /* TextTableViewHeader.swift */; };
+		961CC1A21C2E8E1F0088A986 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1A11C2E8E1F0088A986 /* LoginViewController.swift */; };
+		961CC1A41C2E8EB10088A986 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1A31C2E8EB10088A986 /* LoginView.swift */; };
 		96257ED31C2CDC6600C52332 /* V2EXShareDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96257ED21C2CDC6600C52332 /* V2EXShareDataManager.swift */; };
 		963FD0021C19202500CAC9EC /* topicdetail.css in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0011C19202500CAC9EC /* topicdetail.css */; };
 		963FD0041C19257F00CAC9EC /* topic.html in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0031C19257F00CAC9EC /* topic.html */; };
@@ -96,6 +98,8 @@
 		961CC1991C2DA4180088A986 /* social_twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = social_twitter.png; sourceTree = "<group>"; };
 		961CC19D1C2DA8B10088A986 /* MemberSoicalInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberSoicalInfoTableViewCell.swift; sourceTree = "<group>"; };
 		961CC19F1C2E76CF0088A986 /* TextTableViewHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextTableViewHeader.swift; sourceTree = "<group>"; };
+		961CC1A11C2E8E1F0088A986 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		961CC1A31C2E8EB10088A986 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		96257ED21C2CDC6600C52332 /* V2EXShareDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = V2EXShareDataManager.swift; sourceTree = "<group>"; };
 		963FD0011C19202500CAC9EC /* topicdetail.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = topicdetail.css; sourceTree = "<group>"; };
 		963FD0031C19257F00CAC9EC /* topic.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = topic.html; sourceTree = "<group>"; };
@@ -329,6 +333,7 @@
 				96AD74411C05BF9100753961 /* HomeViewController.swift */,
 				96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */,
 				961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */,
+				961CC1A11C2E8E1F0088A986 /* LoginViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -369,6 +374,7 @@
 				961CC1921C2D53460088A986 /* MemberProfileView.swift */,
 				961CC19D1C2DA8B10088A986 /* MemberSoicalInfoTableViewCell.swift */,
 				961CC19F1C2E76CF0088A986 /* TextTableViewHeader.swift */,
+				961CC1A31C2E8EB10088A986 /* LoginView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -574,6 +580,7 @@
 				96AD74491C071EF700753961 /* DataManager.swift in Sources */,
 				96257ED31C2CDC6600C52332 /* V2EXShareDataManager.swift in Sources */,
 				96AD74401C05B34700753961 /* CommonConfiguration.swift in Sources */,
+				961CC1A21C2E8E1F0088A986 /* LoginViewController.swift in Sources */,
 				96AD74241C05895F00753961 /* NSString+Extention.m in Sources */,
 				96AD74331C058C2F00753961 /* BaseViewController.swift in Sources */,
 				9611CA191C268B3100C2B2E3 /* CoreTextData.swift in Sources */,
@@ -605,6 +612,7 @@
 				96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */,
 				96AD73EC1C04539300753961 /* V2EX_iOS.xcdatamodeld in Sources */,
 				965007A01C101C8700096F73 /* TopicReplyTableViewCell.swift in Sources */,
+				961CC1A41C2E8EB10088A986 /* LoginView.swift in Sources */,
 				961CC1911C2D4A1F0088A986 /* UserProfileViewController.swift in Sources */,
 				96AD74271C05895F00753961 /* MenuView.m in Sources */,
 			);

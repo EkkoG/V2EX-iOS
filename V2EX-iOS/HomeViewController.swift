@@ -44,6 +44,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! TopicTableViewCell
         let topic = topics![indexPath.row] as! TopicModel
+        cell.selectionStyle = .None
         cell.topic = topic
 //        cell.lastModifyMember.text = topic.last_modified
         return cell

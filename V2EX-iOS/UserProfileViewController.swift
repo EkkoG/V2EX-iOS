@@ -14,6 +14,12 @@ let ProfileInfoCellIdentifier = "com.cielpy.profileinfocellidentifier"
 let MemberLatestTopicsIdentifier = "com.cielpy.memberlatesttopicsidentifier"
 
 class UserProfileViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+    var username: String? {
+        didSet {
+            self.loadData(username!)
+        }
+    }
+    
     lazy var profileTableView: UITableView = {
         [unowned self] in
         let tableView = UITableView(frame: self.view.bounds, style: .Plain)
@@ -23,6 +29,15 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         tableView.rowHeight = UITableViewAutomaticDimension
         
         return tableView
+    }()
+    
+    lazy var headerView: MemberProfileView = {
+        [unowned self] in
+        
+        let headerView = MemberProfileView(frame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 70))
+        headerView.addBorderBottom(size: 1, color: UIColor.init(hexString: "#e2e2e2"))
+        
+        return headerView
     }()
     
     var memberProfile: MemberProfileModel?
@@ -39,20 +54,22 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: ProfileInfoCellIdentifier)
         self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: MemberLatestTopicsIdentifier)
         
-        
-        let headerView = MemberProfileView(frame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 70))
-        headerView.addBorderBottom(size: 1, color: UIColor.init(hexString: "#e2e2e2"))
-        
+        if let profile = V2EXShareDataManager.shareInstance.memberProfile {
+            self.loadData(profile.username!)
+        }
+    }
+    
+    func loadData(username: String) {
         DataManager.loadUserProfileInfo("cielpy") { (dataResponse) -> Void in
             guard let model = dataResponse.data else {
                 return
             }
             
-            headerView.memberProfileModel = model
+            self.headerView.memberProfileModel = model
             
             self.memberProfile = model
             
-            self.profileTableView.tableHeaderView = headerView
+            self.profileTableView.tableHeaderView = self.headerView
             self.profileTableView.reloadSection(0, withRowAnimation: .None)
         }
         
@@ -64,6 +81,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
             self.memberLatestTopics = list
             self.profileTableView.reloadSection(1, withRowAnimation: .None)
         }
+        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
