@@ -15,7 +15,13 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     var type: HomeTabs!
     var topicsTableView: UITableView!
     var topics: NSArray?
-
+ 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.tabBarController?.tabBar.hidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -24,7 +30,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
         topicsTableView.dataSource = self
         topicsTableView.delegate = self
-        topicsTableView.estimatedRowHeight = 100
+        topicsTableView.estimatedRowHeight = 60
         topicsTableView.rowHeight = UITableViewAutomaticDimension
         topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(topicsTableView)
@@ -44,6 +50,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! TopicTableViewCell
         let topic = topics![indexPath.row] as! TopicModel
+        cell.selectionStyle = .None
         cell.topic = topic
 //        cell.lastModifyMember.text = topic.last_modified
         return cell

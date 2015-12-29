@@ -29,10 +29,25 @@ class ViewController: UIViewController, ZTViewControllerProtocol {
         
         let nav = BaseNavigationViewController(rootViewController: vc)
         vc.title = "V2EX"
-        vc.view.frame = nav.view.bounds
-        self.addChildViewController(nav)
         
-        self.view.addSubview(nav.view)
+        var profile: UIViewController?
+        if let username = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) {
+            let userProfile = UserProfileViewController()
+            userProfile.username = username as? String
+            profile = userProfile
+        }
+        else {
+            let login = LoginViewController()
+            profile = login
+        }
+        
+        let nav1 = BaseNavigationViewController(rootViewController: profile!)
+        nav1.title = "Profile"
+        
+        let tab = UITabBarController()
+        tab.setViewControllers([nav, nav1], animated: true)
+        self.addChildViewController(tab)
+        self.view.addSubview(tab.view)
     }
     
     func viewControllerCreated(viewController: UIViewController!, index: Int) {

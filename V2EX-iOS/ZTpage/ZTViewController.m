@@ -9,7 +9,7 @@
 #import "ZTViewController.h"
 #import "UIView+Extension.h"
 #import "ZTPage.h"
-#import <TTTAttributedLabel/TTTAttributedLabel.h>
+#import <YYCategories/YYCategories.h>
 
 
 @interface ZTViewController ()<UIScrollViewDelegate,MenuViewDelegate,NSCacheDelegate>
@@ -121,6 +121,16 @@
 {
     MenuView *Menview = [[MenuView alloc]initWithMneuViewStyle:self.style AndTitles:titles];
     [self.view addSubview:Menview];
+    
+//    CALayer *layer = [[CALayer alloc] init];
+//    CGRect f = Menview.frame;
+//    f.size.height = 1;
+//    f.origin.y = CGRectGetHeight(Menview.frame) - 1;
+//    layer.backgroundColor = [UIColor colorWithHexString:@"#e2e2e2"].CGColor;
+//    
+//    layer.frame = f;
+//    [Menview.layer addSublayer:layer];
+    
     Menview.delegate = self;
     self.MenuView = Menview;
 }
@@ -132,7 +142,7 @@
     for (int j = 0; j < self.subviewControllers.count; j++) {
         CGFloat X = j * ScreenWidth;
         CGFloat Y = 0;
-        CGFloat height = self.view.height;
+        CGFloat height = self.view.height - 89;
         CGRect frame = CGRectMake(X, Y, ScreenWidth, height);
         [self.controllerFrames addObject:[NSValue valueWithCGRect:frame]];
     }

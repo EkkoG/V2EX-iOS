@@ -84,8 +84,10 @@ class TopicReplyTableViewCell: UITableViewCell {
             }
             
             let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
-            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            if let cache = delegate.cellHeightCeche[self.topicID!] {
+            
+            var cellHeightCeche = V2EXShareDataManager.shareInstance.cellHeightCeche
+            
+            if let cache = cellHeightCeche[self.topicID!] {
                 if let object = cache[key] {
                     self.contentLabel.data = object
                     self.refreshContentLabelHeight(object.height)
@@ -98,7 +100,7 @@ class TopicReplyTableViewCell: UITableViewCell {
                     
                     var c = cache
                     c[key] = data
-                    delegate.cellHeightCeche[self.topicID!] = c
+                    cellHeightCeche[self.topicID!] = c
                 }
             }
             else {
@@ -108,7 +110,7 @@ class TopicReplyTableViewCell: UITableViewCell {
                 self.refreshContentLabelHeight(data.height)
                 
                 cache[key] = data
-                delegate.cellHeightCeche[self.topicID!] = cache
+                cellHeightCeche[self.topicID!] = cache
             }
         }
     }

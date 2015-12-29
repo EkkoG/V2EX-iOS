@@ -13,28 +13,38 @@ import Ji
 import ObjectMapper
 import Async
 
-let V2EX_API_BASE_URL = "https://www.v2ex.com/api"
-let V2EX_BASE_URL = "https://www.v2ex.com/"
-let LATEST_PATH = "/topics/latest.json"
-let HTTP_PREFIX = "https"
-
 struct V2EXAPI {
-    static let V2EXAPIBaseURL = "https://www.v2ex.com/api"
+    static let LATEST_PATH = "/topics/latest.json"
+    static let HTTP_PREFIX = "https"
+
+    static let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
+    static let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
     
-    static var TopicDetailContent: String {
-        return V2EXAPIBaseURL + "/topics/show.json?id="
-    }
+    static let V2EX_TOPIC_URL_PREFIX = V2EX_BASE_URL + "t/"
     
-    static var TopicReplesContent: String {
-        return V2EXAPIBaseURL + "/replies/show.json?topic_id="
-    }
+    static let TopicDetailContent = V2EX_API_BASE_URL + "/topics/show.json?id="
+    
+    static let TopicReplesContent = V2EX_API_BASE_URL + "/replies/show.json?topic_id="
+    
+    static let MemberProfileURL = V2EX_API_BASE_URL + "/members/show.json?username="
+    
+    static let MemberLatestTopicsURL = V2EX_API_BASE_URL + "/topics/show.json?username="
+    
+    static let LatestTopicsURL = V2EX_API_BASE_URL + LATEST_PATH
+    
+    
+    static let SignInURL = V2EX_BASE_URL + "signin"
+    
+    static let TabTopicsURL = V2EX_BASE_URL + "?tab="
+    
+    static let UserAgent = DataManager.getWebViewUserAgent()
 }
 
 public struct DataResponse <T> {
     var data: T?
     var error: NSError?
     
-    typealias completion = (completion: DataResponse<T>) -> Void
+    typealias dataResponse = (dataResponse: DataResponse<T>) -> Void
     
     public init(data: T?, error:NSError?) {
         self.data = data
@@ -42,22 +52,106 @@ public struct DataResponse <T> {
     }
 }
 
+public enum RequestMethod {
+    case GET
+    case POST
+}
+
+public struct HTTPHeaderKey {
+    static let Referer = "Referer"
+    static let UserAgent = "User-Agent"
+}
+
+struct ParameterKey {
+    static let Once = "once"
+    static let Next = "next"
+}
+
 
 class DataManager: NSObject {
     
-    class func loadTabsTopicsDataWithTabsPath(path: String, completion: DataResponse<NSArray>.completion) {
+    class func request(method: RequestMethod, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil, completeHandler: DataResponse<String>.dataResponse) {
+        var requestMethod: Alamofire.Method = .GET
+        if method == .POST {
+            requestMethod = .POST
+        }
+        
+        let request = self.getRequest(requestMethod, url: url, parameters: parameters, customHeaders: customHeaders)
+        
+        request.responseString { (response) -> Void in
+            if response.result.isSuccess {
+                let tmp = DataResponse<String>(data: response.result.value, error: nil)
+                Async.main(block: { () -> Void in
+                    completeHandler(dataResponse: tmp)
+                })
+            }
+            else {
+                let tmp = DataResponse<String>(data: nil, error: response.result.error)
+                Async.main(block: { () -> Void in
+                    completeHandler(dataResponse: tmp)
+                })
+            }
+        }
+    }
+    
+    class func requestData(method: RequestMethod, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil, completeHandler: DataResponse<NSData>.dataResponse) {
+        var requestMethod: Alamofire.Method = .GET
+        if method == .POST {
+            requestMethod = .POST
+        }
+        
+        let request = self.getRequest(requestMethod, url: url, parameters: parameters, customHeaders: customHeaders)
+        
+        request.responseData{ (response) -> Void in
+            if response.result.isSuccess {
+                let tmp = DataResponse<NSData>(data: response.result.value, error: nil)
+                Async.main(block: { () -> Void in
+                    completeHandler(dataResponse: tmp)
+                })
+            }
+            else {
+                let tmp = DataResponse<NSData>(data: nil, error: response.result.error)
+                Async.main(block: { () -> Void in
+                    completeHandler(dataResponse: tmp)
+                })
+            }
+        }
+    }
+    
+    class func getRequest(method: Alamofire.Method, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil) -> Request {
+       return Alamofire.request(method, url, parameters: parameters, encoding: .URL, headers: customHeaders)
+    }
+    
+    class func loadStringDataFromURL(URL: String, dataResponse: DataResponse<String>.dataResponse) {
+        let headers = [HTTPHeaderKey.UserAgent: V2EXAPI.UserAgent]
+        self.request(.GET, url: URL, parameters: nil, customHeaders: headers, completeHandler: dataResponse)
+    }
+    
+    class func loadDataFromURL(URL: String, parameters:[String: AnyObject]? = nil, dataResponse: DataResponse<NSData>.dataResponse) {
+        self.requestData(.GET, url: URL, parameters: parameters, customHeaders: nil, completeHandler: dataResponse)
+    }
+    
+    class func getWebViewUserAgent() -> String {
+        let webView = UIWebView(frame: CGRectZero)
+        return webView.stringByEvaluatingJavaScriptFromString("navigator.userAgent")!
+    }
+}
+
+extension DataManager {
+    
+    class func loadTabsTopicsDataWithTabsPath(path: String, dataResponse: DataResponse<NSArray>.dataResponse) {
         if path == HomeTabs.latest.path {
-            loadLatestTopics(completion)
+            self.loadLatestTopics(dataResponse)
         }
         else {
-            loadStringDataFromURL(V2EX_BASE_URL + "?tab=\(path)", completion: { (response) -> Void in
-                parseHTMLFromString(response.data!, completion: completion)
+            self.loadStringDataFromURL(V2EXAPI.TabTopicsURL + path, dataResponse: { (response) -> Void in
+                self.parseHTMLFromString(response.data!, dataResponse: dataResponse)
             })
         }
     }
     
-    class func loadLatestTopics(completion: DataResponse<NSArray>.completion) {
-        loadDataFromURL(V2EX_API_BASE_URL + LATEST_PATH) { (response) -> Void in
+    class func loadLatestTopics(dataResponse: DataResponse<NSArray>.dataResponse) {
+        self.loadDataFromURL(V2EXAPI.LatestTopicsURL) { (response) -> Void in
             if let data = response.data {
                 let json = JSON(data: data)
                 var list = [TopicModel]()
@@ -67,17 +161,16 @@ class DataManager: NSObject {
                     }
                 }
                 let tmp = DataResponse<NSArray>(data: list, error: nil)
-                completion(completion: tmp)
+                dataResponse(dataResponse: tmp)
             }
             else {
                 let tmp = DataResponse<NSArray>(data: nil, error: response.error!)
-                completion(completion: tmp)
+                dataResponse(dataResponse: tmp)
             }
-            
         }
     }
     
-    class func parseHTMLFromString(html: String, completion: DataResponse<NSArray>.completion) {
+    class func parseHTMLFromString(html: String, dataResponse: DataResponse<NSArray>.dataResponse) {
         let jiDoc = Ji(htmlString: html)
         //        let body = jiDoc?.rootNode?.firstChildWithName("body")
         if let items = jiDoc?.xPath("//div[@class='cell item']") {
@@ -100,8 +193,8 @@ class DataManager: NSObject {
                 let authors = fade[0].xPath(".//strong/a")
                 let author = authors.first?.content
                 
-//                let lastComments = fade[1].xPath(".//strong/a")
-//                let last = lastComments.first?.content
+                //                let lastComments = fade[1].xPath(".//strong/a")
+                //                let last = lastComments.first?.content
                 
                 let fadeContent = fade[1].content
                 let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
@@ -127,81 +220,42 @@ class DataManager: NSObject {
                 t.member = memberModel
                 
                 t.last_modifiedText = lastModifiedText
-//                print(t.last_modifiedText)
+                //                print(t.last_modifiedText)
                 
                 list.append(t)
             }
             if list.count > 0 {
                 let tmp = DataResponse<NSArray>(data: list, error: nil)
-                completion(completion: tmp)
+                dataResponse(dataResponse: tmp)
             }
             else {
                 let tmp = DataResponse<NSArray>(data: nil, error: nil)
-                completion(completion: tmp)
+                dataResponse(dataResponse: tmp)
             }
         }
-        
     }
-    
-    class func loadStringDataFromURL(URL: String, completion: DataResponse<String>.completion) {
-        let headers = ["User-Agent" : "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13B143"]
-        Alamofire.request(.GET, URL, headers: headers).responseString { (response) -> Void in
-            if response.result.isSuccess {
-                let tmp = DataResponse<String>(data: response.result.value, error: nil)
-                Async.main(block: { () -> Void in
-                    completion(completion: tmp)
-                })
-            }
-            else {
-                let tmp = DataResponse<String>(data: nil, error: response.result.error)
-                Async.main(block: { () -> Void in
-                    completion(completion: tmp)
-                })
-            }
-        }
-        
-    }
-    
-    class func loadDataFromURL(URL: String, completion: DataResponse<NSData>.completion) {
-        Alamofire.request(.GET, URL).responseData { (response) -> Void in
-            if response.result.isSuccess {
-                let tmp = DataResponse<NSData>(data: response.data, error: nil)
-                Async.main(block: { () -> Void in
-                    completion(completion: tmp)
-                })
-            }
-            else {
-                let tmp = DataResponse<NSData>(data: nil, error: response.result.error!)
-                Async.main(block: { () -> Void in
-                    completion(completion: tmp)
-                })
-            }
-        }
-        
-    }
-    
 }
 
 extension DataManager {
-    class func loadTopicDetailContent(topicID: Int, completionHander: DataResponse<TopicDetailModel>.completion) {
-        loadDataFromURL(V2EXAPI.TopicDetailContent + "\(topicID)") { (response) -> Void in
+    class func loadTopicDetailContent(topicID: Int, completionHander: DataResponse<TopicDetailModel>.dataResponse) {
+        self.loadDataFromURL(V2EXAPI.TopicDetailContent + "\(topicID)") { (response) -> Void in
             if let data = response.data {
                 let json = JSON(data: data)
                 if let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) {
                     model.content_rendered = model.content_rendered?.stringByReplacingOccurrencesOfString("//i.v2ex", withString: "https://i.v2ex")
                     let tmp = DataResponse<TopicDetailModel>(data: model, error: nil)
-                    completionHander(completion: tmp)
+                    completionHander(dataResponse: tmp)
                 }
                 else {
                     let tmp = DataResponse<TopicDetailModel>(data: nil, error: nil)
-                    completionHander(completion: tmp)
+                    completionHander(dataResponse: tmp)
                 }
             }
         }
     }
     
-    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<NSArray>.completion) {
-        loadDataFromURL(V2EXAPI.TopicReplesContent + "\(topicID)") { (completion) -> Void in
+    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<NSArray>.dataResponse) {
+        self.loadDataFromURL(V2EXAPI.TopicReplesContent + "\(topicID)") { (completion) -> Void in
             if let data = completion.data {
                 let json = JSON(data: data)
                 var list = [TopicReplyModel]()
@@ -214,13 +268,158 @@ extension DataManager {
                 }
                 if list.count > 0 {
                     let tmp = DataResponse<NSArray>(data: list, error: nil)
-                    completionHandler(completion: tmp)
+                    completionHandler(dataResponse: tmp)
                 }
                 else {
                     let tmp = DataResponse<NSArray>(data: nil, error: nil)
-                    completionHandler(completion: tmp)
+                    completionHandler(dataResponse: tmp)
                 }
             }
+        }
+    }
+}
+
+extension DataManager {
+    class func getOnceString(url: String, completeionHandler: DataResponse<String>.dataResponse) {
+        self.loadStringDataFromURL(url) { (completion) -> Void in
+            if let data = completion.data {
+                let doc = Ji(htmlString: data)
+                let allNode = doc?.xPath("//input[@name='once']")
+                if allNode?.count > 0 {
+                    let tmp = DataResponse<String>(data: allNode?.first?["value"], error: nil)
+                    completeionHandler(dataResponse: tmp)
+                }
+                else {
+                    let tmp = DataResponse<String>(data: nil, error: nil)
+                    completeionHandler(dataResponse: tmp)
+                }
+            }
+        }
+    }
+}
+
+extension DataManager {
+    class func signIn(username: String, password: String, completion: DataResponse<Bool>.dataResponse) {
+        let storage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        if let cookies = storage.cookies {
+            for cookie in cookies {
+                storage.deleteCookie(cookie)
+            }
+        }
+        
+        let para = [
+            ParameterKey.Next: "/",
+            "p": password,
+            "u": username,
+        ]
+        
+        self.submitForm(V2EXAPI.SignInURL, parameters: para) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse(data: false, error: nil))
+                return
+            }
+            
+            guard data.containsString("/notifications") else {
+                completion(dataResponse: DataResponse(data: false, error: nil))
+                return
+            }
+            
+            completion(dataResponse: DataResponse(data: true, error: nil))
+        }
+    }
+}
+
+extension DataManager {
+    class func loadUserProfileInfo(username: String, completion: DataResponse<MemberProfileModel>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.MemberProfileURL + username) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            guard let model = Mapper<MemberProfileModel>().map(json.dictionaryObject) else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            guard model.status != "notfound" else {
+                completion(dataResponse: DataResponse<MemberProfileModel>(data: nil, error: nil))
+                return
+            }
+            
+            completion(dataResponse: DataResponse<MemberProfileModel>(data: model, error: nil))
+        }
+    }
+}
+
+extension DataManager {
+    class func loadMemberLatestTopics(username: String, completion: DataResponse<Array<TopicModel>>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.MemberLatestTopicsURL + username) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completion(dataResponse: DataResponse<Array<TopicModel>>(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [TopicModel]()
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                if let topic = Mapper<TopicModel>().map(value) {
+                    list.append(topic)
+                }
+            }
+            
+            guard list.count != 0 else {
+                completion(dataResponse: DataResponse<Array<TopicModel>>(data: nil, error: nil))
+                return
+            }
+            
+            let tmp = DataResponse<Array<TopicModel>>(data: list, error: nil)
+            completion(dataResponse: tmp)
+        }
+    }
+}
+
+extension DataManager {
+    class func defaultHeader(URL: String) -> [String: String] {
+        let header = [
+            HTTPHeaderKey.Referer: URL,
+            HTTPHeaderKey.UserAgent: V2EXAPI.UserAgent,
+            "accept-encoding": "gzip, deflate",
+            "accept-language": "en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4,zh-TW;q=0.2",
+            "content-type": "application/x-www-form-urlencoded"
+        ]
+        
+        return header
+    }
+    
+    class func submitForm(URL: String, parameters: [String: AnyObject], completeHander: DataResponse<String>.dataResponse) {
+        self.getOnceString(URL) { (dataResponse) -> Void in
+            guard let once = dataResponse.data else {
+                return
+            }
+            
+            var para = parameters
+            para[ParameterKey.Once] = once
+            
+            let header = self.defaultHeader(URL)
+            
+            self.request(.POST, url: URL, parameters: para, customHeaders: header, completeHandler: completeHander)
+        }
+    }
+}
+
+extension DataManager {
+    class func reply(content: String, topicID: Int, completeHander: DataResponse<Bool>.dataResponse) {
+        let URL = V2EXAPI.V2EX_TOPIC_URL_PREFIX + String(topicID)
+        let para = ["content": content]
+        self.submitForm(URL, parameters: para) { (dataResponse) -> Void in
+            guard let _ = dataResponse.data else {
+                completeHander(dataResponse: DataResponse(data: false, error: nil))
+                return
+            }
+            
+            completeHander(dataResponse: DataResponse(data: true, error: nil))
         }
     }
 }

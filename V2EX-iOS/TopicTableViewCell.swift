@@ -14,7 +14,7 @@ import Async
 class TopicTableViewCell: UITableViewCell {
     
     let smallFont:CGFloat = 13
-    let avatarWidth:CGFloat = 60
+    var avatarWidth:CGFloat = 60
     
     lazy var avatar: UIImageView = {
         let imageView = UIImageView()
@@ -68,19 +68,31 @@ class TopicTableViewCell: UITableViewCell {
         return label
     }()
     
+    var avatarHidden : Bool? {
+        didSet {
+            if avatarHidden == true {
+                self.avatar.removeFromSuperview()
+                self.avatarWidth = 0
+                self.needsUpdateConstraints()
+            }
+        }
+    }
+    
     var topic: TopicModel? {
         willSet(topic){
             let url = NSURL(string:topic!.avatarURL())!
-            avatar.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
-                if let image = image {
-                    Async.main(block: { () -> Void in
-                        UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
-                        UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
-                        image.drawInRect(self.avatar.bounds)
-                        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
-                        self.avatar.image = finalImage
-                        UIGraphicsEndImageContext()
-                    })
+            if let _ = self.avatar.superview {
+                self.avatar.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
+                    if let image = image {
+                        Async.main(block: { () -> Void in
+                            UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
+                            UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
+                            image.drawInRect(self.avatar.bounds)
+                            let finalImage = UIGraphicsGetImageFromCurrentImageContext()
+                            self.avatar.image = finalImage
+                            UIGraphicsEndImageContext()
+                        })
+                    }
                 }
             }
             
@@ -99,13 +111,13 @@ class TopicTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(avatar)
-        contentView.addSubview(title)
-        contentView.addSubview(node)
-        contentView.addSubview(lastModified)
-        contentView.addSubview(member)
-        contentView.addSubview(lastModifyMember)
-        contentView.addSubview(replies)
+        self.contentView.addSubview(self.avatar)
+        self.contentView.addSubview(self.title)
+        self.contentView.addSubview(self.node)
+        self.contentView.addSubview(self.lastModified)
+        self.contentView.addSubview(self.member)
+        self.contentView.addSubview(self.lastModifyMember)
+        self.contentView.addSubview(self.replies)
         
 //        title.backgroundColor = UIColor.grayColor()
 //        avatar.backgroundColor = UIColor.redColor()
@@ -120,16 +132,18 @@ class TopicTableViewCell: UITableViewCell {
     
     func UILayout() {
         
-        constrain(avatar) { view in
-            view.width == self.avatarWidth
-            view.height == self.avatarWidth
-            view.top == view.superview!.top + MARGIN_TO_BOUNDARY
-            view.left == view.superview!.left + MARGIN_TO_BOUNDARY
+        if let _ = self.avatar.superview {
+            constrain(self.avatar) { view in
+                view.width == self.avatarWidth
+                view.height == self.avatarWidth
+                view.top == view.superview!.top + MARGIN_TO_BOUNDARY
+                view.left == view.superview!.left + MARGIN_TO_BOUNDARY
+            }
         }
         
-        constrain(title, avatar) { view1, view2 in
-            view1.left == view2.right + SPACING_BEWTWEEN_COMPONENTS
-            view1.top == view2.top
+        constrain(self.title) { view1 in
+            view1.left == view1.superview!.left + MARGIN_TO_BOUNDARY + self.avatarWidth + SPACING_BEWTWEEN_COMPONENTS
+            view1.top == view1.superview!.top + MARGIN_TO_BOUNDARY
             view1.right == view1.superview!.right - MARGIN_TO_BOUNDARY
             /*
             For node label to align to avatar's bottom
@@ -140,7 +154,7 @@ class TopicTableViewCell: UITableViewCell {
             view1.height >= minHeight ~ 1000
         }
         
-        constrain(node, member, lastModified, lastModifyMember, title) {v1, v2, v3, v4, v5 in
+        constrain(self.node, self.member, self.lastModified, self.lastModifyMember, title) {v1, v2, v3, v4, v5 in
             v1.left == v5.left
             v2.left == v1.right + SPACING_BEWTWEEN_COMPONENTS
 //            v3.left == v2.right + SPACING_BEWTWEEN_COMPONENTS

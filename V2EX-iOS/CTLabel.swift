@@ -10,6 +10,8 @@ import UIKit
 import Async
 import Kingfisher
 
+let kChooseMemberInCellNotification = "com.cielpy.v2ex-ios.chooseAMemberInCell"
+
 class CTLabel: UIView, UIGestureRecognizerDelegate {
     dynamic var data: CoreTextData? {
         willSet(newValue) {
@@ -46,7 +48,10 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
         }
         
         if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
-            print("touch link \(link.url)")
+            let memberIdentifier = "/member/"
+            if link.url!.hasPrefix(memberIdentifier) {
+                NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
+            }
         }
     }
     
