@@ -46,6 +46,9 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //hard code
+        self.view.height = self.view.height - 64
 
         // Do any additional setup after loading the view.
         self.title = "Profile"

@@ -142,7 +142,7 @@
     for (int j = 0; j < self.subviewControllers.count; j++) {
         CGFloat X = j * ScreenWidth;
         CGFloat Y = 0;
-        CGFloat height = self.view.height - 40;
+        CGFloat height = self.view.height - 89;
         CGRect frame = CGRectMake(X, Y, ScreenWidth, height);
         [self.controllerFrames addObject:[NSValue valueWithCGRect:frame]];
     }
