@@ -112,6 +112,7 @@ class TopicReplyTableViewCell: UITableViewCell {
                 cache[key] = data
                 cellHeightCeche[self.topicID!] = cache
             }
+            V2EXShareDataManager.shareInstance.cellHeightCeche = cellHeightCeche
         }
     }
 
