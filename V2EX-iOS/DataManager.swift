@@ -319,7 +319,7 @@ extension DataManager {
                 return
             }
             
-            guard !data.containsString("/notifications") else {
+            guard data.containsString("/notifications") else {
                 completion(dataResponse: DataResponse(data: false, error: nil))
                 return
             }

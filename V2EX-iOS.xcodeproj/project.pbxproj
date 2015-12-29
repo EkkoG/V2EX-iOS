@@ -30,6 +30,7 @@
 		963FD0021C19202500CAC9EC /* topicdetail.css in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0011C19202500CAC9EC /* topicdetail.css */; };
 		963FD0041C19257F00CAC9EC /* topic.html in Resources */ = {isa = PBXBuildFile; fileRef = 963FD0031C19257F00CAC9EC /* topic.html */; };
 		965007A01C101C8700096F73 /* TopicReplyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9650079F1C101C8700096F73 /* TopicReplyTableViewCell.swift */; };
+		968AC6A41C32360500749586 /* InputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968AC6A31C32360500749586 /* InputAccessoryView.swift */; };
 		969A75421C118982002F513D /* CLTopAlignLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969A75411C118982002F513D /* CLTopAlignLabel.swift */; };
 		96ACAE4C1C0D521A002C0260 /* TopicDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */; };
 		96ACAE8D1C0EDCCD002C0260 /* TopicDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96ACAE8C1C0EDCCD002C0260 /* TopicDetailModel.swift */; };
@@ -104,6 +105,7 @@
 		963FD0011C19202500CAC9EC /* topicdetail.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = topicdetail.css; sourceTree = "<group>"; };
 		963FD0031C19257F00CAC9EC /* topic.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = topic.html; sourceTree = "<group>"; };
 		9650079F1C101C8700096F73 /* TopicReplyTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicReplyTableViewCell.swift; sourceTree = "<group>"; };
+		968AC6A31C32360500749586 /* InputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAccessoryView.swift; sourceTree = "<group>"; };
 		969A75411C118982002F513D /* CLTopAlignLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLTopAlignLabel.swift; sourceTree = "<group>"; };
 		96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicDetailViewController.swift; sourceTree = "<group>"; };
 		96ACAE8C1C0EDCCD002C0260 /* TopicDetailModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicDetailModel.swift; sourceTree = "<group>"; };
@@ -368,6 +370,7 @@
 		96AD74471C071E5800753961 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				968AC6A31C32360500749586 /* InputAccessoryView.swift */,
 				96F91F511C0B46C100E4CEDB /* TopicTableViewCell.swift */,
 				9650079F1C101C8700096F73 /* TopicReplyTableViewCell.swift */,
 				969A75411C118982002F513D /* CLTopAlignLabel.swift */,
@@ -610,6 +613,7 @@
 				961CC1931C2D53460088A986 /* MemberProfileView.swift in Sources */,
 				9611CA1F1C268B3100C2B2E3 /* CTFrameParserConfig.swift in Sources */,
 				96AD743E1C05A8FF00753961 /* UIImageExtension.swift in Sources */,
+				968AC6A41C32360500749586 /* InputAccessoryView.swift in Sources */,
 				96AD73EC1C04539300753961 /* V2EX_iOS.xcdatamodeld in Sources */,
 				965007A01C101C8700096F73 /* TopicReplyTableViewCell.swift in Sources */,
 				961CC1A41C2E8EB10088A986 /* LoginView.swift in Sources */,

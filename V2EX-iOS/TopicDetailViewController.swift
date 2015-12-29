@@ -12,7 +12,7 @@ import Async
 import UITableView_FDTemplateLayoutCell
 import EZSwiftExtensions
 
-class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate {
+class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate, UIScrollViewDelegate {
     var topicID:Int!
     var topicDetailModel: TopicDetailModel?
     lazy var headerWebView: UIWebView = {
@@ -42,15 +42,60 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     
     var contentWebViewLoaed = false
     
+    override func canBecomeFirstResponder() -> Bool {
+        
+        return true
+    }
+    
+    override func canResignFirstResponder() -> Bool {
+        
+        return true
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        
+        return true
+    }
+    
+    override var inputAccessoryView: UIView? {
+        
+        return accessoryView
+    }
+    
+    let accessoryView = InputAccessoryView()
+    
     deinit {
 //        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
 //        delegate.cellHeightCeche[self.topicID] = nil
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.tabBarController?.tabBar.hidden = true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
 
         // Do any additional setup after loading the view.
+        
+        accessoryView.handlers.tapSendButton = { _ in
+            guard let text = self.accessoryView.growingTextView!.text else {
+                print("内容为空")
+                return
+            }
+            
+            DataManager.reply(text, topicID: self.topicID, completeHander: { (dataResponse) -> Void in
+                if let _ = dataResponse.data {
+                    self.accessoryView.growingTextView?.resignFirstResponder()
+                    self.accessoryView.growingTextView?.text = nil
+                    print("评论成功")
+                }
+            })
+        }
+        
         self.view.addSubview(self.headerWebView)
         self.view.addSubview(self.tableView)
         view.backgroundColor = UIColor.whiteColor()
@@ -142,6 +187,10 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.contentWebViewLoaed = true
         self.tableView.reloadData()
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        self.accessoryView.growingTextView!.resignFirstResponder()
     }
     
     override func didReceiveMemoryWarning() {

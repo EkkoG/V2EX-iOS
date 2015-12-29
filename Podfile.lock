@@ -2,13 +2,14 @@ PODS:
   - Alamofire (3.1.4)
   - AsyncSwift (1.6.4)
   - Cartography (0.6.0)
-  - EZSwiftExtensions (1.0.1)
+  - EZSwiftExtensions (1.0.2)
   - Ji (1.2.0):
     - Ji/Ji (= 1.2.0)
   - Ji/Ji (1.2.0):
     - Ji/Ji-libxml
   - Ji/Ji-libxml (1.2.0)
   - Kingfisher (1.8.5)
+  - NextGrowingTextView (0.1.1)
   - ObjectMapper (1.0.1)
   - SQLite.swift (1.0.0)
   - SwiftyJSON (2.3.2)
@@ -24,6 +25,7 @@ DEPENDENCIES:
   - EZSwiftExtensions
   - Ji (~> 1.2.0)
   - Kingfisher (~> 1.8.2)
+  - NextGrowingTextView
   - ObjectMapper (~> 1.0.1)
   - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
   - SwiftyJSON (~> 2.3.1)
@@ -43,9 +45,10 @@ SPEC CHECKSUMS:
   Alamofire: fbc829692f351fa1d8a31dd75fd7f7f56fea31fb
   AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
   Cartography: 70af183a248547694a8cfaa6b989cb7e04589985
-  EZSwiftExtensions: 28cd397f5202f708b6dd19fa02874dd140bb48f7
+  EZSwiftExtensions: 31df4ec881d0653e3aa0a58229a46d4b5456dbb2
   Ji: ddebb22f9ac445db6e884b66f78ea74fb135fdb7
   Kingfisher: 780fed0fa82692a3bd59d53329ae2b85cdd354a5
+  NextGrowingTextView: 436152a06a65038a31564d466e44b398f2b28de6
   ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
   SQLite.swift: 3bb75f5a650f08673276bc6d3fb1de1b542b8f4d
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a

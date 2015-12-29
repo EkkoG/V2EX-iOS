@@ -15,7 +15,13 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     var type: HomeTabs!
     var topicsTableView: UITableView!
     var topics: NSArray?
-
+ 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.tabBarController?.tabBar.hidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
