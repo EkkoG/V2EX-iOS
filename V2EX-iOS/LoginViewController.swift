@@ -9,18 +9,32 @@
 import UIKit
 
 class LoginViewController: BaseViewController,LoginViewProtocol {
+    
+    lazy var loginView: LoginView = {
+        [unowned self] in
+        let loginView = LoginView(frame: self.view.bounds)
+        loginView.delegate = self
+        
+        return loginView
+    }()
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "登录"
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "memberSignInSuccessful:", name: kMemberSignInSuccessfulNotification, object: nil)
 
         // Do any additional setup after loading the view.
-        let loginView = LoginView(frame: self.view.bounds)
-        loginView.delegate = self
-        self.view.addSubview(loginView)
+        self.view.addSubview(self.loginView)
+        self.showUserProfile()
     }
     
     func signInButtonClicked(username: String, password: String) {
-        print(username + "  " + password)
+//        print(username + "  " + password)
         DataManager.signIn(username, password: password) { (dataResponse) -> Void in
             guard dataResponse.data! == true else {
                 print("登录失败")
@@ -33,18 +47,29 @@ class LoginViewController: BaseViewController,LoginViewProtocol {
                     return
                 }
                 
+                self.loginView.clearMemberInput()
                 V2EXShareDataManager.shareInstance.memberProfile = profile
                 
+                self.showUserProfile()
                 NSUserDefaults.standardUserDefaults().setObject(username, forKey: signinedMemberNameKey)
-                
-                let userProfile = UserProfileViewController()
-                userProfile.username = username
-                self.addChildViewController(userProfile)
-                self.view.addSubview(userProfile.view)
             })
         }
     }
-
+    
+    func memberSignInSuccessful(notification: NSNotification) {
+        self.showUserProfile()
+    }
+    
+    func showUserProfile() {
+        guard let _ = V2EXShareDataManager.shareInstance.memberProfile else {
+            return
+        }
+        
+        let userProfile = UserProfileViewController()
+        self.addChildViewController(userProfile)
+        self.view.addSubview(userProfile.view)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

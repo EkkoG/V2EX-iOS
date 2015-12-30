@@ -122,14 +122,6 @@
     MenuView *Menview = [[MenuView alloc]initWithMneuViewStyle:self.style AndTitles:titles];
     [self.view addSubview:Menview];
     
-//    CALayer *layer = [[CALayer alloc] init];
-//    CGRect f = Menview.frame;
-//    f.size.height = 1;
-//    f.origin.y = CGRectGetHeight(Menview.frame) - 1;
-//    layer.backgroundColor = [UIColor colorWithHexString:@"#e2e2e2"].CGColor;
-//    
-//    layer.frame = f;
-//    [Menview.layer addSublayer:layer];
     
     Menview.delegate = self;
     self.MenuView = Menview;
@@ -150,6 +142,16 @@
     //如果不是在tabbar中需要将MenuView的y值设置为Y+20（导航控制器高度+状态栏高度）
     //    GFloat y =  NavigationBarHeight
     self.MenuView.frame = CGRectMake(0, 0, ScreenWidth, MenuHeight);
+    
+    CALayer *layer = [[CALayer alloc] init];
+    CGRect f = self.MenuView.frame;
+    f.size.height = 1;
+    f.origin.y = CGRectGetHeight(self.MenuView.frame) - 1;
+    layer.backgroundColor = [UIColor colorWithHexString:@"#e2e2e2"].CGColor;
+    
+    layer.frame = f;
+    [self.MenuView.layer addSublayer:layer];
+    
     self.detailScrollView.frame = CGRectMake(0, self.MenuView.y+self.MenuView.height, ScreenWidth,ScreenHeight - self.detailScrollView.y);
     self.detailScrollView.contentSize = CGSizeMake(self.subviewControllers.count * self.detailScrollView.width, 0);
     

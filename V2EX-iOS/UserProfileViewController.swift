@@ -46,9 +46,11 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.parentViewController!.title = "个人"
         
         //hard code
-        self.view.height = self.view.height - 64
+        self.view.height = self.view.height - 110
+//        self.profileTableView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
 
         // Do any additional setup after loading the view.
         self.view.addSubview(self.profileTableView)
@@ -59,6 +61,9 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         if let profile = V2EXShareDataManager.shareInstance.memberProfile {
             self.loadData(profile.username!)
         }
+        
+        let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
+        self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
     }
     
     func loadData(username: String) {
@@ -154,6 +159,22 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
             navigationController?.pushViewController(detail, animated: true)
         }
     }
+    
+    func signOut() {
+        V2EXShareDataManager.shareInstance.memberProfile = nil
+        let storage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        if let cookies = storage.cookies {
+            for cookie in cookies {
+                storage.deleteCookie(cookie)
+            }
+        }
+        self.parentViewController!.title = "登录"
+        self.parentViewController!.navigationItem.leftBarButtonItem = nil
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(signinedMemberNameKey)
+        self.removeFromParentViewController()
+        self.view.removeFromSuperview()
+    }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

@@ -9,6 +9,7 @@
 import UIKit
 
 let signinedMemberNameKey = "com.cilepy.v2ex.signedUserNameKey"
+public let kMemberSignInSuccessfulNotification = "com.cielpy.v2ex.signInSuccessful"
 
 class V2EXShareDataManager: NSObject {
     static let shareInstance = V2EXShareDataManager()
@@ -24,6 +25,7 @@ class V2EXShareDataManager: NSObject {
                     return
                 }
                 self.memberProfile = profile
+                NSNotificationCenter.defaultCenter().postNotificationOnMainThreadWithName(kMemberSignInSuccessfulNotification, object: nil)
             })
         }
     }

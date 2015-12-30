@@ -29,20 +29,8 @@ class ViewController: UIViewController, ZTViewControllerProtocol {
         let item = UITabBarItem(title: "主页", image: UIImage(named: "tabbar_home"), selectedImage: UIImage(named: "tabbar_home_selected"))
         nav.tabBarItem = item
         
-        
-        var profile: UIViewController?
-        if let username = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) {
-            let userProfile = UserProfileViewController()
-            userProfile.username = username as? String
-            profile = userProfile
-        }
-        else {
-            let login = LoginViewController()
-            profile = login
-        }
-        
-        let nav1 = BaseNavigationViewController(rootViewController: profile!)
-        profile!.title = "个人"
+        let login = LoginViewController()
+        let nav1 = BaseNavigationViewController(rootViewController: login)
         
         let item1 = UITabBarItem(title: "个人", image: UIImage(named: "tabbar_profile"), selectedImage: UIImage(named: "tabbar_profile_selected"))
         nav1.tabBarItem = item1
