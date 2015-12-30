@@ -101,13 +101,20 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         view.backgroundColor = UIColor.whiteColor()
         
         self.tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
+        //hard code
+        self.tableView.height -= 105
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
         
 //        self.topicID = 182391
 //        self.topicID = 245188
         
         DataManager.loadTopicDetailContent(self.topicID!) { (completion) -> Void in
-            self.topicDetailModel = completion.data
+            guard let data = completion.data else {
+                return
+            }
+            
+            self.topicDetailModel = data
             self.title = self.topicDetailModel!.title
             if let content = self.topicDetailModel!.content_rendered {
                 
