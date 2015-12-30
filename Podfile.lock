@@ -9,10 +9,12 @@ PODS:
     - Ji/Ji-libxml
   - Ji/Ji-libxml (1.2.0)
   - Kingfisher (1.8.5)
+  - LCTabBarController (1.2.2)
   - NextGrowingTextView (0.1.1)
   - ObjectMapper (1.0.1)
   - SQLite.swift (1.0.0)
   - SwiftyJSON (2.3.2)
+  - TTTAttributedLabel (1.13.4)
   - UITableView+FDTemplateLayoutCell (1.4.beta)
   - YYCategories (0.9.3):
     - YYCategories/no-arc (= 0.9.3)
@@ -25,10 +27,12 @@ DEPENDENCIES:
   - EZSwiftExtensions
   - Ji (~> 1.2.0)
   - Kingfisher (~> 1.8.2)
+  - LCTabBarController
   - NextGrowingTextView
   - ObjectMapper (~> 1.0.1)
   - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
   - SwiftyJSON (~> 2.3.1)
+  - TTTAttributedLabel
   - UITableView+FDTemplateLayoutCell (~> 1.4.beta)
   - YYCategories
 
@@ -48,10 +52,12 @@ SPEC CHECKSUMS:
   EZSwiftExtensions: 31df4ec881d0653e3aa0a58229a46d4b5456dbb2
   Ji: ddebb22f9ac445db6e884b66f78ea74fb135fdb7
   Kingfisher: 780fed0fa82692a3bd59d53329ae2b85cdd354a5
+  LCTabBarController: b055f8373a8d5623d18d73e94338daac5840af5f
   NextGrowingTextView: 436152a06a65038a31564d466e44b398f2b28de6
   ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
   SQLite.swift: 3bb75f5a650f08673276bc6d3fb1de1b542b8f4d
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+  TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
   UITableView+FDTemplateLayoutCell: 9d20bf0518f3c01e42ae614243b97f1161063d27
   YYCategories: 44fa4213d3d0ebc7fc165f3b56e9f745e2ab8afb
 

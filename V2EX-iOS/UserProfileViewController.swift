@@ -51,7 +51,6 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         self.view.height = self.view.height - 64
 
         // Do any additional setup after loading the view.
-        self.title = "Profile"
         self.view.addSubview(self.profileTableView)
         
         self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: ProfileInfoCellIdentifier)
@@ -63,7 +62,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func loadData(username: String) {
-        DataManager.loadUserProfileInfo("cielpy") { (dataResponse) -> Void in
+        DataManager.loadUserProfileInfo(username) { (dataResponse) -> Void in
             guard let model = dataResponse.data else {
                 return
             }
@@ -76,7 +75,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
             self.profileTableView.reloadSection(0, withRowAnimation: .None)
         }
         
-        DataManager.loadMemberLatestTopics("cielpy") { (dataResponse) -> Void in
+        DataManager.loadMemberLatestTopics(username) { (dataResponse) -> Void in
             guard let list = dataResponse.data else {
                 return
             }
