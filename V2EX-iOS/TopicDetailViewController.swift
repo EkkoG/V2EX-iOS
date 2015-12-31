@@ -80,6 +80,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         
 
         // Do any additional setup after loading the view.
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseMember:", name: kChooseMemberInCellNotification, object: nil)
         
         accessoryView.handlers.tapSendButton = { _ in
             guard let text = self.accessoryView.growingTextView!.text else {
@@ -165,6 +166,16 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         }
 //        print("indexPath \(indexPath.row) height \(height)")
         return height
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let model = self.replies[indexPath.row]
+        self.replyMember(model.member!.username!)
+    }
+    
+    func replyMember(memberName: String) {
+        self.accessoryView.growingTextView?.text = "@\(memberName) "
+        self.accessoryView.growingTextView?.becomeFirstResponder()
     }
     
     func cellContentHasNewHeight(notification: NSNotification) {

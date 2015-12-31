@@ -31,28 +31,60 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
         self.setupEvents()
     }
     
-    func userTapGestureDetected(recognizer: UIGestureRecognizer) {
-        let point = recognizer.locationInView(self)
-        if let data = self.data {
-            if let imageArray = data.imageArray {
-                for imageData in imageArray {
-                    let imageRect = imageData.imagePosition!
-                    var imagePosition:CGPoint = imageRect.origin
-                    imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
-                    let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
-                    if CGRectContainsPoint(rect, point) {
-                        print("点击了图片\(imageData.imageURL)")
+    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer is UITapGestureRecognizer {
+            let point = gestureRecognizer.locationInView(self)
+            if let data = self.data {
+                if let imageArray = data.imageArray {
+                    for imageData in imageArray {
+                        let imageRect = imageData.imagePosition!
+                        var imagePosition:CGPoint = imageRect.origin
+                        imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
+                        let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
+                        if CGRectContainsPoint(rect, point) {
+                            print("点击了图片\(imageData.imageURL)")
+                            return true
+                        }
                     }
                 }
             }
+            
+            if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
+                let memberIdentifier = "/member/"
+                if link.url!.hasPrefix(memberIdentifier) {
+                    NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
+                    return true
+                }
+            }
+            
+            return false
         }
         
-        if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
-            let memberIdentifier = "/member/"
-            if link.url!.hasPrefix(memberIdentifier) {
-                NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
-            }
-        }
+        return true
+    }
+    
+    func userTapGestureDetected(recognizer: UIGestureRecognizer) {
+//        let point = recognizer.locationInView(self)
+//        if let data = self.data {
+//            if let imageArray = data.imageArray {
+//                for imageData in imageArray {
+//                    let imageRect = imageData.imagePosition!
+//                    var imagePosition:CGPoint = imageRect.origin
+//                    imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
+//                    let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
+//                    if CGRectContainsPoint(rect, point) {
+//                        print("点击了图片\(imageData.imageURL)")
+//                    }
+//                }
+//            }
+//        }
+//        
+//        if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
+//            let memberIdentifier = "/member/"
+//            if link.url!.hasPrefix(memberIdentifier) {
+//                NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
+//            }
+//        }
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
