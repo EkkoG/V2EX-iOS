@@ -20,6 +20,7 @@ pod 'NextGrowingTextView'
 pod 'LCTabBarController'
 pod 'TTTAttributedLabel'
 pod 'NYTPhotoViewer'
+pod 'PullToRefresher'
 
 end
 

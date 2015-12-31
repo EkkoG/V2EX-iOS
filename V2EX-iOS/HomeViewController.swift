@@ -10,6 +10,7 @@ import UIKit
 import Cartography
 import SwiftyJSON
 import Async
+import PullToRefresh
 
 class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     var type: HomeTabs!
@@ -33,11 +34,19 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         }
         
         print(type.title)
-//        print(V2EXHelper.dateFormat(1448793443))
         
-        DataManager.loadTabsTopicsDataWithTabsPath(type.path) { (response) -> Void in
+        self.loadData()
+        
+        self.topicsTableView.addPullToRefresh(PullToRefresh()) { () -> () in
+            self.loadData()
+        }
+    }
+    
+    func loadData() {
+        DataManager.loadTabsTopicsDataWithTabsPath(self.type.path) { (response) -> Void in
             self.topics = response.data
             self.topicsTableView.reloadData()
+            self.topicsTableView.endRefreshing()
         }
     }
     
