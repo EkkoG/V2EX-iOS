@@ -30,6 +30,8 @@ struct V2EXAPI {
     
     static let MemberLatestTopicsURL = V2EX_API_BASE_URL + "/topics/show.json?username="
     
+    static let NodeTopicsURL = V2EX_API_BASE_URL + "/topics/show.json?node_name="
+    
     static let AllNodeURL = V2EX_API_BASE_URL + "/nodes/all.json"
     
     static let LatestTopicsURL = V2EX_API_BASE_URL + LATEST_PATH
@@ -449,6 +451,34 @@ extension DataManager {
             
             let tmp = DataResponse<[Node]>(data: list, error: nil)
             completeHandler(dataResponse: tmp)
+        }
+    }
+}
+
+extension DataManager {
+    class func getNodeTopics(nodeName:String, completeHandler: DataResponse<[TopicModel]>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.NodeTopicsURL + nodeName) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completeHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [TopicModel]()
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                if let topic = Mapper<TopicModel>().map(value) {
+                    list.append(topic)
+                }
+            }
+            
+            guard list.count != 0 else {
+                completeHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let tmp = DataResponse<[TopicModel]>(data: list, error: nil)
+            completeHandler(dataResponse: tmp)
+            
         }
     }
 }

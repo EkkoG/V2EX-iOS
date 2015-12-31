@@ -11,7 +11,7 @@ import RFQuiltLayout
 
 let kAllNodeCellReuseIndentifier = "com.ciepy.v2ex-ios.allNodeCell"
 
-class AllNodeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate,  RFQuiltLayoutDelegate {
+class AllNodeViewController: BaseViewController, UICollectionViewDataSource, UICollectionViewDelegate,  RFQuiltLayoutDelegate {
     lazy var nodeCollectionView: UICollectionView = {
         [unowned self] in
         
@@ -72,7 +72,10 @@ class AllNodeViewController: UIViewController, UICollectionViewDataSource, UICol
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let model = self.allNodeArray[indexPath.row]
-        print(model.title)
+//        print(model.title)
+        let nodeTopics = NodeTopicsViewController()
+        nodeTopics.nodeModel = model
+        self.navigationController!.pushViewController(nodeTopics, animated: true)
     }
     
     func getTitleWidth(title: NSString) -> CGFloat {
