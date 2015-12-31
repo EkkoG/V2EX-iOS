@@ -57,6 +57,8 @@
 		96AD74491C071EF700753961 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96AD74481C071EF700753961 /* DataManager.swift */; };
 		96C3026B1C2BC29100AB6CCB /* ic_launcher144.png in Resources */ = {isa = PBXBuildFile; fileRef = 96C3026A1C2BC29100AB6CCB /* ic_launcher144.png */; };
 		96E37A361C34CDCC00A35433 /* TopicReplyPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E37A351C34CDCC00A35433 /* TopicReplyPhoto.swift */; };
+		96E37A381C34DF2600A35433 /* AllNodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E37A371C34DF2600A35433 /* AllNodeViewController.swift */; };
+		96E37A3A1C35030C00A35433 /* NodeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E37A391C35030C00A35433 /* NodeCollectionViewCell.swift */; };
 		96F91F4D1C0A215D00E4CEDB /* TopicModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F91F4C1C0A215D00E4CEDB /* TopicModel.swift */; };
 		96F91F501C0AFC7500E4CEDB /* V2EXHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F91F4F1C0AFC7500E4CEDB /* V2EXHelper.swift */; };
 		96F91F521C0B46C100E4CEDB /* TopicTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F91F511C0B46C100E4CEDB /* TopicTableViewCell.swift */; };
@@ -153,6 +155,8 @@
 		96AD74481C071EF700753961 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		96C3026A1C2BC29100AB6CCB /* ic_launcher144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_launcher144.png; sourceTree = "<group>"; };
 		96E37A351C34CDCC00A35433 /* TopicReplyPhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicReplyPhoto.swift; sourceTree = "<group>"; };
+		96E37A371C34DF2600A35433 /* AllNodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AllNodeViewController.swift; sourceTree = "<group>"; };
+		96E37A391C35030C00A35433 /* NodeCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeCollectionViewCell.swift; sourceTree = "<group>"; };
 		96F91F4C1C0A215D00E4CEDB /* TopicModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicModel.swift; sourceTree = "<group>"; };
 		96F91F4F1C0AFC7500E4CEDB /* V2EXHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = V2EXHelper.swift; sourceTree = "<group>"; };
 		96F91F511C0B46C100E4CEDB /* TopicTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopicTableViewCell.swift; sourceTree = "<group>"; };
@@ -352,6 +356,7 @@
 				96ACAE4B1C0D521A002C0260 /* TopicDetailViewController.swift */,
 				961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */,
 				961CC1A11C2E8E1F0088A986 /* LoginViewController.swift */,
+				96E37A371C34DF2600A35433 /* AllNodeViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -395,6 +400,7 @@
 				961CC19D1C2DA8B10088A986 /* MemberSoicalInfoTableViewCell.swift */,
 				961CC19F1C2E76CF0088A986 /* TextTableViewHeader.swift */,
 				961CC1A31C2E8EB10088A986 /* LoginView.swift */,
+				96E37A391C35030C00A35433 /* NodeCollectionViewCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -680,6 +686,7 @@
 			files = (
 				96E37A361C34CDCC00A35433 /* TopicReplyPhoto.swift in Sources */,
 				96AD74251C05895F00753961 /* UIView+Extension.m in Sources */,
+				96E37A3A1C35030C00A35433 /* NodeCollectionViewCell.swift in Sources */,
 				96AD74491C071EF700753961 /* DataManager.swift in Sources */,
 				96257ED31C2CDC6600C52332 /* V2EXShareDataManager.swift in Sources */,
 				96AD74401C05B34700753961 /* CommonConfiguration.swift in Sources */,
@@ -690,6 +697,7 @@
 				961CC1A01C2E76CF0088A986 /* TextTableViewHeader.swift in Sources */,
 				96AD743B1C05A02600753961 /* BaseNavigationViewController.swift in Sources */,
 				9611CA1D1C268B3100C2B2E3 /* CoreTextLinkUtils.swift in Sources */,
+				96E37A381C34DF2600A35433 /* AllNodeViewController.swift in Sources */,
 				961CC1951C2D81090088A986 /* MemberProfileModel.swift in Sources */,
 				9611CA1C1C268B3100C2B2E3 /* CoreTextLinkData.swift in Sources */,
 				96ACAE4C1C0D521A002C0260 /* TopicDetailViewController.swift in Sources */,

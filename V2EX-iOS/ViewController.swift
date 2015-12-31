@@ -29,14 +29,21 @@ class ViewController: UIViewController, ZTViewControllerProtocol {
         let item = UITabBarItem(title: "主页", image: UIImage(named: "tabbar_home"), selectedImage: UIImage(named: "tabbar_home_selected"))
         nav.tabBarItem = item
         
-        let login = LoginViewController()
-        let nav1 = BaseNavigationViewController(rootViewController: login)
         
-        let item1 = UITabBarItem(title: "个人", image: UIImage(named: "tabbar_profile"), selectedImage: UIImage(named: "tabbar_profile_selected"))
+        let node = AllNodeViewController()
+        let nav1 = BaseNavigationViewController(rootViewController: node)
+        let item1 = UITabBarItem(title: "节点", image: UIImage(named: "tabbar_discover"), selectedImage: UIImage(named: "tabbar_discover_selected"))
         nav1.tabBarItem = item1
         
+        
+        let login = LoginViewController()
+        let nav2 = BaseNavigationViewController(rootViewController: login)
+        
+        let item2 = UITabBarItem(title: "个人", image: UIImage(named: "tabbar_profile"), selectedImage: UIImage(named: "tabbar_profile_selected"))
+        nav2.tabBarItem = item2
+        
         let tab = LCTabBarController()
-        tab.viewControllers = [nav, nav1]
+        tab.viewControllers = [nav, nav1, nav2]
         self.addChildViewController(tab)
         self.view.addSubview(tab.view)
     }

@@ -30,6 +30,8 @@ struct V2EXAPI {
     
     static let MemberLatestTopicsURL = V2EX_API_BASE_URL + "/topics/show.json?username="
     
+    static let AllNodeURL = V2EX_API_BASE_URL + "/nodes/all.json"
+    
     static let LatestTopicsURL = V2EX_API_BASE_URL + LATEST_PATH
     
     
@@ -420,6 +422,33 @@ extension DataManager {
             }
             
             completeHander(dataResponse: DataResponse(data: true, error: nil))
+        }
+    }
+}
+
+extension DataManager {
+    class func getAllNode(completeHandler: DataResponse<[Node]>.dataResponse) {
+        self.requestData(.GET, url: V2EXAPI.AllNodeURL) { (dataResponse) -> Void in
+            guard let data = dataResponse.data else {
+                completeHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [Node]()
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                if let node = Mapper<Node>().map(value) {
+                    list.append(node)
+                }
+            }
+            
+            guard list.count != 0 else {
+                completeHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let tmp = DataResponse<[Node]>(data: list, error: nil)
+            completeHandler(dataResponse: tmp)
         }
     }
 }

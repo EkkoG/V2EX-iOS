@@ -21,6 +21,7 @@ pod 'LCTabBarController'
 pod 'TTTAttributedLabel'
 pod 'NYTPhotoViewer'
 pod 'PullToRefresher'
+pod 'RFQuiltLayout'
 
 end
 
