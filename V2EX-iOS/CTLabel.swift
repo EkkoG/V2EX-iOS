@@ -11,6 +11,8 @@ import Async
 import Kingfisher
 
 let kChooseMemberInCellNotification = "com.cielpy.v2ex-ios.chooseAMemberInCell"
+let kChooseImageInCellNotification = "com.cielpy.v2ex-ios.chooseImageInCell"
+let kChooseLinkInCellNOtification = "com.cielpy.v2ex-ios.chooseLinkInCell"
 
 class CTLabel: UIView, UIGestureRecognizerDelegate {
     dynamic var data: CoreTextData? {
@@ -43,6 +45,7 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
                         let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
                         if CGRectContainsPoint(rect, point) {
                             print("点击了图片\(imageData.imageURL)")
+                            NSNotificationCenter.defaultCenter().postNotificationName(kChooseImageInCellNotification, object: imageData.image!)
                             return true
                         }
                     }
@@ -53,6 +56,10 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
                 let memberIdentifier = "/member/"
                 if link.url!.hasPrefix(memberIdentifier) {
                     NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
+                    return true
+                }
+                else {
+                    NSNotificationCenter.defaultCenter().postNotificationName(kChooseLinkInCellNOtification, object: link.url!)
                     return true
                 }
             }

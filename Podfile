@@ -19,6 +19,7 @@ pod 'UITableView+FDTemplateLayoutCell', '~> 1.4.beta'
 pod 'NextGrowingTextView'
 pod 'LCTabBarController'
 pod 'TTTAttributedLabel'
+pod 'NYTPhotoViewer'
 
 end
 

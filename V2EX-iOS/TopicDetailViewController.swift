@@ -11,6 +11,8 @@ import Kingfisher
 import Async
 import UITableView_FDTemplateLayoutCell
 import EZSwiftExtensions
+import NYTPhotoViewer
+import SafariServices
 
 class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate, UIScrollViewDelegate {
     var topicID:Int!
@@ -67,6 +69,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     deinit {
 //        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
 //        delegate.cellHeightCeche[self.topicID] = nil
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -81,6 +84,8 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
 
         // Do any additional setup after loading the view.
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseMember:", name: kChooseMemberInCellNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseImage:", name: kChooseImageInCellNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseLink:", name: kChooseLinkInCellNOtification, object: nil)
         
         accessoryView.handlers.tapSendButton = { _ in
             guard let text = self.accessoryView.growingTextView!.text else {
@@ -209,6 +214,20 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         self.accessoryView.growingTextView!.resignFirstResponder()
+    }
+    
+    func chooseImage(notification: NSNotification) {
+        let image = notification.object as! UIImage
+        
+        let photo = TopicReplyPhoto(image: image)
+        let browser = NYTPhotosViewController(photos: [photo])
+        self.presentVC(browser)
+    }
+    
+    func chooseLink(notification: NSNotification) {
+        let url = notification.object as! String
+        let sf = SFSafariViewController(URL: NSURL(string: url)!)
+        self.presentVC(sf)
     }
     
     override func didReceiveMemoryWarning() {
