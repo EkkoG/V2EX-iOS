@@ -14,7 +14,7 @@ public let kMemberSignInSuccessfulNotification = "com.cielpy.v2ex.signInSuccessf
 class V2EXShareDataManager: NSObject {
     static let shareInstance = V2EXShareDataManager()
     
-    var cellHeightCeche = [Int: [String :CoreTextData]]()
+    var cellHeightCeche = NSCache()
     
     var memberProfile: MemberProfileModel?
     

@@ -40,8 +40,6 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     var replies = [TopicReplyModel]()
     var cellRowHeightDictionary = [NSIndexPath: CGFloat]()
     
-    var cellHeightCeche = [String :CoreTextData]()
-    
     var contentWebViewLoaed = false
     
     override func canBecomeFirstResponder() -> Bool {
@@ -207,6 +205,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         self.headerWebView.addBorderBottom(size: 1, color: UIColor.init(hexString: "#e2e2e2"))
         
         self.tableView.tableHeaderView = headerWebView
+        
         
         self.contentWebViewLoaed = true
         self.tableView.reloadData()

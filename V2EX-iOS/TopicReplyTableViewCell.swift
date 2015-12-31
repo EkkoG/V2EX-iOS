@@ -85,9 +85,15 @@ class TopicReplyTableViewCell: UITableViewCell {
             
             let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
             
-            var cellHeightCeche = V2EXShareDataManager.shareInstance.cellHeightCeche
             
-            if let cache = cellHeightCeche[self.topicID!] {
+            let cellHeightCache = V2EXShareDataManager.shareInstance.cellHeightCeche
+            if let cache = cellHeightCache.objectForKey(self.topicID!) {
+                guard cache is [String: CoreTextData] else {
+                    return
+                }
+                
+                var cache = cache as! [String: CoreTextData]
+                
                 if let object = cache[key] {
                     self.contentLabel.data = object
                     self.refreshContentLabelHeight(object.height)
@@ -96,11 +102,9 @@ class TopicReplyTableViewCell: UITableViewCell {
                     let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
                     self.contentLabel.data = data
                     self.refreshContentLabelHeight(data.height)
-//                    cache[key] = data
+                    cache[key] = data
                     
-                    var c = cache
-                    c[key] = data
-                    cellHeightCeche[self.topicID!] = c
+                    cellHeightCache.setObject(cache, forKey: self.topicID!)
                 }
             }
             else {
@@ -110,9 +114,9 @@ class TopicReplyTableViewCell: UITableViewCell {
                 self.refreshContentLabelHeight(data.height)
                 
                 cache[key] = data
-                cellHeightCeche[self.topicID!] = cache
+                cellHeightCache.setObject(cache, forKey: self.topicID!)
             }
-            V2EXShareDataManager.shareInstance.cellHeightCeche = cellHeightCeche
+            V2EXShareDataManager.shareInstance.cellHeightCeche = cellHeightCache
         }
     }
 
