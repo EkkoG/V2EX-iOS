@@ -49,14 +49,19 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.loadData(self.username!)
         
-        let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) as! String
-        if loginMemberName != self.username {
-            self.title = self.username
+        if let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) as? String {
+            if loginMemberName != self.username {
+                self.title = self.username
+            }
+            else {
+                if let _ = V2EXShareDataManager.shareInstance.memberProfile {
+                    self.parentViewController!.title = "个人"
+                }
+            }
+            
         }
         else {
-            if let _ = V2EXShareDataManager.shareInstance.memberProfile {
-                self.parentViewController!.title = "个人"
-            }
+                self.title = self.username
         }
         
         //hard code
