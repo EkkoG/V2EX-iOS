@@ -55,8 +55,27 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         let topic = topics![indexPath.row] as! TopicModel
         cell.selectionStyle = .None
         cell.topic = topic
+        cell.tapSendButton = { _ in
+            self.gotoNodeTopics(topic.node!)
+        }
+        
+        cell.tapAvatar = { _ in
+            self.gotoMemberProfile(topic.member!.username!)
+        }
 //        cell.lastModifyMember.text = topic.last_modified
         return cell
+    }
+    
+    func gotoNodeTopics(node: Node) {
+        let nodeTopics = NodeTopicsViewController()
+        nodeTopics.nodeModel = node
+        self.navigationController!.pushViewController(nodeTopics, animated: true)
+    }
+    
+    func gotoMemberProfile(username: String) {
+        let profile = UserProfileViewController()
+        profile.username = username
+        self.navigationController!.pushViewController(profile, animated: true)
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -46,7 +46,18 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.parentViewController!.title = "个人"
+        
+        self.loadData(self.username!)
+        
+        let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) as! String
+        if loginMemberName != self.username {
+            self.title = self.username
+        }
+        else {
+            if let _ = V2EXShareDataManager.shareInstance.memberProfile {
+                self.parentViewController!.title = "个人"
+            }
+        }
         
         //hard code
         self.view.height = self.view.height - 110
@@ -57,10 +68,6 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: ProfileInfoCellIdentifier)
         self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: MemberLatestTopicsIdentifier)
-        
-        if let profile = V2EXShareDataManager.shareInstance.memberProfile {
-            self.loadData(profile.username!)
-        }
         
         let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
         self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
@@ -77,7 +84,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
             self.memberProfile = model
             
             self.profileTableView.tableHeaderView = self.headerView
-            self.profileTableView.reloadSection(0, withRowAnimation: .None)
+            self.profileTableView.reloadData()
         }
         
         DataManager.loadMemberLatestTopics(username) { (dataResponse) -> Void in
@@ -139,7 +146,6 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         let view = TextTableViewHeader(frame: CGRectZero)
         view.backgroundColor = UIColor(hexString: "#f2f2f2")
         view.text = "最近主题"
-        
         return view
     }
     

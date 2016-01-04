@@ -50,6 +50,8 @@ class TopicReplyTableViewCell: UITableViewCell {
     
     let contentLabelHeightGroup = ConstraintGroup()
     
+    var tapAvatar: () -> Void = { _ in }
+    
     var topicID: Int?
     
     var replyModel: TopicReplyModel? {
@@ -132,6 +134,10 @@ class TopicReplyTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentLabel.addObserver(self, forKeyPath: "textHeight", options: NSKeyValueObservingOptions.New, context: nil)
+        
+        let tap = UITapGestureRecognizer(target: self, action: "tapAvatarImageView:")
+        self.avatarImageView.addGestureRecognizer(tap)
+        self.avatarImageView.userInteractionEnabled = true
         
         self.UILayout()
     }
@@ -222,6 +228,10 @@ class TopicReplyTableViewCell: UITableViewCell {
         }
         
         return CGSizeMake(size.width, totalHeight)
+    }
+    
+    func tapAvatarImageView(gesture: UIGestureRecognizer) {
+        self.tapAvatar()
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -61,11 +61,12 @@ class LoginViewController: BaseViewController,LoginViewProtocol {
     }
     
     func showUserProfile() {
-        guard let _ = V2EXShareDataManager.shareInstance.memberProfile else {
+        guard let profile = V2EXShareDataManager.shareInstance.memberProfile else {
             return
         }
         
         let userProfile = UserProfileViewController()
+        userProfile.username = profile.username
         self.addChildViewController(userProfile)
         self.view.addSubview(userProfile.view)
     }

@@ -195,6 +195,10 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         cell.topicID = self.topicID
         let reply = replies[indexPath.row] as TopicReplyModel
         cell.replyModel = reply
+        
+        cell.tapAvatar = { _ in
+            self.gotoMemberProfile(reply.member!.username!)
+        }
     }
     
     func webViewDidFinishLoad(webView: UIWebView) {
@@ -227,6 +231,12 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         let url = notification.object as! String
         let sf = SFSafariViewController(URL: NSURL(string: url)!)
         self.presentVC(sf)
+    }
+    
+    func gotoMemberProfile(username: String) {
+        let profile = UserProfileViewController()
+        profile.username = username
+        self.navigationController!.pushViewController(profile, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
