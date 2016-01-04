@@ -67,13 +67,25 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     deinit {
 //        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
 //        delegate.cellHeightCeche[self.topicID] = nil
-        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
         self.tabBarController?.tabBar.hidden = true
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseImage:", name: kCTTouchImageNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseLink:", name: kCTTouchLinkNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
     override func viewDidLoad() {
@@ -82,8 +94,6 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
 
         // Do any additional setup after loading the view.
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseMember:", name: kChooseMemberInCellNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseImage:", name: kChooseImageInCellNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseLink:", name: kChooseLinkInCellNOtification, object: nil)
         
         accessoryView.handlers.tapSendButton = { _ in
             guard let text = self.accessoryView.growingTextView!.text else {
@@ -228,9 +238,17 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func chooseLink(notification: NSNotification) {
-        let url = notification.object as! String
-        let sf = SFSafariViewController(URL: NSURL(string: url)!)
-        self.presentVC(sf)
+        let url = notification.object as! NSString
+        
+        let memberIdentifier = "/member/"
+        if url.hasPrefix(memberIdentifier) {
+            let memberName = url.stringByReplacingOccurrencesOfString(memberIdentifier, withString: "")
+            self.gotoMemberProfile(memberName)
+        }
+        else {
+            let sf = SFSafariViewController(URL: NSURL(string: url as String)!)
+            self.presentVC(sf)
+        }
     }
     
     func gotoMemberProfile(username: String) {

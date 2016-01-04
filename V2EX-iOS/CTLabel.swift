@@ -10,9 +10,10 @@ import UIKit
 import Async
 import Kingfisher
 
-let kChooseMemberInCellNotification = "com.cielpy.v2ex-ios.chooseAMemberInCell"
-let kChooseImageInCellNotification = "com.cielpy.v2ex-ios.chooseImageInCell"
 let kChooseLinkInCellNOtification = "com.cielpy.v2ex-ios.chooseLinkInCell"
+
+let kCTTouchLinkNotification = "com.cielpy.v2ex.CTTouchLinkNotification"
+let kCTTouchImageNotification = "com.cielpy.v2ex.CTTouchImageNotification"
 
 class CTLabel: UIView, UIGestureRecognizerDelegate {
     dynamic var data: CoreTextData? {
@@ -45,7 +46,7 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
                         let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
                         if CGRectContainsPoint(rect, point) {
                             print("点击了图片\(imageData.imageURL)")
-                            NSNotificationCenter.defaultCenter().postNotificationName(kChooseImageInCellNotification, object: imageData.image!)
+                            NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchImageNotification, object: imageData.image!)
                             return true
                         }
                     }
@@ -53,15 +54,7 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
             }
             
             if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
-                let memberIdentifier = "/member/"
-                if link.url!.hasPrefix(memberIdentifier) {
-                    NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
-                    return true
-                }
-                else {
-                    NSNotificationCenter.defaultCenter().postNotificationName(kChooseLinkInCellNOtification, object: link.url!)
-                    return true
-                }
+                NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchLinkNotification, object: link.url!)
             }
             
             return false
