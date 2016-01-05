@@ -10,8 +10,8 @@ import UIKit
 import EZSwiftExtensions
 import SafariServices
 
-let ProfileInfoCellIdentifier = "com.cielpy.profileinfocellidentifier"
-let MemberLatestTopicsIdentifier = "com.cielpy.memberlatesttopicsidentifier"
+let kMemberProfileSocialCellIdentifier = "com.cielpy.v2ex.MemberProfile.social.cellIdentifier"
+let kMemberProfileLatestTopicsCellIdentifier = "com.cielpy.v2ex.MemberProfile.latestTopics.cellIdentifier"
 
 class UserProfileViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     var username: String? {
@@ -35,7 +35,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         [unowned self] in
         
         let headerView = MemberProfileView(frame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 70))
-        headerView.addBorderBottom(size: 1, color: UIColor.init(hexString: "#e2e2e2"))
+        headerView.addBorderBottom(size: 1, color: kSeparateLineColor)
         
         return headerView
     }()
@@ -49,8 +49,8 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.view.addSubview(self.profileTableView)
         
-        self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: ProfileInfoCellIdentifier)
-        self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: MemberLatestTopicsIdentifier)
+        self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: kMemberProfileSocialCellIdentifier)
+        self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: kMemberProfileLatestTopicsCellIdentifier)
         
         self.loadData(self.username!)
         
@@ -108,14 +108,14 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier(ProfileInfoCellIdentifier, forIndexPath: indexPath) as! MemberSoicalInfoTableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(kMemberProfileSocialCellIdentifier, forIndexPath: indexPath) as! MemberSoicalInfoTableViewCell
             cell.selectionStyle = .None
             let info = self.memberProfile!.memberSoicalInfo[indexPath.row]
             cell.memberSocialInfoModel = info
             return cell
         }
         else {
-            let cell = tableView.dequeueReusableCellWithIdentifier(MemberLatestTopicsIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(kMemberProfileLatestTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
             cell.selectionStyle = .None
             cell.avatarHidden = true
             cell.topic = self.memberLatestTopics[indexPath.row]
@@ -152,7 +152,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = TextTableViewHeader(frame: CGRectZero)
-        view.backgroundColor = UIColor(hexString: "#f2f2f2")
+        view.backgroundColor = kListViewHeaderViewBackroundColor
         view.text = "最近主题"
         return view
     }

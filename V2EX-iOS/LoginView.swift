@@ -43,7 +43,7 @@ class LoginView: UIView {
         self.addSubview(self.passwordTextField)
         
         self.addSubview(self.signInButton)
-        self.signInButton.backgroundColor = UIColor(hexString: "#f2f2f2")
+        self.signInButton.backgroundColor = kListViewHeaderViewBackroundColor
         self.signInButton.setTitle("登录", forState: .Normal)
         self.signInButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
         

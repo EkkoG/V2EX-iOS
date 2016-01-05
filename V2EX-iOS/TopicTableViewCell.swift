@@ -35,7 +35,7 @@ class TopicTableViewCell: UITableViewCell {
     lazy var node: UIButton = {
         let node = UIButton(type: UIButtonType.Custom)
         
-        node.backgroundColor = UIColor.init(hexString: "#F5F5F5")
+        node.backgroundColor = kListViewHeaderViewBackroundColor
         node.layer.cornerRadius = 3
         node.layer.masksToBounds = true
         

@@ -9,7 +9,7 @@
 import UIKit
 import RFQuiltLayout
 
-let kAllNodeCellReuseIndentifier = "com.ciepy.v2ex-ios.allNodeCell"
+let kNodeAllNodeCellIndentifier = "com.ciepy.v2ex.node.allNodeCellIdentifier"
 
 class AllNodeViewController: BaseViewController, UICollectionViewDataSource, UICollectionViewDelegate,  RFQuiltLayoutDelegate {
     lazy var nodeCollectionView: UICollectionView = {
@@ -36,7 +36,7 @@ class AllNodeViewController: BaseViewController, UICollectionViewDataSource, UIC
         self.view.addSubview(self.nodeCollectionView)
         self.nodeCollectionView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
         
-        self.nodeCollectionView.registerClass(NodeCollectionViewCell.self, forCellWithReuseIdentifier: kAllNodeCellReuseIndentifier)
+        self.nodeCollectionView.registerClass(NodeCollectionViewCell.self, forCellWithReuseIdentifier: kNodeAllNodeCellIndentifier)
         
         DataManager.getAllNode { (dataResponse) -> Void in
             guard let data = dataResponse.data else {
@@ -49,7 +49,7 @@ class AllNodeViewController: BaseViewController, UICollectionViewDataSource, UIC
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(kAllNodeCellReuseIndentifier, forIndexPath: indexPath) as! NodeCollectionViewCell
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(kNodeAllNodeCellIndentifier, forIndexPath: indexPath) as! NodeCollectionViewCell
         
         cell.nodeModel = self.allNodeArray[indexPath.row]
 

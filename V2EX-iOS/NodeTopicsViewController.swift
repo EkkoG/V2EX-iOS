@@ -7,7 +7,7 @@
 //
 
 import UIKit
-let kNodeTopicsCellReuseIdentifier = "com.cielpy.v2ex-ios.nodeTopics"
+let kNodeTopicsCellIdentifier = "com.cielpy.v2ex.node.NodeTopics.cellIdentifier"
 
 class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     

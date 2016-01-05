@@ -216,7 +216,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         f.size.height = webView.scrollView.contentSize.height
         self.headerWebView.frame = f
         
-        self.headerWebView.addBorderBottom(size: 1, color: UIColor.init(hexString: "#e2e2e2"))
+        self.headerWebView.addBorderBottom(size: 1, color: kListViewHeaderViewBackroundColor)
         
         self.tableView.tableHeaderView = headerWebView
         

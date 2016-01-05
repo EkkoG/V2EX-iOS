@@ -10,6 +10,7 @@
 #import "UIView+Extension.h"
 #import "ZTPage.h"
 #import <YYCategories/YYCategories.h>
+#import "V2EX_iOS-Swift.h"
 
 
 @interface ZTViewController ()<UIScrollViewDelegate,MenuViewDelegate,NSCacheDelegate>

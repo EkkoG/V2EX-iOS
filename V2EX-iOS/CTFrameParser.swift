@@ -16,8 +16,6 @@ enum TagName: String {
     case NONE = "none"
 }
 
-let ImageHasDownloadedNotification = "com.cielpy.coretext.imagehasdownloaded"
-
 class CTFrameParser: NSObject {
     
     class func parseHTMLString(html: String, config: CTFrameParserConfig) -> CoreTextData {
@@ -110,9 +108,9 @@ class CTFrameParser: NSObject {
     class func attributedStringWithTagName(content: String, config: CTFrameParserConfig?, tagName: TagName) -> NSAttributedString {
         var attributes = self.attributesWithConfig(config!)
         
-        func tagAttributes(colorHex: String, fontSize: CGFloat) {
+        func tagAttributes(color: UIColor, fontSize: CGFloat) {
             
-            attributes[kCTForegroundColorAttributeName as String] = UIColor.init(hexString: colorHex).CGColor
+            attributes[kCTForegroundColorAttributeName as String] = color.CGColor
             
             let fontRef = CTFontCreateWithName("ArialMT", fontSize, nil)
             attributes[kCTFontAttributeName as String] = fontRef
@@ -120,13 +118,13 @@ class CTFrameParser: NSObject {
         
         switch tagName {
         case .A:
-            tagAttributes("#778087", fontSize: 15)
+            tagAttributes(kHTMLATagColor, fontSize: 15)
             return NSAttributedString(string: content, attributes: attributes)
         case .BR:
-            tagAttributes("#778087", fontSize: 15)
+            tagAttributes(kHTMLATagColor, fontSize: 15)
             return NSAttributedString(string: content, attributes: attributes)
         case .IMG:
-            tagAttributes("#778087", fontSize: 15)
+            tagAttributes(kHTMLATagColor, fontSize: 15)
             return NSAttributedString(string: content, attributes: attributes)
         case .NONE:
             return NSAttributedString(string: content, attributes: attributes)

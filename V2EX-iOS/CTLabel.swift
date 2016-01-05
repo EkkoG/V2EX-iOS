@@ -10,8 +10,6 @@ import UIKit
 import Async
 import Kingfisher
 
-let kChooseLinkInCellNOtification = "com.cielpy.v2ex-ios.chooseLinkInCell"
-
 let kCTTouchLinkNotification = "com.cielpy.v2ex.CTTouchLinkNotification"
 let kCTTouchImageNotification = "com.cielpy.v2ex.CTTouchImageNotification"
 
