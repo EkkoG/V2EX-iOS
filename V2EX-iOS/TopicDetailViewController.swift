@@ -15,6 +15,11 @@ import NYTPhotoViewer
 import SafariServices
 
 class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate, UIScrollViewDelegate {
+    
+    let kTopicDetailContentCellIdentifier = "com.cielpy.v2ex.TopicDetailContent.CellIdentifier"
+    
+    let kHTMLContentBodyPlaceholderKey = "CONTENT_BODY"
+    
     var topicID:Int!
     var topicDetailModel: TopicDetailModel?
     lazy var headerWebView: UIWebView = {
@@ -35,7 +40,6 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         return tableView
     }()
     
-    let topicDetailContentCellIdentifier = "com.cielpy.v2ex.detailcontent"
     
     var replies = [TopicReplyModel]()
     var cellRowHeightDictionary = [NSIndexPath: CGFloat]()
@@ -59,7 +63,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     
     override var inputAccessoryView: UIView? {
         
-        return accessoryView
+        return self.accessoryView
     }
     
     let accessoryView = InputAccessoryView()
@@ -95,7 +99,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         // Do any additional setup after loading the view.
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseMember:", name: kChooseMemberInCellNotification, object: nil)
         
-        accessoryView.handlers.tapSendButton = { _ in
+        self.accessoryView.handlers.tapSendButton = { _ in
             guard let text = self.accessoryView.growingTextView!.text else {
                 print("内容为空")
                 return
@@ -112,9 +116,9 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.view.addSubview(self.headerWebView)
         self.view.addSubview(self.tableView)
-        view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.whiteColor()
         
-        self.tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: topicDetailContentCellIdentifier)
+        self.tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: kTopicDetailContentCellIdentifier)
         //hard code
         self.tableView.height -= 105
         
@@ -137,7 +141,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
                     let htmlTemplate = try NSString.init(contentsOfFile: htmlPath!, encoding: NSUTF8StringEncoding)
                     let path = NSBundle.mainBundle().bundlePath
                     let baseURL = NSURL(fileURLWithPath: path)
-                    let html = htmlTemplate.stringByReplacingOccurrencesOfString("CONTENT_BODY", withString: content)
+                    let html = htmlTemplate.stringByReplacingOccurrencesOfString(self.kHTMLContentBodyPlaceholderKey, withString: content)
                     self.headerWebView.loadHTMLString(html as String, baseURL: baseURL)
                 }
                 catch {
@@ -159,8 +163,8 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(topicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
-        configurationCell(cell, indexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier(kTopicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
+        self.configurationCell(cell, indexPath: indexPath)
         return cell
     }
     
@@ -172,7 +176,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let height = tableView.fd_heightForCellWithIdentifier(topicDetailContentCellIdentifier, cacheByIndexPath: indexPath) { (cell) -> Void in
+        let height = tableView.fd_heightForCellWithIdentifier(kTopicDetailContentCellIdentifier, cacheByIndexPath: indexPath) { (cell) -> Void in
             if let c = cell as! TopicReplyTableViewCell? {
                 self.configurationCell(c, indexPath: indexPath)
             }

@@ -9,9 +9,11 @@
 import UIKit
 import RFQuiltLayout
 
-let kNodeAllNodeCellIndentifier = "com.ciepy.v2ex.node.allNodeCellIdentifier"
 
 class AllNodeViewController: BaseViewController, UICollectionViewDataSource, UICollectionViewDelegate,  RFQuiltLayoutDelegate {
+    
+    let kNodeAllNodeCellIndentifier = "com.ciepy.v2ex.node.allNodeCellIdentifier"
+    
     lazy var nodeCollectionView: UICollectionView = {
         [unowned self] in
         

@@ -27,30 +27,30 @@ class TopicModel: NSObject, Mappable {
     }
 
     func mapping(map: Map) {
-        topicID <- map["id"]
-        title <- map["title"]
-        replies <- map["replies"]
-        member <- map["member"]
-        node <- map["node"]
-        last_modified <- map["last_modified"]
+        self.topicID <- map["id"]
+        self.title <- map["title"]
+        self.replies <- map["replies"]
+        self.member <- map["member"]
+        self.node <- map["node"]
+        self.last_modified <- map["last_modified"]
     }
     
     func lastModifiedText() -> String {
-        if let last_modified = last_modified {
+        if let last_modified = self.last_modified {
             return V2EXHelper.dateFormat(last_modified)
         }
         
-        if let last_modifiedText = last_modifiedText {
+        if let last_modifiedText = self.last_modifiedText {
             return last_modifiedText
         }
         return ""
     }
     
     func avatarURL() -> String {
-        if !member!.avatar_normal!.hasPrefix("http") {
-            return "https:" + member!.avatar_normal!
+        if !self.member!.avatar_normal!.hasPrefix("http") {
+            return "https:" + self.member!.avatar_normal!
         }
-        return member!.avatar_normal!
+        return self.member!.avatar_normal!
     }
 }
 
@@ -68,9 +68,9 @@ class Node: NSObject, Mappable {
     }
     
     func mapping(map: Map) {
-        title <- map["title"]
-        name <- map["name"]
-        url <- map["url"]
+        self.title <- map["title"]
+        self.name <- map["name"]
+        self.url <- map["url"]
     }
 }
 
@@ -87,7 +87,7 @@ class Member: NSObject, Mappable {
     }
     
     func mapping(map: Map) {
-        username <- map["username"]
-        avatar_normal <- map["avatar_normal"]
+        self.username <- map["username"]
+        self.avatar_normal <- map["avatar_normal"]
     }
 }

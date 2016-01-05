@@ -7,9 +7,10 @@
 //
 
 import UIKit
-let kNodeTopicsCellIdentifier = "com.cielpy.v2ex.node.NodeTopics.cellIdentifier"
 
 class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    let kNodeTopicsCellIdentifier = "com.cielpy.v2ex.node.NodeTopics.cellIdentifier"
     
     var nodeModel: Node?
     
@@ -39,7 +40,7 @@ class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITab
         
         
         self.view.addSubview(self.topicListTableView)
-        self.topicListTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: kNodeTopicsCellReuseIdentifier)
+        self.topicListTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: kNodeTopicsCellIdentifier)
         
         DataManager.getNodeTopics(self.nodeModel!.name!) { (dataResponse) -> Void in
             guard let data = dataResponse.data else {
@@ -52,7 +53,7 @@ class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITab
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(kNodeTopicsCellReuseIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(kNodeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
         let topic = topics[indexPath.row]
         cell.selectionStyle = .None
         cell.topic = topic
@@ -61,8 +62,8 @@ class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if topics.count > 0 {
-            return topics.count
+        if self.topics.count > 0 {
+            return self.topics.count
         }
         return 0
     }
@@ -75,7 +76,7 @@ class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITab
         let topic = self.topics[indexPath.row]
         let detail = TopicDetailViewController()
         detail.topicID = topic.topicID
-        navigationController?.pushViewController(detail, animated: true)
+        self.navigationController?.pushViewController(detail, animated: true)
     }
     
     override func didReceiveMemoryWarning() {

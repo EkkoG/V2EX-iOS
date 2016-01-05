@@ -13,6 +13,7 @@ import Async
 import PullToRefresh
 
 class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+    let kHomeTopicsCellIdentifier = "com.cielpy.v2ex.home.cellIdentifier"
     var type: HomeTabs!
     var topicsTableView: UITableView!
     var topics: NSArray?
@@ -22,18 +23,18 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
 
         // Do any additional setup after loading the view.
         
-        topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
-        topicsTableView.dataSource = self
-        topicsTableView.delegate = self
-        topicsTableView.estimatedRowHeight = 60
-        topicsTableView.rowHeight = UITableViewAutomaticDimension
-        topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(topicsTableView)
+        self.topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
+        self.topicsTableView.dataSource = self
+        self.topicsTableView.delegate = self
+        self.topicsTableView.estimatedRowHeight = 60
+        self.topicsTableView.rowHeight = UITableViewAutomaticDimension
+        self.topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: kHomeTopicsCellIdentifier)
+        self.view.addSubview(self.topicsTableView)
         constrain(topicsTableView) { (view) -> () in
             view.edges == inset(view.superview!.edges, 0, 0, 0, 0)
         }
         
-        print(type.title)
+        print(self.type.title)
         
         self.loadData()
         
@@ -51,7 +52,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! TopicTableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(kHomeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
         let topic = topics![indexPath.row] as! TopicModel
         cell.selectionStyle = .None
         cell.topic = topic
@@ -93,7 +94,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         let topic = topics![indexPath.row] as! TopicModel
         let detail = TopicDetailViewController()
         detail.topicID = topic.topicID
-        navigationController?.pushViewController(detail, animated: true)
+        self.navigationController?.pushViewController(detail, animated: true)
     }
 
     override func didReceiveMemoryWarning() {

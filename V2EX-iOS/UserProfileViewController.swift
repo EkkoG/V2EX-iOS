@@ -10,10 +10,12 @@ import UIKit
 import EZSwiftExtensions
 import SafariServices
 
-let kMemberProfileSocialCellIdentifier = "com.cielpy.v2ex.MemberProfile.social.cellIdentifier"
-let kMemberProfileLatestTopicsCellIdentifier = "com.cielpy.v2ex.MemberProfile.latestTopics.cellIdentifier"
 
 class UserProfileViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    let kMemberProfileSocialCellIdentifier = "com.cielpy.v2ex.MemberProfile.social.cellIdentifier"
+    let kMemberProfileLatestTopicsCellIdentifier = "com.cielpy.v2ex.MemberProfile.latestTopics.cellIdentifier"
+    
     var username: String? {
         didSet {
             self.loadData(username!)

@@ -49,21 +49,21 @@ class MemberProfileModel: NSObject,Mappable {
     }
     
     func mapping(map: Map) {
-        status <- map["status"]
-        id <- map["id"]
-        username <- map["username"]
-        website <- map["website"]
-        twitter <- map["twitter"]
-        psn <- map["psn"]
-        github <- map["github"]
-        btc <- map["btc"]
-        location <- map["localtion"]
-        tagline <- map["tagline"]
-        bio <- map["bio"]
-        avatar_mini <- map["avatar_mini"]
-        avatar_normal <- map["avatar_normal"]
-        avatar_large <- map["avatar_large"]
-        created <- map["created"]
+        self.status <- map["status"]
+        self.id <- map["id"]
+        self.username <- map["username"]
+        self.website <- map["website"]
+        self.twitter <- map["twitter"]
+        self.psn <- map["psn"]
+        self.github <- map["github"]
+        self.btc <- map["btc"]
+        self.location <- map["localtion"]
+        self.tagline <- map["tagline"]
+        self.bio <- map["bio"]
+        self.avatar_mini <- map["avatar_mini"]
+        self.avatar_normal <- map["avatar_normal"]
+        self.avatar_large <- map["avatar_large"]
+        self.created <- map["created"]
     }
     
     func memberSocialInfo() {
