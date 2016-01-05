@@ -51,7 +51,7 @@ class LoginViewController: BaseViewController,LoginViewProtocol {
                 V2EXShareDataManager.shareInstance.memberProfile = profile
                 
                 self.showUserProfile()
-                NSUserDefaults.standardUserDefaults().setObject(username, forKey: signinedMemberNameKey)
+                NSUserDefaults.standardUserDefaults().setObject(username, forKey: kSigninedMemberNameKey)
             })
         }
     }

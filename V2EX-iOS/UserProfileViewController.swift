@@ -47,21 +47,30 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.addSubview(self.profileTableView)
+        
+        self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: ProfileInfoCellIdentifier)
+        self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: MemberLatestTopicsIdentifier)
+        
         self.loadData(self.username!)
         
-        if let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) as? String {
+        if let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(kSigninedMemberNameKey) as? String {
             if loginMemberName != self.username {
                 self.title = self.username
+                self.tabBarController?.tabBar.hidden = true
             }
             else {
                 if let _ = V2EXShareDataManager.shareInstance.memberProfile {
                     self.parentViewController!.title = "个人"
+                    let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
+                    self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
                 }
             }
             
         }
         else {
                 self.title = self.username
+                self.tabBarController?.tabBar.hidden = true
         }
         
         //hard code
@@ -69,13 +78,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
 //        self.profileTableView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
 
         // Do any additional setup after loading the view.
-        self.view.addSubview(self.profileTableView)
         
-        self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: ProfileInfoCellIdentifier)
-        self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: MemberLatestTopicsIdentifier)
-        
-        let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
-        self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
     }
     
     func loadData(username: String) {
@@ -181,7 +184,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         }
         self.parentViewController!.title = "登录"
         self.parentViewController!.navigationItem.leftBarButtonItem = nil
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(signinedMemberNameKey)
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(kSigninedMemberNameKey)
         self.removeFromParentViewController()
         self.view.removeFromSuperview()
     }

@@ -11,10 +11,7 @@ import Cartography
 import Kingfisher
 import Async
 
-public let TopicReplyCellContentHasNewHeightNotification = "com.cielpy.v2ex.topicreplycontenthasnewheight"
-
-public let TopicContentNewHeightIndexPathKey = "com.cielpy.v2ex.topiccontentnewheight"
-public let TopicContentNewHeightHeightKey = "com.cielpy.v2ex.topiccontentnewheightheight"
+public let kTopicDetailCellHasNewHeightNotification = "com.cielpy.v2ex.TopicDetailCellHasNewHeight"
 
 class TopicReplyTableViewCell: UITableViewCell {
     var indexPath: NSIndexPath?
@@ -148,7 +145,7 @@ class TopicReplyTableViewCell: UITableViewCell {
 //            print("indexpath \(self.indexPath!.row) + \(obj)")
             
             self.refreshContentLabelHeight(self.contentLabel.data!.height)
-            NSNotificationCenter.defaultCenter().postNotificationName(TopicReplyCellContentHasNewHeightNotification, object: self.indexPath)
+            NSNotificationCenter.defaultCenter().postNotificationName(kTopicDetailCellHasNewHeightNotification, object: self.indexPath)
         }
     }
     
