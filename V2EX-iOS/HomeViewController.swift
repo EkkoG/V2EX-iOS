@@ -12,7 +12,7 @@ import SwiftyJSON
 import Async
 import PullToRefresh
 
-class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+class HomeViewController: BaseViewController {
     let kHomeTopicsCellIdentifier = "com.cielpy.v2ex.home.cellIdentifier"
     var type: HomeTabs!
     var topicsTableView: UITableView!
@@ -51,22 +51,6 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(kHomeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
-        let topic = topics![indexPath.row] as! TopicModel
-        cell.selectionStyle = .None
-        cell.topic = topic
-        cell.tapSendButton = { _ in
-            self.gotoNodeTopics(topic.node!)
-        }
-        
-        cell.tapAvatar = { _ in
-            self.gotoMemberProfile(topic.member!.username!)
-        }
-//        cell.lastModifyMember.text = topic.last_modified
-        return cell
-    }
-    
     func gotoNodeTopics(node: Node) {
         let nodeTopics = NodeTopicsViewController()
         nodeTopics.nodeModel = node
@@ -77,24 +61,6 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         let profile = UserProfileViewController()
         profile.username = username
         self.navigationController!.pushViewController(profile, animated: true)
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let arr = topics {
-            return arr.count
-        }
-        return 0
-    }
-    
-//    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-//        return 80
-//    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let topic = topics![indexPath.row] as! TopicModel
-        let detail = TopicDetailViewController()
-        detail.topicID = topic.topicID
-        self.navigationController?.pushViewController(detail, animated: true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -113,4 +79,40 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     */
 
+}
+
+extension HomeViewController: UITableViewDataSource {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(kHomeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
+        let topic = topics![indexPath.row] as! TopicModel
+        cell.selectionStyle = .None
+        cell.topic = topic
+        cell.tapSendButton = { _ in
+            self.gotoNodeTopics(topic.node!)
+        }
+        
+        cell.tapAvatar = { _ in
+            self.gotoMemberProfile(topic.member!.username!)
+        }
+//        cell.lastModifyMember.text = topic.last_modified
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let arr = topics {
+            return arr.count
+        }
+        return 0
+    }
+}
+
+extension HomeViewController: UITableViewDelegate {
+    
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let topic = topics![indexPath.row] as! TopicModel
+        let detail = TopicDetailViewController()
+        detail.topicID = topic.topicID
+        self.navigationController?.pushViewController(detail, animated: true)
+    }
 }

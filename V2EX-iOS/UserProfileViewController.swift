@@ -11,7 +11,7 @@ import EZSwiftExtensions
 import SafariServices
 
 
-class UserProfileViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+class UserProfileViewController: BaseViewController {
     
     let kMemberProfileSocialCellIdentifier = "com.cielpy.v2ex.MemberProfile.social.cellIdentifier"
     let kMemberProfileLatestTopicsCellIdentifier = "com.cielpy.v2ex.MemberProfile.latestTopics.cellIdentifier"
@@ -108,6 +108,42 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         
     }
     
+    func signOut() {
+        V2EXShareDataManager.shareInstance.memberProfile = nil
+        let storage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        if let cookies = storage.cookies {
+            for cookie in cookies {
+                storage.deleteCookie(cookie)
+            }
+        }
+        self.parentViewController!.title = "登录"
+        self.parentViewController!.navigationItem.leftBarButtonItem = nil
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(kSigninedMemberNameKey)
+        self.removeFromParentViewController()
+        self.view.removeFromSuperview()
+    }
+    
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
+
+extension UserProfileViewController: UITableViewDataSource {
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCellWithIdentifier(kMemberProfileSocialCellIdentifier, forIndexPath: indexPath) as! MemberSoicalInfoTableViewCell
@@ -140,6 +176,10 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         }
         return 0
     }
+    
+}
+
+extension UserProfileViewController: UITableViewDelegate {
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 2
@@ -176,36 +216,4 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         }
     }
     
-    func signOut() {
-        V2EXShareDataManager.shareInstance.memberProfile = nil
-        let storage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
-        if let cookies = storage.cookies {
-            for cookie in cookies {
-                storage.deleteCookie(cookie)
-            }
-        }
-        self.parentViewController!.title = "登录"
-        self.parentViewController!.navigationItem.leftBarButtonItem = nil
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(kSigninedMemberNameKey)
-        self.removeFromParentViewController()
-        self.view.removeFromSuperview()
-    }
-    
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

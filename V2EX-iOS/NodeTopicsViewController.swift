@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+class NodeTopicsViewController: BaseViewController {
     
     let kNodeTopicsCellIdentifier = "com.cielpy.v2ex.node.NodeTopics.cellIdentifier"
     
@@ -51,34 +51,9 @@ class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITab
             self.topicListTableView.reloadData()
         }
     }
-
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(kNodeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
-        let topic = topics[indexPath.row]
-        cell.selectionStyle = .None
-        cell.topic = topic
-//        cell.lastModifyMember.text = topic.last_modified
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if self.topics.count > 0 {
-            return self.topics.count
-        }
-        return 0
-    }
-    
 //    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 //        return 80
 //    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let topic = self.topics[indexPath.row]
-        let detail = TopicDetailViewController()
-        detail.topicID = topic.topicID
-        self.navigationController?.pushViewController(detail, animated: true)
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -95,4 +70,34 @@ class NodeTopicsViewController: BaseViewController, UITableViewDataSource, UITab
     }
     */
 
+}
+
+extension NodeTopicsViewController: UITableViewDelegate {
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let topic = self.topics[indexPath.row]
+        let detail = TopicDetailViewController()
+        detail.topicID = topic.topicID
+        self.navigationController?.pushViewController(detail, animated: true)
+    }
+    
+}
+
+extension NodeTopicsViewController: UITableViewDataSource {
+
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(kNodeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
+        let topic = topics[indexPath.row]
+        cell.selectionStyle = .None
+        cell.topic = topic
+//        cell.lastModifyMember.text = topic.last_modified
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if self.topics.count > 0 {
+            return self.topics.count
+        }
+        return 0
+    }
 }

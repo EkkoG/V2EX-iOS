@@ -14,7 +14,7 @@ import EZSwiftExtensions
 import NYTPhotoViewer
 import SafariServices
 
-class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, UIWebViewDelegate, UIScrollViewDelegate {
+class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScrollViewDelegate {
     
     let kTopicDetailContentCellIdentifier = "com.cielpy.v2ex.TopicDetailContent.CellIdentifier"
     
@@ -91,7 +91,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -162,33 +162,6 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(kTopicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
-        self.configurationCell(cell, indexPath: indexPath)
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard self.contentWebViewLoaed == true else {
-            return 0
-        }
-        return replies.count
-    }
-    
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let height = tableView.fd_heightForCellWithIdentifier(kTopicDetailContentCellIdentifier, cacheByIndexPath: indexPath) { (cell) -> Void in
-            if let c = cell as! TopicReplyTableViewCell? {
-                self.configurationCell(c, indexPath: indexPath)
-            }
-        }
-//        print("indexPath \(indexPath.row) height \(height)")
-        return height
-    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let model = self.replies[indexPath.row]
-        self.replyMember(model.member!.username!)
-    }
     
     func replyMember(memberName: String) {
         self.accessoryView.growingTextView?.text = "@\(memberName) "
@@ -233,6 +206,48 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         self.accessoryView.growingTextView!.resignFirstResponder()
     }
     
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+}
+
+
+extension TopicDetailViewController: UITableViewDataSource {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(kTopicDetailContentCellIdentifier, forIndexPath: indexPath) as! TopicReplyTableViewCell
+        self.configurationCell(cell, indexPath: indexPath)
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard self.contentWebViewLoaed == true else {
+            return 0
+        }
+        return replies.count
+    }
+}
+
+extension TopicDetailViewController: UITableViewDelegate {
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let height = tableView.fd_heightForCellWithIdentifier(kTopicDetailContentCellIdentifier, cacheByIndexPath: indexPath) { (cell) -> Void in
+            if let c = cell as! TopicReplyTableViewCell? {
+                self.configurationCell(c, indexPath: indexPath)
+            }
+        }
+//        print("indexPath \(indexPath.row) height \(height)")
+        return height
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let model = self.replies[indexPath.row]
+        self.replyMember(model.member!.username!)
+    }
+    
+}
+
+extension TopicDetailViewController {
     func chooseImage(notification: NSNotification) {
         let image = notification.object as! UIImage
         
@@ -259,10 +274,5 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         let profile = UserProfileViewController()
         profile.username = username
         self.navigationController!.pushViewController(profile, animated: true)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 }
