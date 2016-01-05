@@ -27,16 +27,16 @@ class TopicDetailModel: NSObject, Mappable {
     }
     
     func mapping(map: Map) {
-        topicID <- map["id"]
-        title <- map["title"]
-        url <- map["url"]
-        content <- map["content"]
-        content_rendered <- map["content_rendered"]
-        replies <- map["replies"]
-        member <- map["member"]
-        node <- map["node"]
-        created <- map["created"]
-        last_modified <- map["last_modified"]
-        last_touched <- map["last_touched"]
+        self.topicID <- map["id"]
+        self.title <- map["title"]
+        self.url <- map["url"]
+        self.content <- map["content"]
+        self.content_rendered <- map["content_rendered"]
+        self.replies <- map["replies"]
+        self.member <- map["member"]
+        self.node <- map["node"]
+        self.created <- map["created"]
+        self.last_modified <- map["last_modified"]
+        self.last_touched <- map["last_touched"]
     }
 }

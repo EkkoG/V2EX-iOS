@@ -23,19 +23,19 @@ class TopicReplyModel: NSObject, Mappable {
     }
     
     func mapping(map: Map) {
-        replyID <- map["id"]
-        thanks <- map["thanks"]
-        content <- map["content"]
-        content_rendered <- map["content_rendered"]
-        created <- map["created"]
-        last_modified <- map["last_modified"]
-        member <- map["member"]
+        self.replyID <- map["id"]
+        self.thanks <- map["thanks"]
+        self.content <- map["content"]
+        self.content_rendered <- map["content_rendered"]
+        self.created <- map["created"]
+        self.last_modified <- map["last_modified"]
+        self.member <- map["member"]
     }
     
     func avatarURL() -> String {
-        if !member!.avatar_normal!.hasPrefix("http") {
-            return "https:" + member!.avatar_normal!
+        if !self.member!.avatar_normal!.hasPrefix("http") {
+            return "https:" + self.member!.avatar_normal!
         }
-        return member!.avatar_normal!
+        return self.member!.avatar_normal!
     }
 }
