@@ -54,7 +54,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.loadData(self.username!)
         
-        if let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) as? String {
+        if let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(kSigninedMemberNameKey) as? String {
             if loginMemberName != self.username {
                 self.title = self.username
                 self.tabBarController?.tabBar.hidden = true
@@ -184,7 +184,7 @@ class UserProfileViewController: BaseViewController, UITableViewDataSource, UITa
         }
         self.parentViewController!.title = "登录"
         self.parentViewController!.navigationItem.leftBarButtonItem = nil
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(signinedMemberNameKey)
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(kSigninedMemberNameKey)
         self.removeFromParentViewController()
         self.view.removeFromSuperview()
     }

@@ -118,7 +118,7 @@ class TopicDetailViewController: BaseViewController, UITableViewDataSource, UITa
         //hard code
         self.tableView.height -= 105
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: TopicReplyCellContentHasNewHeightNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: kTopicDetailCellHasNewHeightNotification, object: nil)
         
 //        self.topicID = 182391
 //        self.topicID = 245188

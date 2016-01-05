@@ -8,8 +8,8 @@
 
 import UIKit
 
-let signinedMemberNameKey = "com.cilepy.v2ex.signedUserNameKey"
-public let kMemberSignInSuccessfulNotification = "com.cielpy.v2ex.signInSuccessful"
+public let kSigninedMemberNameKey = "com.cielpy.v2ex.SignedMemberNameKey"
+public let kMemberSignInSuccessfulNotification = "com.cielpy.v2ex.MemberSignInSuccessful"
 
 class V2EXShareDataManager: NSObject {
     static let shareInstance = V2EXShareDataManager()
@@ -19,7 +19,7 @@ class V2EXShareDataManager: NSObject {
     var memberProfile: MemberProfileModel?
     
     func updateData() {
-        if let username = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) {
+        if let username = NSUserDefaults.standardUserDefaults().objectForKey(kSigninedMemberNameKey) {
             DataManager.loadUserProfileInfo(username as! String, completion: { (dataResponse) -> Void in
                 guard let profile = dataResponse.data else {
                     return
