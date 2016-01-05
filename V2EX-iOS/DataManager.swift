@@ -143,7 +143,7 @@ class DataManager: NSObject {
 
 extension DataManager {
     
-    class func loadTabsTopicsDataWithTabsPath(path: String, dataResponse: DataResponse<NSArray>.dataResponse) {
+    class func loadTabsTopicsDataWithTabsPath(path: String, dataResponse: DataResponse<[TopicModel]>.dataResponse) {
         if path == HomeTabs.latest.path {
             self.loadLatestTopics(dataResponse)
         }
@@ -154,89 +154,101 @@ extension DataManager {
         }
     }
     
-    class func loadLatestTopics(dataResponse: DataResponse<NSArray>.dataResponse) {
+    class func loadLatestTopics(dataResponse: DataResponse<[TopicModel]>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.LatestTopicsURL) { (response) -> Void in
-            if let data = response.data {
-                let json = JSON(data: data)
-                var list = [TopicModel]()
-                for (_, value) in (json.arrayObject?.enumerate())! {
-                    if let topic = Mapper<TopicModel>().map(value) {
-                        list.append(topic)
-                    }
+            guard let data = response.data else {
+                let tmp = DataResponse<[TopicModel]>(data: nil, error: response.error!)
+                dataResponse(dataResponse: tmp)
+                return
+            }
+            
+            let json = JSON(data: data)
+            
+            var list = [TopicModel]()
+            
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                
+                guard let topic = Mapper<TopicModel>().map(value) else {
+                    continue
                 }
-                let tmp = DataResponse<NSArray>(data: list, error: nil)
-                dataResponse(dataResponse: tmp)
+                
+                list.append(topic)
             }
-            else {
-                let tmp = DataResponse<NSArray>(data: nil, error: response.error!)
-                dataResponse(dataResponse: tmp)
+            
+            guard list.count > 0 else {
+                dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+                return
             }
+            
+            dataResponse(dataResponse: DataResponse(data: list, error: nil))
         }
     }
     
-    class func parseHTMLFromString(html: String, dataResponse: DataResponse<NSArray>.dataResponse) {
+    class func parseHTMLFromString(html: String, dataResponse: DataResponse<[TopicModel]>.dataResponse) {
         let jiDoc = Ji(htmlString: html)
         //        let body = jiDoc?.rootNode?.firstChildWithName("body")
-        if let items = jiDoc?.xPath("//div[@class='cell item']") {
-            var list = [TopicModel]()
-            for item in items {
-                let avatar = item.xPath(".//img[@class='avatar']")
-                
-                let titles = item.xPath(".//span[@class='item_title']")
-                let title = titles.first?.content!
-                
-                let url = titles.first!.xPath("./a").first!["href"]
-                let components = url?.componentsSeparatedByString("/")
-                let topicID = components![2].componentsSeparatedByString("#").first
-                
-                let fade = item.xPath(".//span[@class='small fade']")
-                let node = fade[0].xPath(".//a[@class='node']")
-                let nodeTitle = node.first?.content
-                let nodeName = node.first?["href"]?.stringByReplacingOccurrencesOfString("/go/", withString: "")
-                
-                let authors = fade[0].xPath(".//strong/a")
-                let author = authors.first?.content
-                
-                //                let lastComments = fade[1].xPath(".//strong/a")
-                //                let last = lastComments.first?.content
-                
-                let fadeContent = fade[1].content
-                let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
-                let lastModifiedText = lastModify?.first
-                
-                let commentCount = item.xPath(".//a[@class='count_livid']")
-                let count = commentCount.first?.content
-                
-                let t = TopicModel()
-                t.title = title
-                t.topicID = Int(topicID!)
-                let nodeModel = Node()
-                nodeModel.title = nodeTitle
-                nodeModel.name = nodeName
-                nodeModel.url = node.first!["href"]
-                t.node = nodeModel
-                if let count = count {
-                    t.replies = Int(count)
-                }
-                let memberModel = Member()
-                memberModel.username = author
-                memberModel.avatar_normal = avatar.first!["src"]
-                t.member = memberModel
-                
-                t.last_modifiedText = lastModifiedText
-                //                print(t.last_modifiedText)
-                
-                list.append(t)
-            }
-            if list.count > 0 {
-                let tmp = DataResponse<NSArray>(data: list, error: nil)
-                dataResponse(dataResponse: tmp)
-            }
-            else {
-                let tmp = DataResponse<NSArray>(data: nil, error: nil)
-                dataResponse(dataResponse: tmp)
-            }
+        guard let items = jiDoc?.xPath("//div[@class='cell item']") else {
+            dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+            return
         }
+        
+        var list = [TopicModel]()
+        for item in items {
+            let avatar = item.xPath(".//img[@class='avatar']")
+            
+            let titles = item.xPath(".//span[@class='item_title']")
+            let title = titles.first?.content!
+            
+            let url = titles.first!.xPath("./a").first!["href"]
+            let components = url?.componentsSeparatedByString("/")
+            let topicID = components![2].componentsSeparatedByString("#").first
+            
+            let fade = item.xPath(".//span[@class='small fade']")
+            let node = fade[0].xPath(".//a[@class='node']")
+            let nodeTitle = node.first?.content
+            let nodeName = node.first?["href"]?.stringByReplacingOccurrencesOfString("/go/", withString: "")
+            
+            let authors = fade[0].xPath(".//strong/a")
+            let author = authors.first?.content
+            
+            //                let lastComments = fade[1].xPath(".//strong/a")
+            //                let last = lastComments.first?.content
+            
+            let fadeContent = fade[1].content
+            let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
+            let lastModifiedText = lastModify?.first
+            
+            let commentCount = item.xPath(".//a[@class='count_livid']")
+            let count = commentCount.first?.content
+            
+            let t = TopicModel()
+            t.title = title
+            t.topicID = Int(topicID!)
+            let nodeModel = Node()
+            nodeModel.title = nodeTitle
+            nodeModel.name = nodeName
+            nodeModel.url = node.first!["href"]
+            t.node = nodeModel
+            if let count = count {
+                t.replies = Int(count)
+            }
+            let memberModel = Member()
+            memberModel.username = author
+            memberModel.avatar_normal = avatar.first!["src"]
+            t.member = memberModel
+            
+            t.last_modifiedText = lastModifiedText
+            //                print(t.last_modifiedText)
+            
+            list.append(t)
+        }
+        
+        guard list.count > 0 else {
+            dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+            return
+        }
+    
+        dataResponse(dataResponse: DataResponse(data: list, error: nil))
     }
 }
 
