@@ -157,8 +157,7 @@ extension DataManager {
     class func loadLatestTopics(dataResponse: DataResponse<[TopicModel]>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.LatestTopicsURL) { (response) -> Void in
             guard let data = response.data else {
-                let tmp = DataResponse<[TopicModel]>(data: nil, error: response.error!)
-                dataResponse(dataResponse: tmp)
+                dataResponse(dataResponse: DataResponse(data: nil, error: response.error!))
                 return
             }
             
@@ -184,71 +183,137 @@ extension DataManager {
         }
     }
     
+    
     class func parseHTMLFromString(html: String, dataResponse: DataResponse<[TopicModel]>.dataResponse) {
-        let jiDoc = Ji(htmlString: html)
+        guard let jiDoc = Ji(htmlString: html) else {
+            dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+            return
+        }
         //        let body = jiDoc?.rootNode?.firstChildWithName("body")
-        guard let items = jiDoc?.xPath("//div[@class='cell item']") else {
+        guard let items = jiDoc.xPath("//div[@class='cell item']") else {
             dataResponse(dataResponse: DataResponse(data: nil, error: nil))
             return
         }
         
-        var list = [TopicModel]()
-        for item in items {
-            let avatar = item.xPath(".//img[@class='avatar']")
+        let topics = self.parseTopicModelFromCellItems(items)
+        dataResponse(dataResponse: DataResponse(data: topics, error: nil))
+    }
+}
+
+extension DataManager {
+    
+    class func parseTopicModelFromCellItems(items: [JiNode]) -> [TopicModel] {
+        
+        func getItem(node: JiNode, xPath: String) -> JiNode? {
+            let items = node.xPath(xPath)
             
-            let titles = item.xPath(".//span[@class='item_title']")
-            let title = titles.first?.content!
+             guard let item = items.first where items.count > 0 else {
+                return nil
+            }
             
-            let url = titles.first!.xPath("./a").first!["href"]
-            let components = url?.componentsSeparatedByString("/")
-            let topicID = components![2].componentsSeparatedByString("#").first
+            return item
+        }
+        
+        func getAvatarURL(node: JiNode) -> String? {
+            guard let avatar = getItem(node, xPath: ".//img[@class='avatar']") else {
+                return nil
+            }
             
-            let fade = item.xPath(".//span[@class='small fade']")
-            let node = fade[0].xPath(".//a[@class='node']")
-            let nodeTitle = node.first?.content
-            let nodeName = node.first?["href"]?.stringByReplacingOccurrencesOfString("/go/", withString: "")
+            return avatar["src"]
+        }
+        
+        func getTitleAndID(node: JiNode) -> (title: String?, topicID: Int?) {
+            guard let title = getItem(node, xPath: ".//span[@class=\'item_title\']") else {
+                return (nil, nil)
+            }
             
-            let authors = fade[0].xPath(".//strong/a")
-            let author = authors.first?.content
+            guard let topicID = getItem(title, xPath: "./a") else {
+                return (title.content, nil)
+            }
             
-            //                let lastComments = fade[1].xPath(".//strong/a")
-            //                let last = lastComments.first?.content
+            guard let url = topicID["href"] else {
+                return (title.content, nil)
+            }
+            
+            let components = url.componentsSeparatedByString("/")
+            guard let id = components[2].componentsSeparatedByString("#").first else {
+                return (title.content, nil)
+            }
+            
+            return (title.content, Int(id))
+        }
+        
+        func getNodeTitleAndName(node: JiNode) -> (title: String?, name: String?, author: String?) {
+            guard let fade = getItem(node, xPath: ".//span[@class='small fade']") else {
+                return (nil, nil, nil)
+            }
+            
+            guard let node = getItem(fade, xPath: ".//a[@class=\'node\']") else {
+                return (nil, nil, nil)
+            }
+            
+            guard let nodeName = node["href"] else {
+                return (node.content, nil, nil)
+            }
+            
+            let name = nodeName.stringByReplacingOccurrencesOfString("/go/", withString: "")
+            
+            guard let author = getItem(fade, xPath: ".//strong/a") else {
+                return (node.content, name, nil)
+            }
+            
+            return (node.content, name, author.content)
+        }
+        
+        func getLastModify(node: JiNode) -> String? {
+            let fade = node.xPath(".//span[@class='small fade']")
+            guard fade.count > 0 else {
+                return nil
+            }
             
             let fadeContent = fade[1].content
             let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
             let lastModifiedText = lastModify?.first
+            return lastModifiedText
+        }
+        
+        
+        func getReplyCount(node: JiNode) -> Int? {
+            guard let count = getItem(node, xPath: ".//a[@class='count_livid']") else {
+                return nil
+            }
             
-            let commentCount = item.xPath(".//a[@class='count_livid']")
-            let count = commentCount.first?.content
+            guard let content = count.content else {
+                return nil
+            }
+            
+            return Int(content)
+        }
+        
+        
+        var list = [TopicModel]()
+        
+        for item in items {
             
             let t = TopicModel()
-            t.title = title
-            t.topicID = Int(topicID!)
+            t.title = getTitleAndID(item).title
+            t.topicID = getTitleAndID(item).topicID
             let nodeModel = Node()
-            nodeModel.title = nodeTitle
-            nodeModel.name = nodeName
-            nodeModel.url = node.first!["href"]
+            nodeModel.title = getNodeTitleAndName(item).title
+            nodeModel.name = getNodeTitleAndName(item).name
             t.node = nodeModel
-            if let count = count {
-                t.replies = Int(count)
-            }
+            t.replies = getReplyCount(item)
+            
             let memberModel = Member()
-            memberModel.username = author
-            memberModel.avatar_normal = avatar.first!["src"]
+            memberModel.username = getNodeTitleAndName(item).author
+            memberModel.avatar_normal = getAvatarURL(item)
             t.member = memberModel
             
-            t.last_modifiedText = lastModifiedText
-            //                print(t.last_modifiedText)
+            t.last_modifiedText = getLastModify(item)
             
             list.append(t)
         }
-        
-        guard list.count > 0 else {
-            dataResponse(dataResponse: DataResponse(data: nil, error: nil))
-            return
-        }
-    
-        dataResponse(dataResponse: DataResponse(data: list, error: nil))
+        return list
     }
 }
 
