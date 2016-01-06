@@ -54,7 +54,6 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.hidden = true
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseImage:", name: kCTTouchImageNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseLink:", name: kCTTouchLinkNotification, object: nil)

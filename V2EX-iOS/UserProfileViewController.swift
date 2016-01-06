@@ -45,12 +45,17 @@ class UserProfileViewController: BaseViewController {
     var memberProfile: MemberProfileModel?
     
     var memberLatestTopics = [TopicModel]()
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.setupTitleAndTabbar()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupViews()
-        self.setupTitleAndTabbar()
         self.loadData(self.username!)
         
 //        self.profileTableView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
@@ -83,6 +88,7 @@ class UserProfileViewController: BaseViewController {
                 self.parentViewController!.title = "个人"
                 let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
                 self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
+                self.tabBarController?.tabBar.hidden = false
             }
             else {
                 hideTabbar()

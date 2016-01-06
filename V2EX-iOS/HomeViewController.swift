@@ -28,6 +28,11 @@ class HomeViewController: BaseViewController {
     }()
     
     var topics = [TopicModel]()
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.hidden = false
+    }
  
     override func viewDidLoad() {
         super.viewDidLoad()
