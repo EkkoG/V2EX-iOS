@@ -86,12 +86,7 @@ class TopicTableViewCell: UITableViewCell {
                 self.avatar.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
                     if let image = image {
                         Async.main(block: { () -> Void in
-                            UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
-                            UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
-                            image.drawInRect(self.avatar.bounds)
-                            let finalImage = UIGraphicsGetImageFromCurrentImageContext()
-                            self.avatar.image = finalImage
-                            UIGraphicsEndImageContext()
+                            self.avatar.image = image.imageByRoundCornerRadius(3)
                         })
                     }
                 }
@@ -121,12 +116,6 @@ class TopicTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.member)
         self.contentView.addSubview(self.lastModifyMember)
         self.contentView.addSubview(self.replies)
-        
-//        title.backgroundColor = UIColor.grayColor()
-//        avatar.backgroundColor = UIColor.redColor()
-//        node.backgroundColor = UIColor.blueColor()
-//        lastModified.backgroundColor = UIColor.greenColor()
-//        member.backgroundColor = UIColor.purpleColor()
         
         self.node.addTarget(self, action: "gotoNodeTopics:", forControlEvents: UIControlEvents.TouchUpInside)
         
@@ -167,8 +156,6 @@ class TopicTableViewCell: UITableViewCell {
             v1.height == 16
             v1.left == v5.left
             v2.left == v1.right + SPACING_BEWTWEEN_COMPONENTS
-//            v3.left == v2.right + SPACING_BEWTWEEN_COMPONENTS
-//            v4.left == v3.right + SPACING_BEWTWEEN_COMPONENTS
             v3.right == v3.superview!.right - MARGIN_TO_BOUNDARY
             
             v5.bottom == v1.top

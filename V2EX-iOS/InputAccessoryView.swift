@@ -100,10 +100,6 @@ class InputAccessoryView: UIView {
             self?.handlers.didBeginTextEditing()
         }
         
-        view.delegates.textViewDidChange = { [weak self] textView in
-            
-        }
-        
         view.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1)
         view.layer.cornerRadius = 4
         self.addSubview(view)

@@ -52,70 +52,52 @@ class TopicReplyTableViewCell: UITableViewCell {
     var topicID: Int?
     
     var replyModel: TopicReplyModel? {
-        willSet(replyModel){
+        willSet(newValue){
             
-            let url = NSURL(string:replyModel!.avatarURL())!
-            self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
-//                if let image = image {
-//                    Async.main(block: { () -> Void in
-//                        UIGraphicsBeginImageContextWithOptions(self.avatarImageView.bounds.size, false, 1.0)
-//                        UIBezierPath.init(roundedRect: self.avatarImageView.bounds, cornerRadius: 3.0).addClip()
-//                        image.drawInRect(self.avatarImageView.bounds)
-//                        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
-//                        self.avatarImageView.image = finalImage
-//                        UIGraphicsEndImageContext()
-//                    })
-//                }
+            guard let model = newValue else {
+                return
             }
             
-            self.memberButton.setTitle(replyModel!.member?.username, forState: .Normal)
+            self.createdTimeLabel.text = model.createdText
             
-            self.createdTimeLabel.text = V2EXHelper.dateFormat(replyModel!.created!)
-            if let thanks = replyModel!.thanks {
+            if let thanks = model.thanks {
                 self.thanksLabel.text = "\(thanks)"
             }
             
             let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
             let config = CTFrameParserConfig(width: width, fontSize: 15, lineSpace: 5, textColor: UIColor.blackColor())
             
-            if !replyModel!.content_rendered!.hasPrefix("<p>") {
-                replyModel?.content_rendered = "<p>\(replyModel!.content_rendered!)</p>"
-            }
-            
             let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
             
+            var cache = V2EXShareDataManager.shareInstance.getCacheByKey(self.topicID!)
             
-            let cellHeightCache = V2EXShareDataManager.shareInstance.cellHeightCeche
-            if let cache = cellHeightCache.objectForKey(self.topicID!) {
-                guard cache is [String: CoreTextData] else {
-                    return
-                }
-                
-                var cache = cache as! [String: CoreTextData]
-                
-                if let object = cache[key] {
-                    self.contentLabel.data = object
-                    self.refreshContentLabelHeight(object.height)
-                }
-                else {
-                    let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
-                    self.contentLabel.data = data
-                    self.refreshContentLabelHeight(data.height)
-                    cache[key] = data
-                    
-                    cellHeightCache.setObject(cache, forKey: self.topicID!)
-                }
+            if let object = cache[key] {
+                self.contentLabel.data = object
+                self.refreshContentLabelHeight(object.height)
             }
             else {
-                var cache = [String: CoreTextData]()
-                let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
+                let data = CTFrameParser.parseHTMLString(model.content_rendered!, config: config)
                 self.contentLabel.data = data
                 self.refreshContentLabelHeight(data.height)
-                
                 cache[key] = data
-                cellHeightCache.setObject(cache, forKey: self.topicID!)
+                
+                V2EXShareDataManager.shareInstance.updateObjectByKey(self.topicID!, object: cache)
             }
-            V2EXShareDataManager.shareInstance.cellHeightCeche = cellHeightCache
+            
+            guard let member = model.member else {
+                return
+            }
+            
+            let url = NSURL(string:member.avatar_normal!)!
+            self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
+                if let image = image {
+                    Async.main(block: { () -> Void in
+                        self.avatarImageView.image = image.imageByRoundCornerRadius(3)
+                    })
+                }
+            }
+            
+            self.memberButton.setTitle(member.username, forState: .Normal)
         }
     }
 
@@ -150,23 +132,11 @@ class TopicReplyTableViewCell: UITableViewCell {
     }
     
     func UILayout() {
-        self.addSubview(self.avatarImageView)
-        self.addSubview(self.memberButton)
-        self.addSubview(self.createdTimeLabel)
-        self.addSubview(self.thanksLabel)
-        self.addSubview(self.contentLabel)
-        
-//        avatarImageView!.backgroundColor = UIColor.redColor()
-//        self.memberButton.backgroundColor = UIColor.greenColor()
-//        self.createdTimeLabel.backgroundColor = UIColor.grayColor()
-//        self.thanksLabel.backgroundColor = UIColor.blueColor()
-//        self.contentLabel.backgroundColor = UIColor.redColor()
-        
-//        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-//        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Vertical)
-//        
-//        createdTimeLabel.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-//        thanksLabel.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
+        self.contentView.addSubview(self.avatarImageView)
+        self.contentView.addSubview(self.memberButton)
+        self.contentView.addSubview(self.createdTimeLabel)
+        self.contentView.addSubview(self.thanksLabel)
+        self.contentView.addSubview(self.contentLabel)
         
         constrain(self.avatarImageView) { v in
             let width: CGFloat = 50
