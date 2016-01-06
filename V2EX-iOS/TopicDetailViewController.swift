@@ -18,7 +18,7 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
     
     let kTopicDetailContentCellIdentifier = "com.cielpy.v2ex.TopicDetailContent.CellIdentifier"
     
-    let kHTMLContentBodyPlaceholderKey = "CONTENT_BODY"
+    let accessoryView = InputAccessoryView()
     
     var topicID:Int!
     var topicDetailModel: TopicDetailModel?
@@ -28,62 +28,37 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
         webView.delegate = self
         webView.scrollView.scrollEnabled = false
         return webView
-    }()
+        }()
     lazy var tableView: UITableView = {
         [unowned self] in
         
         let tableView = UITableView(frame: self.view.bounds, style: .Plain)
         tableView.dataSource = self
         tableView.delegate = self
-//        tableView.backgroundColor = UIColor.yellowColor()
-//        tableView.fd_debugLogEnabled = true
+        //        tableView.fd_debugLogEnabled = true
         return tableView
-    }()
+        }()
     
     
     var replies = [TopicReplyModel]()
+    
     var cellRowHeightDictionary = [NSIndexPath: CGFloat]()
     
     var contentWebViewLoaed = false
     
-    override func canBecomeFirstResponder() -> Bool {
-        
-        return true
-    }
-    
-    override func canResignFirstResponder() -> Bool {
-        
-        return true
-    }
-    
-    override func resignFirstResponder() -> Bool {
-        
-        return true
-    }
-    
-    override var inputAccessoryView: UIView? {
-        
-        return self.accessoryView
-    }
-    
-    let accessoryView = InputAccessoryView()
     
     deinit {
-//        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-//        delegate.cellHeightCeche[self.topicID] = nil
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        self.tabBarController?.tabBar.hidden = true
+        //        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        //        delegate.cellHeightCeche[self.topicID] = nil
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.hidden = true
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseImage:", name: kCTTouchImageNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseLink:", name: kCTTouchLinkNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: kTopicDetailCellHasNewHeightNotification, object: nil)
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -94,26 +69,16 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-
         // Do any additional setup after loading the view.
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseMember:", name: kChooseMemberInCellNotification, object: nil)
         
-        self.accessoryView.handlers.tapSendButton = { _ in
-            guard let text = self.accessoryView.growingTextView!.text else {
-                print("内容为空")
-                return
-            }
-            
-            DataManager.reply(text, topicID: self.topicID, completeHander: { (dataResponse) -> Void in
-                if let _ = dataResponse.data {
-                    self.accessoryView.growingTextView?.resignFirstResponder()
-                    self.accessoryView.growingTextView?.text = nil
-                    print("评论成功")
-                }
-            })
-        }
-        
+        //        self.topicID = 182391
+        //        self.topicID = 245188
+        self.setupViews()
+        self.setupAccessoryView()
+        self.loadData()
+    }
+    
+    func setupViews() {
         self.view.addSubview(self.headerWebView)
         self.view.addSubview(self.tableView)
         self.view.backgroundColor = UIColor.whiteColor()
@@ -121,44 +86,55 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
         self.tableView.registerClass(TopicReplyTableViewCell.self, forCellReuseIdentifier: kTopicDetailContentCellIdentifier)
         //hard code
         self.tableView.height -= 105
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: kTopicDetailCellHasNewHeightNotification, object: nil)
-        
-//        self.topicID = 182391
-//        self.topicID = 245188
-        
+    }
+    
+    func setupAccessoryView () {
+        self.accessoryView.handlers.tapSendButton = { _ in
+            guard let text = self.accessoryView.growingTextView!.text else {
+                print("内容为空")
+                return
+            }
+            self.replyRequest(text, content: self.topicID)
+        }
+    }
+    
+    func replyRequest(text: String, content: Int) {
+        DataManager.reply(text, topicID: self.topicID, completeHander: { (dataResponse) -> Void in
+            if let _ = dataResponse.data {
+                self.accessoryView.growingTextView?.resignFirstResponder()
+                self.accessoryView.growingTextView?.text = nil
+                print("评论成功")
+            }
+        })
+    }
+    
+    func loadData() {
         DataManager.loadTopicDetailContent(self.topicID!) { (completion) -> Void in
             guard let data = completion.data else {
                 return
             }
             
             self.topicDetailModel = data
-            self.title = self.topicDetailModel!.title
-            if let content = self.topicDetailModel!.content_rendered {
-                
-                do {
-                    let htmlPath = NSBundle.mainBundle().pathForResource("topic", ofType: "html")
-                    let htmlTemplate = try NSString.init(contentsOfFile: htmlPath!, encoding: NSUTF8StringEncoding)
-                    let path = NSBundle.mainBundle().bundlePath
-                    let baseURL = NSURL(fileURLWithPath: path)
-                    let html = htmlTemplate.stringByReplacingOccurrencesOfString(self.kHTMLContentBodyPlaceholderKey, withString: content)
-                    self.headerWebView.loadHTMLString(html as String, baseURL: baseURL)
-                }
-                catch {
-                    
-                }
+            self.title = data.title
+            
+            let tuple = data.HTMLContentAndBaseURL()
+            guard let html = tuple.html where tuple.html?.length > 0 else {
+                return
             }
+            
+            self.headerWebView.loadHTMLString(html, baseURL: tuple.baseURL!)
         }
         
         DataManager.loadTopicDetailReplies(self.topicID!) { (completion) -> Void in
-            if let arr = completion.data as NSArray! {
-                if arr.count > 0 {
-                    self.replies = arr as! [TopicReplyModel]
-                }
-                Async.main(block: { () -> Void in
-                    self.tableView.reloadData()
-                })
+            guard let data = completion.data else {
+                return
             }
+            
+            self.replies = data
+            
+            Async.main(block: { () -> Void in
+                self.tableView.reloadData()
+            })
         }
     }
     
@@ -171,7 +147,7 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
     func cellContentHasNewHeight(notification: NSNotification) {
         let info = notification.object as! NSIndexPath
         self.tableView.fd_indexPathHeightCache.invalidateHeightAtIndexPath(info)
-//        self.tableView.reloadRow(UInt(info.row), inSection: UInt(info.section), withRowAnimation: UITableViewRowAnimation.None)
+        //        self.tableView.reloadRow(UInt(info.row), inSection: UInt(info.section), withRowAnimation: UITableViewRowAnimation.None)
         self.tableView.reloadData()
     }
     
@@ -180,7 +156,7 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
         cell.fd_enforceFrameLayout = true
         cell.indexPath = indexPath
         cell.topicID = self.topicID
-        let reply = replies[indexPath.row] as TopicReplyModel
+        let reply = self.replies[indexPath.row]
         cell.replyModel = reply
         
         cell.tapAvatar = { _ in
@@ -189,9 +165,7 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
     }
     
     func webViewDidFinishLoad(webView: UIWebView) {
-        var f: CGRect = webView.frame
-        f.size.height = webView.scrollView.contentSize.height
-        self.headerWebView.frame = f
+        self.headerWebView.height = webView.scrollView.contentSize.height
         
         self.headerWebView.addBorderBottom(size: 1, color: kListViewHeaderViewBackroundColor)
         
@@ -225,18 +199,16 @@ extension TopicDetailViewController: UITableViewDataSource {
         guard self.contentWebViewLoaed == true else {
             return 0
         }
-        return replies.count
+        return self.replies.count
     }
 }
 
 extension TopicDetailViewController: UITableViewDelegate {
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let height = tableView.fd_heightForCellWithIdentifier(kTopicDetailContentCellIdentifier, cacheByIndexPath: indexPath) { (cell) -> Void in
-            if let c = cell as! TopicReplyTableViewCell? {
-                self.configurationCell(c, indexPath: indexPath)
-            }
+            self.configurationCell(cell as! TopicReplyTableViewCell, indexPath: indexPath)
         }
-//        print("indexPath \(indexPath.row) height \(height)")
+        //        print("indexPath \(indexPath.row) height \(height)")
         return height
     }
     
@@ -257,15 +229,12 @@ extension TopicDetailViewController {
     }
     
     func chooseLink(notification: NSNotification) {
-        let url = notification.object as! NSString
-        
-        let memberIdentifier = "/member/"
-        if url.hasPrefix(memberIdentifier) {
-            let memberName = url.stringByReplacingOccurrencesOfString(memberIdentifier, withString: "")
-            self.gotoMemberProfile(memberName)
+        let url = notification.object as! CoreTextLinkData
+        if url.isMemberLink == true {
+            self.gotoMemberProfile(url.memberName!)
         }
         else {
-            let sf = SFSafariViewController(URL: NSURL(string: url as String)!)
+            let sf = SFSafariViewController(URL: NSURL(string: url.url! as String)!)
             self.presentVC(sf)
         }
     }
@@ -275,4 +244,28 @@ extension TopicDetailViewController {
         profile.username = username
         self.navigationController!.pushViewController(profile, animated: true)
     }
+}
+
+extension TopicDetailViewController {
+    
+    override func canBecomeFirstResponder() -> Bool {
+        
+        return true
+    }
+    
+    override func canResignFirstResponder() -> Bool {
+        
+        return true
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        
+        return true
+    }
+    
+    override var inputAccessoryView: UIView? {
+        
+        return self.accessoryView
+    }
+    
 }

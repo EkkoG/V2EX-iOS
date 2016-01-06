@@ -16,7 +16,7 @@ import Async
 struct V2EXAPI {
     static let LATEST_PATH = "/topics/latest.json"
     static let HTTP_PREFIX = "https"
-
+    
     static let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
     static let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
     
@@ -84,15 +84,13 @@ class DataManager: NSObject {
         
         request.responseString { (response) -> Void in
             if response.result.isSuccess {
-                let tmp = DataResponse<String>(data: response.result.value, error: nil)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: response.result.value, error: nil))
                 })
             }
             else {
-                let tmp = DataResponse<String>(data: nil, error: response.result.error)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: nil, error: response.result.error))
                 })
             }
         }
@@ -108,22 +106,20 @@ class DataManager: NSObject {
         
         request.responseData{ (response) -> Void in
             if response.result.isSuccess {
-                let tmp = DataResponse<NSData>(data: response.result.value, error: nil)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: response.result.value, error: nil))
                 })
             }
             else {
-                let tmp = DataResponse<NSData>(data: nil, error: response.result.error)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: nil, error: response.result.error))
                 })
             }
         }
     }
     
     class func getRequest(method: Alamofire.Method, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil) -> Request {
-       return Alamofire.request(method, url, parameters: parameters, encoding: .URL, headers: customHeaders)
+        return Alamofire.request(method, url, parameters: parameters, encoding: .URL, headers: customHeaders)
     }
     
     class func loadStringDataFromURL(URL: String, dataResponse: DataResponse<String>.dataResponse) {
@@ -207,7 +203,7 @@ extension DataManager {
         func getItem(node: JiNode, xPath: String) -> JiNode? {
             let items = node.xPath(xPath)
             
-             guard let item = items.first where items.count > 0 else {
+            guard let item = items.first where items.count > 0 else {
                 return nil
             }
             
@@ -320,61 +316,69 @@ extension DataManager {
 extension DataManager {
     class func loadTopicDetailContent(topicID: Int, completionHander: DataResponse<TopicDetailModel>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.TopicDetailContent + "\(topicID)") { (response) -> Void in
-            if let data = response.data {
-                let json = JSON(data: data)
-                if let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) {
-                    model.content_rendered = model.content_rendered?.stringByReplacingOccurrencesOfString("//i.v2ex", withString: "https://i.v2ex")
-                    let tmp = DataResponse<TopicDetailModel>(data: model, error: nil)
-                    completionHander(dataResponse: tmp)
-                }
-                else {
-                    let tmp = DataResponse<TopicDetailModel>(data: nil, error: nil)
-                    completionHander(dataResponse: tmp)
-                }
+            guard let data = response.data else {
+                completionHander(dataResponse: DataResponse(data: nil, error: nil))
+                return
             }
+            let json = JSON(data: data)
+            guard let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) else {
+                
+                completionHander(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            completionHander(dataResponse: DataResponse(data: model, error: nil))
         }
     }
     
-    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<NSArray>.dataResponse) {
+    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<[TopicReplyModel]>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.TopicReplesContent + "\(topicID)") { (completion) -> Void in
-            if let data = completion.data {
-                let json = JSON(data: data)
-                var list = [TopicReplyModel]()
-                if json.arrayObject?.count > 0 {
-                    for (_, value) in json.arrayObject!.enumerate() {
-                        if let model = Mapper<TopicReplyModel>().map(value) {
-                            list.append(model)
-                        }
-                    }
+            guard let data = completion.data else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [TopicReplyModel]()
+            guard let objects = json.arrayObject where json.arrayObject?.count > 0 else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            for (_, value) in objects.enumerate() {
+                if let model = Mapper<TopicReplyModel>().map(value) {
+                    list.append(model)
                 }
-                if list.count > 0 {
-                    let tmp = DataResponse<NSArray>(data: list, error: nil)
-                    completionHandler(dataResponse: tmp)
-                }
-                else {
-                    let tmp = DataResponse<NSArray>(data: nil, error: nil)
-                    completionHandler(dataResponse: tmp)
-                }
+            }
+            if list.count > 0 {
+                completionHandler(dataResponse: DataResponse(data: list, error: nil))
+            }
+            else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
             }
         }
     }
 }
 
 extension DataManager {
-    class func getOnceString(url: String, completeionHandler: DataResponse<String>.dataResponse) {
+    class func getOnceString(url: String, completionHandler: DataResponse<String>.dataResponse) {
         self.loadStringDataFromURL(url) { (completion) -> Void in
-            if let data = completion.data {
-                let doc = Ji(htmlString: data)
-                let allNode = doc?.xPath("//input[@name='once']")
-                if allNode?.count > 0 {
-                    let tmp = DataResponse<String>(data: allNode?.first?["value"], error: nil)
-                    completeionHandler(dataResponse: tmp)
-                }
-                else {
-                    let tmp = DataResponse<String>(data: nil, error: nil)
-                    completeionHandler(dataResponse: tmp)
-                }
+            guard let data = completion.data else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
             }
+            
+            guard let doc = Ji(htmlString: data) else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let array = doc.xPath("//input[@name='once']")
+            
+            guard let allNodes = array where array?.count > 0 else {
+                
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            completionHandler(dataResponse: DataResponse<String>(data: allNodes.first!["value"], error: nil))
         }
     }
 }
@@ -455,8 +459,7 @@ extension DataManager {
                 return
             }
             
-            let tmp = DataResponse<Array<TopicModel>>(data: list, error: nil)
-            completion(dataResponse: tmp)
+            completion(dataResponse: DataResponse(data: list, error: nil))
         }
     }
 }
@@ -526,8 +529,7 @@ extension DataManager {
                 return
             }
             
-            let tmp = DataResponse<[Node]>(data: list, error: nil)
-            completeHandler(dataResponse: tmp)
+            completeHandler(dataResponse: DataResponse(data: list, error: nil))
         }
     }
 }
@@ -553,9 +555,7 @@ extension DataManager {
                 return
             }
             
-            let tmp = DataResponse<[TopicModel]>(data: list, error: nil)
-            completeHandler(dataResponse: tmp)
-            
+            completeHandler(dataResponse: DataResponse(data: list, error: nil))
         }
     }
 }
