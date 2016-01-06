@@ -46,4 +46,17 @@ class V2EXHelper: NSObject {
         return string
     }
     
+    class func loadLocalFile(fileName: String, type: String) -> String? {
+        guard let path = NSBundle.mainBundle().pathForResource(fileName, ofType: type) else {
+            return nil
+        }
+        
+        do {
+            let string = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+            return string
+        }
+        catch {
+            return nil
+        }
+    }
 }

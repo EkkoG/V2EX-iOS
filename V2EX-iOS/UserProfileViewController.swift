@@ -45,42 +45,58 @@ class UserProfileViewController: BaseViewController {
     var memberProfile: MemberProfileModel?
     
     var memberLatestTopics = [TopicModel]()
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.setupTitleAndTabbar()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.setupViews()
+        self.loadData(self.username!)
+        
+//        self.profileTableView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
+
+        // Do any additional setup after loading the view.
+        
+    }
+    
+    func setupViews() {
         self.view.addSubview(self.profileTableView)
         
         self.profileTableView.registerClass(MemberSoicalInfoTableViewCell.self, forCellReuseIdentifier: kMemberProfileSocialCellIdentifier)
         self.profileTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: kMemberProfileLatestTopicsCellIdentifier)
         
-        self.loadData(self.username!)
-        
-        if let loginMemberName = NSUserDefaults.standardUserDefaults().objectForKey(kSigninedMemberNameKey) as? String {
-            if loginMemberName != self.username {
-                self.title = self.username
-                self.tabBarController?.tabBar.hidden = true
-            }
-            else {
-                if let _ = V2EXShareDataManager.shareInstance.memberProfile {
-                    self.parentViewController!.title = "个人"
-                    let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
-                    self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
-                }
-            }
-            
-        }
-        else {
-                self.title = self.username
-                self.tabBarController?.tabBar.hidden = true
-        }
-        
         //hard code
         self.view.height = self.view.height - 110
-//        self.profileTableView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
-
-        // Do any additional setup after loading the view.
         
+    }
+    
+    func setupTitleAndTabbar() {
+        func hideTabbar() {
+            self.title = self.username
+            self.tabBarController?.tabBar.hidden = true
+        }
+        
+        //check if member signin
+        if V2EXShareDataManager.shareInstance.signInStatus().status == true {
+            //check if is the signin member
+            if V2EXShareDataManager.shareInstance.signInStatus().memberName == self.username {
+                self.parentViewController!.title = "个人"
+                let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
+                self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
+                self.tabBarController?.tabBar.hidden = false
+            }
+            else {
+                hideTabbar()
+            }
+        }
+        else { //member not signin,only a case,show member's profile
+            hideTabbar()
+        }
     }
     
     func loadData(username: String) {

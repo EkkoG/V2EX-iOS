@@ -52,7 +52,7 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
             }
             
             if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
-                NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchLinkNotification, object: link.url!)
+                NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchLinkNotification, object: link)
             }
             
             return false

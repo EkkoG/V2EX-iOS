@@ -16,7 +16,7 @@ import Async
 struct V2EXAPI {
     static let LATEST_PATH = "/topics/latest.json"
     static let HTTP_PREFIX = "https"
-
+    
     static let V2EX_API_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/api"
     static let V2EX_BASE_URL = HTTP_PREFIX + "://www.v2ex.com/"
     
@@ -84,15 +84,13 @@ class DataManager: NSObject {
         
         request.responseString { (response) -> Void in
             if response.result.isSuccess {
-                let tmp = DataResponse<String>(data: response.result.value, error: nil)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: response.result.value, error: nil))
                 })
             }
             else {
-                let tmp = DataResponse<String>(data: nil, error: response.result.error)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: nil, error: response.result.error))
                 })
             }
         }
@@ -108,22 +106,20 @@ class DataManager: NSObject {
         
         request.responseData{ (response) -> Void in
             if response.result.isSuccess {
-                let tmp = DataResponse<NSData>(data: response.result.value, error: nil)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: response.result.value, error: nil))
                 })
             }
             else {
-                let tmp = DataResponse<NSData>(data: nil, error: response.result.error)
                 Async.main(block: { () -> Void in
-                    completeHandler(dataResponse: tmp)
+                    completeHandler(dataResponse: DataResponse(data: nil, error: response.result.error))
                 })
             }
         }
     }
     
     class func getRequest(method: Alamofire.Method, url: String, parameters: [String: AnyObject]? = nil, customHeaders: [String: String]? = nil) -> Request {
-       return Alamofire.request(method, url, parameters: parameters, encoding: .URL, headers: customHeaders)
+        return Alamofire.request(method, url, parameters: parameters, encoding: .URL, headers: customHeaders)
     }
     
     class func loadStringDataFromURL(URL: String, dataResponse: DataResponse<String>.dataResponse) {
@@ -143,7 +139,7 @@ class DataManager: NSObject {
 
 extension DataManager {
     
-    class func loadTabsTopicsDataWithTabsPath(path: String, dataResponse: DataResponse<NSArray>.dataResponse) {
+    class func loadTabsTopicsDataWithTabsPath(path: String, dataResponse: DataResponse<[TopicModel]>.dataResponse) {
         if path == HomeTabs.latest.path {
             self.loadLatestTopics(dataResponse)
         }
@@ -154,150 +150,235 @@ extension DataManager {
         }
     }
     
-    class func loadLatestTopics(dataResponse: DataResponse<NSArray>.dataResponse) {
+    class func loadLatestTopics(dataResponse: DataResponse<[TopicModel]>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.LatestTopicsURL) { (response) -> Void in
-            if let data = response.data {
-                let json = JSON(data: data)
-                var list = [TopicModel]()
-                for (_, value) in (json.arrayObject?.enumerate())! {
-                    if let topic = Mapper<TopicModel>().map(value) {
-                        list.append(topic)
-                    }
+            guard let data = response.data else {
+                dataResponse(dataResponse: DataResponse(data: nil, error: response.error!))
+                return
+            }
+            
+            let json = JSON(data: data)
+            
+            var list = [TopicModel]()
+            
+            for (_, value) in (json.arrayObject?.enumerate())! {
+                
+                guard let topic = Mapper<TopicModel>().map(value) else {
+                    continue
                 }
-                let tmp = DataResponse<NSArray>(data: list, error: nil)
-                dataResponse(dataResponse: tmp)
+                
+                list.append(topic)
             }
-            else {
-                let tmp = DataResponse<NSArray>(data: nil, error: response.error!)
-                dataResponse(dataResponse: tmp)
+            
+            guard list.count > 0 else {
+                dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+                return
             }
+            
+            dataResponse(dataResponse: DataResponse(data: list, error: nil))
         }
     }
     
-    class func parseHTMLFromString(html: String, dataResponse: DataResponse<NSArray>.dataResponse) {
-        let jiDoc = Ji(htmlString: html)
-        //        let body = jiDoc?.rootNode?.firstChildWithName("body")
-        if let items = jiDoc?.xPath("//div[@class='cell item']") {
-            var list = [TopicModel]()
-            for item in items {
-                let avatar = item.xPath(".//img[@class='avatar']")
-                
-                let titles = item.xPath(".//span[@class='item_title']")
-                let title = titles.first?.content!
-                
-                let url = titles.first!.xPath("./a").first!["href"]
-                let components = url?.componentsSeparatedByString("/")
-                let topicID = components![2].componentsSeparatedByString("#").first
-                
-                let fade = item.xPath(".//span[@class='small fade']")
-                let node = fade[0].xPath(".//a[@class='node']")
-                let nodeTitle = node.first?.content
-                let nodeName = node.first?["href"]?.stringByReplacingOccurrencesOfString("/go/", withString: "")
-                
-                let authors = fade[0].xPath(".//strong/a")
-                let author = authors.first?.content
-                
-                //                let lastComments = fade[1].xPath(".//strong/a")
-                //                let last = lastComments.first?.content
-                
-                let fadeContent = fade[1].content
-                let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
-                let lastModifiedText = lastModify?.first
-                
-                let commentCount = item.xPath(".//a[@class='count_livid']")
-                let count = commentCount.first?.content
-                
-                let t = TopicModel()
-                t.title = title
-                t.topicID = Int(topicID!)
-                let nodeModel = Node()
-                nodeModel.title = nodeTitle
-                nodeModel.name = nodeName
-                nodeModel.url = node.first!["href"]
-                t.node = nodeModel
-                if let count = count {
-                    t.replies = Int(count)
-                }
-                let memberModel = Member()
-                memberModel.username = author
-                memberModel.avatar_normal = avatar.first!["src"]
-                t.member = memberModel
-                
-                t.last_modifiedText = lastModifiedText
-                //                print(t.last_modifiedText)
-                
-                list.append(t)
-            }
-            if list.count > 0 {
-                let tmp = DataResponse<NSArray>(data: list, error: nil)
-                dataResponse(dataResponse: tmp)
-            }
-            else {
-                let tmp = DataResponse<NSArray>(data: nil, error: nil)
-                dataResponse(dataResponse: tmp)
-            }
+    
+    class func parseHTMLFromString(html: String, dataResponse: DataResponse<[TopicModel]>.dataResponse) {
+        guard let jiDoc = Ji(htmlString: html) else {
+            dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+            return
         }
+        //        let body = jiDoc?.rootNode?.firstChildWithName("body")
+        guard let items = jiDoc.xPath("//div[@class='cell item']") else {
+            dataResponse(dataResponse: DataResponse(data: nil, error: nil))
+            return
+        }
+        
+        let topics = self.parseTopicModelFromCellItems(items)
+        dataResponse(dataResponse: DataResponse(data: topics, error: nil))
+    }
+}
+
+extension DataManager {
+    
+    class func parseTopicModelFromCellItems(items: [JiNode]) -> [TopicModel] {
+        
+        func getItem(node: JiNode, xPath: String) -> JiNode? {
+            let items = node.xPath(xPath)
+            
+            guard let item = items.first where items.count > 0 else {
+                return nil
+            }
+            
+            return item
+        }
+        
+        func getAvatarURL(node: JiNode) -> String? {
+            guard let avatar = getItem(node, xPath: ".//img[@class='avatar']") else {
+                return nil
+            }
+            
+            return avatar["src"]
+        }
+        
+        func getTitleAndID(node: JiNode) -> (title: String?, topicID: Int?) {
+            guard let title = getItem(node, xPath: ".//span[@class=\'item_title\']") else {
+                return (nil, nil)
+            }
+            
+            guard let topicID = getItem(title, xPath: "./a") else {
+                return (title.content, nil)
+            }
+            
+            guard let url = topicID["href"] else {
+                return (title.content, nil)
+            }
+            
+            let components = url.componentsSeparatedByString("/")
+            guard let id = components[2].componentsSeparatedByString("#").first else {
+                return (title.content, nil)
+            }
+            
+            return (title.content, Int(id))
+        }
+        
+        func getNodeTitleAndName(node: JiNode) -> (title: String?, name: String?, author: String?) {
+            guard let fade = getItem(node, xPath: ".//span[@class='small fade']") else {
+                return (nil, nil, nil)
+            }
+            
+            guard let node = getItem(fade, xPath: ".//a[@class=\'node\']") else {
+                return (nil, nil, nil)
+            }
+            
+            guard let nodeName = node["href"] else {
+                return (node.content, nil, nil)
+            }
+            
+            let name = nodeName.stringByReplacingOccurrencesOfString("/go/", withString: "")
+            
+            guard let author = getItem(fade, xPath: ".//strong/a") else {
+                return (node.content, name, nil)
+            }
+            
+            return (node.content, name, author.content)
+        }
+        
+        func getLastModify(node: JiNode) -> String? {
+            let fade = node.xPath(".//span[@class='small fade']")
+            guard fade.count > 0 else {
+                return nil
+            }
+            
+            let fadeContent = fade[1].content
+            let lastModify = fadeContent?.componentsSeparatedByString("  •  ")
+            let lastModifiedText = lastModify?.first
+            return lastModifiedText
+        }
+        
+        
+        func getReplyCount(node: JiNode) -> Int? {
+            guard let count = getItem(node, xPath: ".//a[@class='count_livid']") else {
+                return nil
+            }
+            
+            guard let content = count.content else {
+                return nil
+            }
+            
+            return Int(content)
+        }
+        
+        
+        var list = [TopicModel]()
+        
+        for item in items {
+            
+            let t = TopicModel()
+            t.title = getTitleAndID(item).title
+            t.topicID = getTitleAndID(item).topicID
+            let nodeModel = Node()
+            nodeModel.title = getNodeTitleAndName(item).title
+            nodeModel.name = getNodeTitleAndName(item).name
+            t.node = nodeModel
+            t.replies = getReplyCount(item)
+            
+            let memberModel = Member()
+            memberModel.username = getNodeTitleAndName(item).author
+            memberModel.avatar_normal = getAvatarURL(item)
+            t.member = memberModel
+            
+            t.last_modifiedText = getLastModify(item)
+            
+            list.append(t)
+        }
+        return list
     }
 }
 
 extension DataManager {
     class func loadTopicDetailContent(topicID: Int, completionHander: DataResponse<TopicDetailModel>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.TopicDetailContent + "\(topicID)") { (response) -> Void in
-            if let data = response.data {
-                let json = JSON(data: data)
-                if let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) {
-                    model.content_rendered = model.content_rendered?.stringByReplacingOccurrencesOfString("//i.v2ex", withString: "https://i.v2ex")
-                    let tmp = DataResponse<TopicDetailModel>(data: model, error: nil)
-                    completionHander(dataResponse: tmp)
-                }
-                else {
-                    let tmp = DataResponse<TopicDetailModel>(data: nil, error: nil)
-                    completionHander(dataResponse: tmp)
-                }
+            guard let data = response.data else {
+                completionHander(dataResponse: DataResponse(data: nil, error: nil))
+                return
             }
+            let json = JSON(data: data)
+            guard let model = Mapper<TopicDetailModel>().map(json.arrayObject?.first) else {
+                
+                completionHander(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            completionHander(dataResponse: DataResponse(data: model, error: nil))
         }
     }
     
-    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<NSArray>.dataResponse) {
+    class func loadTopicDetailReplies(topicID: Int, completionHandler: DataResponse<[TopicReplyModel]>.dataResponse) {
         self.loadDataFromURL(V2EXAPI.TopicReplesContent + "\(topicID)") { (completion) -> Void in
-            if let data = completion.data {
-                let json = JSON(data: data)
-                var list = [TopicReplyModel]()
-                if json.arrayObject?.count > 0 {
-                    for (_, value) in json.arrayObject!.enumerate() {
-                        if let model = Mapper<TopicReplyModel>().map(value) {
-                            list.append(model)
-                        }
-                    }
+            guard let data = completion.data else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let json = JSON(data: data)
+            var list = [TopicReplyModel]()
+            guard let objects = json.arrayObject where json.arrayObject?.count > 0 else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            for (_, value) in objects.enumerate() {
+                if let model = Mapper<TopicReplyModel>().map(value) {
+                    list.append(model)
                 }
-                if list.count > 0 {
-                    let tmp = DataResponse<NSArray>(data: list, error: nil)
-                    completionHandler(dataResponse: tmp)
-                }
-                else {
-                    let tmp = DataResponse<NSArray>(data: nil, error: nil)
-                    completionHandler(dataResponse: tmp)
-                }
+            }
+            if list.count > 0 {
+                completionHandler(dataResponse: DataResponse(data: list, error: nil))
+            }
+            else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
             }
         }
     }
 }
 
 extension DataManager {
-    class func getOnceString(url: String, completeionHandler: DataResponse<String>.dataResponse) {
+    class func getOnceString(url: String, completionHandler: DataResponse<String>.dataResponse) {
         self.loadStringDataFromURL(url) { (completion) -> Void in
-            if let data = completion.data {
-                let doc = Ji(htmlString: data)
-                let allNode = doc?.xPath("//input[@name='once']")
-                if allNode?.count > 0 {
-                    let tmp = DataResponse<String>(data: allNode?.first?["value"], error: nil)
-                    completeionHandler(dataResponse: tmp)
-                }
-                else {
-                    let tmp = DataResponse<String>(data: nil, error: nil)
-                    completeionHandler(dataResponse: tmp)
-                }
+            guard let data = completion.data else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
             }
+            
+            guard let doc = Ji(htmlString: data) else {
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            
+            let array = doc.xPath("//input[@name='once']")
+            
+            guard let allNodes = array where array?.count > 0 else {
+                
+                completionHandler(dataResponse: DataResponse(data: nil, error: nil))
+                return
+            }
+            completionHandler(dataResponse: DataResponse<String>(data: allNodes.first!["value"], error: nil))
         }
     }
 }
@@ -378,8 +459,7 @@ extension DataManager {
                 return
             }
             
-            let tmp = DataResponse<Array<TopicModel>>(data: list, error: nil)
-            completion(dataResponse: tmp)
+            completion(dataResponse: DataResponse(data: list, error: nil))
         }
     }
 }
@@ -449,8 +529,7 @@ extension DataManager {
                 return
             }
             
-            let tmp = DataResponse<[Node]>(data: list, error: nil)
-            completeHandler(dataResponse: tmp)
+            completeHandler(dataResponse: DataResponse(data: list, error: nil))
         }
     }
 }
@@ -476,9 +555,7 @@ extension DataManager {
                 return
             }
             
-            let tmp = DataResponse<[TopicModel]>(data: list, error: nil)
-            completeHandler(dataResponse: tmp)
-            
+            completeHandler(dataResponse: DataResponse(data: list, error: nil))
         }
     }
 }

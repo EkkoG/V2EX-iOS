@@ -13,8 +13,22 @@ class TopicReplyModel: NSObject, Mappable {
     var replyID: Int?
     var thanks: String?
     var content: String?
-    var content_rendered: String?
+    var content_rendered: String? {
+        didSet {
+            guard let content = content_rendered else {
+                return
+            }
+            if !content.hasPrefix("<p>") {
+                content_rendered = "<p>\(content)</p>"
+            }
+        }
+    }
     var created: Double?
+    var createdText: String {
+        get {
+            return V2EXHelper.dateFormat(self.created!)
+        }
+    }
     var last_modified: Double?
     var member: Member?
     
@@ -30,12 +44,5 @@ class TopicReplyModel: NSObject, Mappable {
         self.created <- map["created"]
         self.last_modified <- map["last_modified"]
         self.member <- map["member"]
-    }
-    
-    func avatarURL() -> String {
-        if !self.member!.avatar_normal!.hasPrefix("http") {
-            return "https:" + self.member!.avatar_normal!
-        }
-        return self.member!.avatar_normal!
     }
 }

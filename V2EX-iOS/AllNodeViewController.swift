@@ -30,6 +30,11 @@ class AllNodeViewController: BaseViewController {
     
     var allNodeArray = [Node]()
 
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.hidden = false
+    }
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -39,16 +44,19 @@ class AllNodeViewController: BaseViewController {
         self.nodeCollectionView.autoresizingMask = [.FlexibleBottomMargin, .FlexibleHeight]
         
         self.nodeCollectionView.registerClass(NodeCollectionViewCell.self, forCellWithReuseIdentifier: kNodeAllNodeCellIndentifier)
-        
+        self.loadData()
+    }
+    
+    func loadData() {
         DataManager.getAllNode { (dataResponse) -> Void in
             guard let data = dataResponse.data else {
                 return
             }
-//            print(data)
             self.allNodeArray = data
             self.nodeCollectionView.reloadData()
         }
     }
+    
     func getTitleWidth(title: NSString) -> CGFloat {
         let size = title.boundingRectWithSize(CGSizeMake(UIScreen.mainScreen().bounds.width, 200), options: [NSStringDrawingOptions.UsesLineFragmentOrigin, NSStringDrawingOptions.UsesFontLeading], attributes: [NSFontAttributeName: UIFont.systemFontOfSize(17)], context: nil)
         return size.width

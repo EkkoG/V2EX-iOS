@@ -76,7 +76,17 @@ class Node: NSObject, Mappable {
 
 class Member: NSObject, Mappable {
     var username: String?
-    var avatar_normal: String?
+    var avatar_normal: String? {
+        didSet {
+            guard let url = avatar_normal else {
+                return
+            }
+            
+            if !url.hasPrefix("http") {
+                avatar_normal =  "https:" + url
+            }
+        }
+    }
     
     required init?(_ map: Map) {
         

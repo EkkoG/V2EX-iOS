@@ -10,11 +10,17 @@ import UIKit
 import ObjectMapper
 
 class TopicDetailModel: NSObject, Mappable {
+    let kHTMLContentBodyPlaceholderKey = "CONTENT_BODY"
+    
     var topicID: Int?
     var title: String?
     var url: String?
     var content: String?
-    var content_rendered: String?
+    var content_rendered: String? {
+        didSet {
+           content_rendered = content_rendered?.stringByReplacingOccurrencesOfString("//i.v2ex", withString: "https://i.v2ex")
+        }
+    }
     var replies: Int?
     var member: Member?
     var node: Node?
@@ -38,5 +44,20 @@ class TopicDetailModel: NSObject, Mappable {
         self.created <- map["created"]
         self.last_modified <- map["last_modified"]
         self.last_touched <- map["last_touched"]
+    }
+    
+    func HTMLContentAndBaseURL() -> (html: String?, baseURL: NSURL?)  {
+        guard let htmlTemplate = V2EXHelper.loadLocalFile("topic", type: "html") else {
+            return (nil, nil)
+        }
+        
+        guard let rendered = self.content_rendered else {
+            return (nil, nil)
+        }
+        
+        let path = NSBundle.mainBundle().bundlePath
+        let baseURL = NSURL(fileURLWithPath: path)
+        let html = htmlTemplate.stringByReplacingOccurrencesOfString(kHTMLContentBodyPlaceholderKey, withString: rendered)
+        return (html, baseURL)
     }
 }

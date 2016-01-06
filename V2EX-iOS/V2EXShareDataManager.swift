@@ -29,4 +29,29 @@ class V2EXShareDataManager: NSObject {
             })
         }
     }
+    
+    func signInStatus() -> (status: Bool, memberName: String?) {
+        if let memberName = NSUserDefaults.standardUserDefaults().objectForKey(kSigninedMemberNameKey) {
+            return (true, memberName as? String)
+        }
+        else {
+            return (false, nil)
+        }
+    }
+}
+
+extension V2EXShareDataManager {
+    func getCacheByKey(key: AnyObject) -> [String: CoreTextData] {
+        if let obj = self.cellHeightCeche.objectForKey(key) {
+            return obj as! [String: CoreTextData]
+            
+        }
+        else {
+            return [String: CoreTextData]()
+        }
+    }
+    
+    func updateObjectByKey(key: AnyObject, object: [String: CoreTextData]) {
+        self.cellHeightCeche.setObject(object, forKey: key)
+    }
 }
