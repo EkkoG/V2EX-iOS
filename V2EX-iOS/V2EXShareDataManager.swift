@@ -29,4 +29,13 @@ class V2EXShareDataManager: NSObject {
             })
         }
     }
+    
+    func signInStatus() -> (status: Bool, memberName: String?) {
+        if let memberName = NSUserDefaults.standardUserDefaults().objectForKey(kSigninedMemberNameKey) {
+            return (true, memberName as? String)
+        }
+        else {
+            return (false, nil)
+        }
+    }
 }
