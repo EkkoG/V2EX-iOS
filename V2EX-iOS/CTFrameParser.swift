@@ -18,11 +18,11 @@ enum TagName: String {
 
 class CTFrameParser: NSObject {
     
-    class func parseHTMLString(html: String, config: CTFrameParserConfig) -> CoreTextData {
+    class func parseHTMLString(html: String, width: CGFloat) -> CoreTextData {
         
-        let tuple = self.parseHTML(html, config: config)
+        let tuple = self.parseHTML(html)
         
-        let data = self.parseAttributedContent(tuple.2, config: config)
+        let data = self.parseAttributedContent(tuple.2, width: width)
         
         data.imageArray = tuple.0
         data.linkArray = tuple.1
@@ -30,7 +30,7 @@ class CTFrameParser: NSObject {
         return data
     }
     
-    class func parseHTML(html: String, config: CTFrameParserConfig) -> ([CoreTextImageData], [CoreTextLinkData], NSAttributedString) {
+    class func parseHTML(html: String) -> ([CoreTextImageData], [CoreTextLinkData], NSAttributedString) {
         let doc = Ji(htmlString: html)
         
         let attributedString = NSMutableAttributedString()
@@ -48,7 +48,7 @@ class CTFrameParser: NSObject {
                     linkData.title = node.content
                     linkData.url = node["href"]
                     
-                    let attribute = self.attributedStringWithTagName(node.content!, config: config, tagName: .A)
+                    let attribute = self.attributedStringWithTagName(node.content!, tagName: .A)
                     attributedString.appendAttributedString(attribute)
                     
                     let length = attributedString.length - startPosition
@@ -58,7 +58,7 @@ class CTFrameParser: NSObject {
                     continue
                 }
                 else if node.tag == "br" {
-                    let attribute = self.attributedStringWithTagName(node.content!, config: config, tagName: .BR)
+                    let attribute = self.attributedStringWithTagName(node.content!, tagName: .BR)
                     attributedString.appendAttributedString(attribute)
                     continue
                 }
@@ -70,12 +70,16 @@ class CTFrameParser: NSObject {
                     
                     imageData.image = UIImage(named: "ic_launcher144")
                     imageArray.append(imageData)
-                    let attribute = CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(imageData.image!)
+//                    let attribute = self.attributedStringWithTagName(node.content!, tagName: .IMG)
+                    
+                    let config = CTFrameParserConfig()
+                    let attributes = self.attributesWithConfig(config)
+                    let attribute = CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(imageData.image!, attributes: attributes)
                     attributedString.appendAttributedString(attribute)
                     continue
                 }
                 
-                let attribute = self.attributedStringWithTagName(node.content!, config: config, tagName: .NONE)
+                let attribute = self.attributedStringWithTagName(node.content!, tagName: .NONE)
                 attributedString.appendAttributedString(attribute)
             }
         }
@@ -83,50 +87,24 @@ class CTFrameParser: NSObject {
         return (imageArray, linkArray, attributedString)
     }
     
-    class func parseImageDataFromDictionary(image: UIImage) -> NSAttributedString {
-        var img = image
-        var  imageCallback =  CTRunDelegateCallbacks(version: kCTRunDelegateCurrentVersion, dealloc: { (refCon) -> Void in
-            }, getAscent: { ( refCon) -> CGFloat in
-                let img = UnsafeMutablePointer<UIImage>(refCon).memory
-                return img.size.height
-            }, getDescent: { (refCon) -> CGFloat in
-                return 0
-            }) { (refCon) -> CGFloat in
-                let img: UIImage = UnsafeMutablePointer<UIImage>(refCon).memory
-                return img.size.width
-        }
-        
-        let delegate = CTRunDelegateCreate(&imageCallback, &img)
-        
-        var objectReplacementChar:unichar = 0xFFFC
-        let content = NSString(characters: &objectReplacementChar, length: 1)
-        let space = NSMutableAttributedString(string: content as String)
-        CFAttributedStringSetAttribute(space, CFRangeMake(0, 1), kCTRunDelegateAttributeName, delegate)
-        return space
-    }
-    
-    class func attributedStringWithTagName(content: String, config: CTFrameParserConfig?, tagName: TagName) -> NSAttributedString {
-        var attributes = self.attributesWithConfig(config!)
-        
-        func tagAttributes(color: UIColor, fontSize: CGFloat) {
-            
-            attributes[kCTForegroundColorAttributeName as String] = color.CGColor
-            
-            let fontRef = CTFontCreateWithName("ArialMT", fontSize, nil)
-            attributes[kCTFontAttributeName as String] = fontRef
-        }
-        
+    class func attributedStringWithTagName(content: String, tagName: TagName) -> NSAttributedString {
         switch tagName {
         case .A:
-            tagAttributes(kHTMLATagColor, fontSize: 15)
+            let config = CTFrameParserConfig(textColor:kHTMLATagColor)
+            let attributes = self.attributesWithConfig(config)
             return NSAttributedString(string: content, attributes: attributes)
         case .BR:
-            tagAttributes(kHTMLATagColor, fontSize: 15)
+            let config = CTFrameParserConfig()
+            let attributes = self.attributesWithConfig(config)
             return NSAttributedString(string: content, attributes: attributes)
         case .IMG:
-            tagAttributes(kHTMLATagColor, fontSize: 15)
-            return NSAttributedString(string: content, attributes: attributes)
+            let config = CTFrameParserConfig()
+            let image = UIImage(named: "ic_launcher144")
+            let attributes = self.attributesWithConfig(config)
+            return CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(image, attributes: attributes)
         case .NONE:
+            let config = CTFrameParserConfig()
+            let attributes = self.attributesWithConfig(config)
             return NSAttributedString(string: content, attributes: attributes)
         }
     }
@@ -155,22 +133,15 @@ class CTFrameParser: NSObject {
         return attributes
     }
     
-    class func parseContent(content: String, config: CTFrameParserConfig) -> CoreTextData {
-        let attributes = self.attributesWithConfig(config)
-        let contentString = NSMutableAttributedString(string: content, attributes: attributes)
-        
-        return self.parseAttributedContent(contentString, config: config)
-    }
-    
-    class func parseAttributedContent(attributeString: NSAttributedString, config: CTFrameParserConfig) -> CoreTextData {
+    class func parseAttributedContent(attributeString: NSAttributedString, width: CGFloat) -> CoreTextData {
         
         let framesetter = CTFramesetterCreateWithAttributedString(attributeString)
         
-        let restrictSize = CGSizeMake(config.width, CGFloat.max)
+        let restrictSize = CGSizeMake(width, CGFloat.max)
         let coreTextSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, attributeString.length), nil, restrictSize, nil)
         let textHeight = coreTextSize.height
         
-        let frame = self.createFrameWithFramesetter(framesetter, config: config, height: textHeight)
+        let frame = self.createFrameWithFramesetter(framesetter, width: width, height: textHeight)
         
         let coreTextData = CoreTextData()
         coreTextData.ctFrame = frame
@@ -180,9 +151,9 @@ class CTFrameParser: NSObject {
         return coreTextData
     }
     
-    internal class func createFrameWithFramesetter(settter: CTFramesetterRef, config: CTFrameParserConfig, height: CGFloat) ->  CTFrameRef {
+    internal class func createFrameWithFramesetter(settter: CTFramesetterRef, width: CGFloat, height: CGFloat) ->  CTFrameRef {
         let path = CGPathCreateMutable()
-        CGPathAddRect(path, nil, CGRectMake(0, 0, config.width, height))
+        CGPathAddRect(path, nil, CGRectMake(0, 0, width, height))
         
         let frame = CTFramesetterCreateFrame(settter, CFRangeMake(0, 0), path, nil)
         return frame

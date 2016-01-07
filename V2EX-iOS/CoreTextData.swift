@@ -32,15 +32,16 @@ class CoreTextData: NSObject {
                             Async.main(block: { () -> Void in
                                 item.webImageDownloaded = true
                                 item.image = image
-                                let attribute = CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(image)
+                                let config = CTFrameParserConfig()
+                                let attributes = CTFrameParser.attributesWithConfig(config)
+                                let attribute = CoreTextImageRunDelegateHelper.parseAttributedContentFromDictionary(image, attributes: attributes)
                                 if let content = self.content {
                                     content.beginEditing()
                                     content.replaceCharactersInRange(NSMakeRange(item.position!, 1), withAttributedString: attribute)
                                     content.endEditing()
                                     
                                     let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
-                                    let config = CTFrameParserConfig.defaultConfig(width)
-                                    let data = CTFrameParser.parseAttributedContent(content, config: config)
+                                    let data = CTFrameParser.parseAttributedContent(content, width: width)
                                     
                                     self.ctFrame = data.ctFrame
                                     self.fillImagePosition()

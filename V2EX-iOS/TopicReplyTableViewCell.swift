@@ -64,8 +64,6 @@ class TopicReplyTableViewCell: UITableViewCell {
                 self.thanksLabel.text = "\(thanks)"
             }
             
-            let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
-            let config = CTFrameParserConfig(width: width, fontSize: 15, lineSpace: 5, textColor: UIColor.blackColor())
             
             let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
             
@@ -76,7 +74,8 @@ class TopicReplyTableViewCell: UITableViewCell {
                 self.refreshContentLabelHeight(object.height)
             }
             else {
-                let data = CTFrameParser.parseHTMLString(model.content_rendered!, config: config)
+                let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
+                let data = CTFrameParser.parseHTMLString(model.content_rendered!, width: width)
                 self.contentLabel.data = data
                 self.refreshContentLabelHeight(data.height)
                 cache[key] = data
