@@ -14,8 +14,8 @@ class CoreTextData: NSObject {
     var ctFrame: CTFrameRef!
     dynamic var height:CGFloat = 0
     var content: NSMutableAttributedString?
-    var linkArray: [CoreTextLinkData]?
-    var imageArray: [CoreTextImageData]? {
+    var linkArray = [CoreTextLinkData]()
+    var imageArray = [CoreTextImageData]() {
         didSet {
             self.fillImagePosition()
             self.downloadImages()
@@ -23,7 +23,7 @@ class CoreTextData: NSObject {
     }
     
     internal func downloadImages() {
-        for item in self.imageArray! {
+        for item in self.imageArray {
             if !item.webImageDownloaded {
                 ImageDownloader.defaultDownloader.downloadImageWithURL(NSURL(string: item.imageURL!)!, progressBlock: { (receivedSize, totalSize) -> () in
                     
@@ -54,7 +54,7 @@ class CoreTextData: NSObject {
     }
     
     internal func fillImagePosition() {
-        if self.imageArray!.count == 0 {
+        if self.imageArray.count == 0 {
             return
         }
         let lines = CTFrameGetLines(self.ctFrame) as NSArray
@@ -63,7 +63,7 @@ class CoreTextData: NSObject {
         CTFrameGetLineOrigins(self.ctFrame, CFRangeMake(0, 0), &lineOrigins)
         
         var imageIndex = 0
-        var imageData = self.imageArray?.first
+        var imageData = self.imageArray.first
         
         for i in 0..<lineCount {
             let line = lines[i] as! CTLineRef
@@ -89,12 +89,12 @@ class CoreTextData: NSObject {
                     let delegateBounds = CGRectOffset(runBounds, colRect.origin.x, colRect.origin.y)
                     imageData?.imagePosition = delegateBounds
                     imageIndex++
-                    if imageIndex == self.imageArray!.count {
+                    if imageIndex == self.imageArray.count {
                         imageData = nil
                         break
                     }
                     else {
-                        imageData = self.imageArray![imageIndex]
+                        imageData = self.imageArray[imageIndex]
                     }
                     
                 }

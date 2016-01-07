@@ -15,6 +15,7 @@
 		9611CA1E1C268B3100C2B2E3 /* CTFrameParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */; };
 		9611CA1F1C268B3100C2B2E3 /* CTFrameParserConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */; };
 		9611CA201C268B3100C2B2E3 /* CTLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9611CA181C268B3100C2B2E3 /* CTLabel.swift */; };
+		9616CF721C3E13EC004997EC /* CoreTextImageUtitils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9616CF711C3E13EC004997EC /* CoreTextImageUtitils.swift */; };
 		961CC1911C2D4A1F0088A986 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */; };
 		961CC1931C2D53460088A986 /* MemberProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1921C2D53460088A986 /* MemberProfileView.swift */; };
 		961CC1951C2D81090088A986 /* MemberProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961CC1941C2D81090088A986 /* MemberProfileModel.swift */; };
@@ -100,6 +101,7 @@
 		9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTFrameParser.swift; sourceTree = "<group>"; };
 		9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTFrameParserConfig.swift; sourceTree = "<group>"; };
 		9611CA181C268B3100C2B2E3 /* CTLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CTLabel.swift; sourceTree = "<group>"; };
+		9616CF711C3E13EC004997EC /* CoreTextImageUtitils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextImageUtitils.swift; sourceTree = "<group>"; };
 		961CC1901C2D4A1F0088A986 /* UserProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		961CC1921C2D53460088A986 /* MemberProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberProfileView.swift; sourceTree = "<group>"; };
 		961CC1941C2D81090088A986 /* MemberProfileModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberProfileModel.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 				9611CA131C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m */,
 				9611CA141C268B3100C2B2E3 /* CoreTextLinkData.swift */,
 				9611CA151C268B3100C2B2E3 /* CoreTextLinkUtils.swift */,
+				9616CF711C3E13EC004997EC /* CoreTextImageUtitils.swift */,
 				9611CA161C268B3100C2B2E3 /* CTFrameParser.swift */,
 				9611CA171C268B3100C2B2E3 /* CTFrameParserConfig.swift */,
 				9611CA181C268B3100C2B2E3 /* CTLabel.swift */,
@@ -713,6 +716,7 @@
 				9611CA1B1C268B3100C2B2E3 /* CoreTextImageRunDelegateHelper.m in Sources */,
 				96A295EE1C3517D1001D6A00 /* NodeTopicsViewController.swift in Sources */,
 				96AD74281C05895F00753961 /* MenuViewBtn.m in Sources */,
+				9616CF721C3E13EC004997EC /* CoreTextImageUtitils.swift in Sources */,
 				96F91F4D1C0A215D00E4CEDB /* TopicModel.swift in Sources */,
 				9611CA1E1C268B3100C2B2E3 /* CTFrameParser.swift in Sources */,
 				969A75421C118982002F513D /* CLTopAlignLabel.swift in Sources */,

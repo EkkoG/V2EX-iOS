@@ -16,15 +16,18 @@ let kCTTouchImageNotification = "com.cielpy.v2ex.CTTouchImageNotification"
 class CTLabel: UIView, UIGestureRecognizerDelegate {
     dynamic var data: CoreTextData? {
         willSet(newValue) {
-            self.data?.removeObserver(self, forKeyPath: "height")
-            newValue!.addObserver(self, forKeyPath: "height", options: .New, context: nil)
+            self.addDataObserver(newValue)
+        }
+        
+        didSet {
+            self.removeDataObserver(oldValue)
         }
     }
     
     dynamic var textHeight: CGFloat = 0
     
     deinit {
-        self.data?.removeObserver(self, forKeyPath: "height")
+        self.removeDataObserver(self.data)
     }
     
     override init(frame: CGRect) {
@@ -35,24 +38,18 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
     override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer is UITapGestureRecognizer {
             let point = gestureRecognizer.locationInView(self)
-            if let data = self.data {
-                if let imageArray = data.imageArray {
-                    for imageData in imageArray {
-                        let imageRect = imageData.imagePosition!
-                        var imagePosition:CGPoint = imageRect.origin
-                        imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
-                        let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
-                        if CGRectContainsPoint(rect, point) {
-                            print("点击了图片\(imageData.imageURL)")
-                            NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchImageNotification, object: imageData.image!)
-                            return true
-                        }
-                    }
-                }
+            guard let data = self.data else {
+                return false
+            }
+            
+            if let imageData = CoreTextImageUtitils.touchImageInView(data.imageArray, touchPoint: point, view: self) {
+                NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchImageNotification, object: imageData.image!)
+                return true
             }
             
             if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
                 NSNotificationCenter.defaultCenter().postNotificationName(kCTTouchLinkNotification, object: link)
+                return true
             }
             
             return false
@@ -62,37 +59,16 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
     }
     
     func userTapGestureDetected(recognizer: UIGestureRecognizer) {
-//        let point = recognizer.locationInView(self)
-//        if let data = self.data {
-//            if let imageArray = data.imageArray {
-//                for imageData in imageArray {
-//                    let imageRect = imageData.imagePosition!
-//                    var imagePosition:CGPoint = imageRect.origin
-//                    imagePosition.y = self.bounds.size.height - imageRect.origin.y - imageRect.size.height
-//                    let rect = CGRectMake(imagePosition.x, imagePosition.y, imageRect.size.width, imageRect.size.height)
-//                    if CGRectContainsPoint(rect, point) {
-//                        print("点击了图片\(imageData.imageURL)")
-//                    }
-//                }
-//            }
-//        }
-//        
-//        if let link = CoreTextLinkUtils.touchLinkInView(self, point: point, data: self.data!) {
-//            let memberIdentifier = "/member/"
-//            if link.url!.hasPrefix(memberIdentifier) {
-//                NSNotificationCenter.defaultCenter().postNotificationName(kChooseMemberInCellNotification, object: link.title, userInfo: nil)
-//            }
-//        }
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if let change = change {
             let obj = change[NSKeyValueChangeNewKey] as! CGFloat
-//            print("========>>> \(obj)")
+            //            print("========>>> \(obj)")
             self.textHeight = obj
         }
     }
-
+    
     func setupEvents() {
         let tap = UITapGestureRecognizer(target: self, action: "userTapGestureDetected:")
         tap.delegate = self
@@ -105,22 +81,38 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
         
         let context = UIGraphicsGetCurrentContext()!
         
-        CGContextSetTextMatrix(context, CGAffineTransformIdentity)
-        CGContextTranslateCTM(context, 0, self.bounds.size.height)
-        CGContextScaleCTM(context, 1.0, -1.0)
+        self.flipCoordinate(context)
         
         if let data = self.data {
             CTFrameDraw(data.ctFrame, context)
             
-            if let imageArray = data.imageArray {
-                for imageData in imageArray {
-                    if let image = imageData.image {
-                        CGContextDrawImage(context, imageData.imagePosition!, image.CGImage)
-                    }
+            for imageData in data.imageArray {
+                if let image = imageData.image {
+                    CGContextDrawImage(context, imageData.imagePosition!, image.CGImage)
                 }
             }
         }
+    }
+    
+    func flipCoordinate(context: CGContextRef) {
+        CGContextSetTextMatrix(context, CGAffineTransformIdentity)
+        CGContextTranslateCTM(context, 0, self.bounds.size.height)
+        CGContextScaleCTM(context, 1.0, -1.0)
+    }
+    
+    func removeDataObserver(data: CoreTextData?) {
+        guard let data = data else {
+            return
+        }
         
+        data.removeObserver(self, forKeyPath: "height")
+    }
+    
+    func addDataObserver(data: CoreTextData?) {
+        guard let data = data else {
+            return
+        }
+        data.addObserver(self, forKeyPath: "height", options: .New, context: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
