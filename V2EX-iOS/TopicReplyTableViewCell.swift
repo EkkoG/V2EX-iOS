@@ -53,56 +53,55 @@ class TopicReplyTableViewCell: UITableViewCell {
     
     var replyModel: TopicReplyModel? {
         willSet(newValue){
-            
             guard let model = newValue else {
                 return
             }
-            
-            self.createdTimeLabel.text = model.createdText
-            
-            if let thanks = model.thanks {
-                self.thanksLabel.text = "\(thanks)"
-            }
-            
-            
-            let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
-            
-            var cache = V2EXShareDataManager.shareInstance.getCacheByKey(self.topicID!)
-            
-            if let object = cache[key] {
-                self.contentLabel.data = object
-                self.refreshContentLabelHeight(object.height)
-            }
-            else {
-                let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
-                let data = CTFrameParser.parseHTMLString(model.content_rendered!, width: width)
-                self.contentLabel.data = data
-                self.refreshContentLabelHeight(data.height)
-                cache[key] = data
-                
-                V2EXShareDataManager.shareInstance.updateObjectByKey(self.topicID!, object: cache)
-            }
-            
-            guard let member = model.member else {
-                return
-            }
-            
-            let url = NSURL(string:member.avatar_normal!)!
-            self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
-                if let image = image {
-                    Async.main(block: { () -> Void in
-                        self.avatarImageView.image = image.imageByRoundCornerRadius(3)
-                    })
-                }
-            }
-            
-            self.memberButton.setTitle(member.username, forState: .Normal)
+            self.setupModel(model)
         }
     }
-
+    
+    func setupModel(model: TopicReplyModel) {
+        
+        self.createdTimeLabel.text = model.createdText
+        
+        if let thanks = model.thanks {
+            self.thanksLabel.text = "\(thanks)"
+        }
+        
+        self.contentLabel.htmlString = model.content_rendered
+        self.refreshContentLabelHeight(self.contentLabel.data!.height)
+        
+        
+        guard let member = model.member else {
+            return
+        }
+        
+        self.loadAvatarImage(member.avatar_normal!)
+        
+        
+        self.memberButton.setTitle(member.username, forState: .Normal)
+    }
+    
+    func loadAvatarImage(urlString: String) {
+        let url = NSURL(string:urlString)!
+        self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
+            if let image = image {
+                Async.main(block: { () -> Void in
+                    self.avatarImageView.image = image.imageByRoundCornerRadius(3)
+                })
+            }
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        //        self.setupModel(self.replyModel!)
     }
     
     deinit {
@@ -122,8 +121,8 @@ class TopicReplyTableViewCell: UITableViewCell {
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if let _ = change {
-//            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
-//            print("indexpath \(self.indexPath!.row) + \(obj)")
+            //            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
+            //            print("indexpath \(self.indexPath!.row) + \(obj)")
             
             self.refreshContentLabelHeight(self.contentLabel.data!.height)
             NSNotificationCenter.defaultCenter().postNotificationName(kTopicDetailCellHasNewHeightNotification, object: self.indexPath)
@@ -161,7 +160,7 @@ class TopicReplyTableViewCell: UITableViewCell {
             align(left: v1, v2)
             v1.top == v2.bottom + SPACING_BEWTWEEN_COMPONENTS
             v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
-//            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+            //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
         }
         
         self.refreshContentLabelHeight(15)
@@ -201,12 +200,12 @@ class TopicReplyTableViewCell: UITableViewCell {
     }
     
     required init?(coder aDecoder: NSCoder) {
-       super.init(coder: aDecoder)
+        super.init(coder: aDecoder)
     }
-
+    
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
 }

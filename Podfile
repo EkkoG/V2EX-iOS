@@ -22,6 +22,7 @@ pod 'TTTAttributedLabel'
 pod 'NYTPhotoViewer'
 pod 'PullToRefresher'
 pod 'RFQuiltLayout'
+pod 'CryptoSwift'
 
 end
 

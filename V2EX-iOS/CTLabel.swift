@@ -14,6 +14,18 @@ let kCTTouchLinkNotification = "com.cielpy.v2ex.CTTouchLinkNotification"
 let kCTTouchImageNotification = "com.cielpy.v2ex.CTTouchImageNotification"
 
 class CTLabel: UIView, UIGestureRecognizerDelegate {
+    
+    var htmlString: String? {
+        didSet {
+            let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
+            self.data = CTFrameCache.shareInstance.getData(htmlString!, width: width)
+//            self.textHeight = data!.height
+        }
+    }
+    
+    var linkStyle: CTFrameParserConfig?
+    var contentStyle: CTFrameParserConfig?
+    
     dynamic var data: CoreTextData? {
         willSet(newValue) {
             self.addDataObserver(newValue)
