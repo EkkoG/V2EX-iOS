@@ -18,7 +18,6 @@ PODS:
   - RFQuiltLayout (1.1.1)
   - SQLite.swift (1.0.0)
   - SwiftyJSON (2.3.2)
-  - TTTAttributedLabel (1.13.4)
   - UITableView+FDTemplateLayoutCell (1.4)
   - YYCategories (0.9.3):
     - YYCategories/no-arc (= 0.9.3)
@@ -40,7 +39,6 @@ DEPENDENCIES:
   - RFQuiltLayout
   - SQLite.swift (from `https://github.com/stephencelis/SQLite.swift.git`)
   - SwiftyJSON (~> 2.3.1)
-  - TTTAttributedLabel
   - UITableView+FDTemplateLayoutCell (~> 1.4.beta)
   - YYCategories
 
@@ -69,10 +67,9 @@ SPEC CHECKSUMS:
   RFQuiltLayout: aa28fc2d4a262fbca7caa43d9d8ef4b4726c8cd4
   SQLite.swift: 3bda6d7bfff43e7f2cfd155509cad6d5d7189494
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
-  TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
   UITableView+FDTemplateLayoutCell: 234e1582bcc4e18461af91155123bb96538ed030
   YYCategories: 44fa4213d3d0ebc7fc165f3b56e9f745e2ab8afb
 
-PODFILE CHECKSUM: 91fdaa9ff8b64ebe58c1466de7bc5d5fa44f9758
+PODFILE CHECKSUM: 27bc00f6df03031909dcb136837e27750ee99fb8
 
 COCOAPODS: 1.0.0.beta.2
