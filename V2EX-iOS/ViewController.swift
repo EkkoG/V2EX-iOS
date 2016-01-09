@@ -8,6 +8,7 @@
 
 import UIKit
 import Kingfisher
+import LCTabBarController
 
 
 class ViewController: UIViewController, ZTViewControllerProtocol {
@@ -15,39 +16,47 @@ class ViewController: UIViewController, ZTViewControllerProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let cla = HomeViewController.self
-        var classArr = [HomeViewController.Type]()
-        var titles = [String]()
-        for tab in HomeTabs.allValue {
-            classArr.append(cla)
-            titles.append(tab.title)
-        }
+        
+        let tuple = self.getClassesAndTitles()
         
         let vc = ZTViewController(mneuViewStyle: MenuViewStyleDefault)
         vc.delegate = self
-        vc.loadVC(classArr, andTitle: titles)
+        vc.loadVC(tuple.0, andTitle: tuple.1)
         
         let nav = BaseNavigationViewController(rootViewController: vc)
         vc.title = "V2EX"
         
-        var profile: UIViewController?
-        if let username = NSUserDefaults.standardUserDefaults().objectForKey(signinedMemberNameKey) {
-            let userProfile = UserProfileViewController()
-            userProfile.username = username as? String
-            profile = userProfile
-        }
-        else {
-            let login = LoginViewController()
-            profile = login
-        }
+        let item = UITabBarItem(title: "主页", image: UIImage(named: "tabbar_home"), selectedImage: UIImage(named: "tabbar_home_selected"))
+        nav.tabBarItem = item
         
-        let nav1 = BaseNavigationViewController(rootViewController: profile!)
-        nav1.title = "Profile"
         
-        let tab = UITabBarController()
-        tab.setViewControllers([nav, nav1], animated: true)
+        let node = AllNodeViewController()
+        let nav1 = BaseNavigationViewController(rootViewController: node)
+        let item1 = UITabBarItem(title: "节点", image: UIImage(named: "tabbar_discover"), selectedImage: UIImage(named: "tabbar_discover_selected"))
+        nav1.tabBarItem = item1
+        
+        
+        let login = LoginViewController()
+        let nav2 = BaseNavigationViewController(rootViewController: login)
+        
+        let item2 = UITabBarItem(title: "个人", image: UIImage(named: "tabbar_profile"), selectedImage: UIImage(named: "tabbar_profile_selected"))
+        nav2.tabBarItem = item2
+        
+        let tab = LCTabBarController()
+        tab.viewControllers = [nav, nav1, nav2]
         self.addChildViewController(tab)
         self.view.addSubview(tab.view)
+    }
+    
+    func getClassesAndTitles() -> ([UIViewController.Type], [String]) {
+        let className = HomeViewController.self
+        var classes = [HomeViewController.Type]()
+        var titles = [String]()
+        for tab in HomeTabs.allValue {
+            classes.append(className)
+            titles.append(tab.title)
+        }
+        return (classes, titles)
     }
     
     func viewControllerCreated(viewController: UIViewController!, index: Int) {

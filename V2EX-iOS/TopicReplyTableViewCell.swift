@@ -11,10 +11,7 @@ import Cartography
 import Kingfisher
 import Async
 
-public let TopicReplyCellContentHasNewHeightNotification = "com.cielpy.v2ex.topicreplycontenthasnewheight"
-
-public let TopicContentNewHeightIndexPathKey = "com.cielpy.v2ex.topiccontentnewheight"
-public let TopicContentNewHeightHeightKey = "com.cielpy.v2ex.topiccontentnewheightheight"
+public let kTopicDetailCellHasNewHeightNotification = "com.cielpy.v2ex.TopicDetailCellHasNewHeight"
 
 class TopicReplyTableViewCell: UITableViewCell {
     var indexPath: NSIndexPath?
@@ -50,74 +47,61 @@ class TopicReplyTableViewCell: UITableViewCell {
     
     let contentLabelHeightGroup = ConstraintGroup()
     
+    var tapAvatar: () -> Void = { _ in }
+    
     var topicID: Int?
     
     var replyModel: TopicReplyModel? {
-        willSet(replyModel){
-            
-            let url = NSURL(string:replyModel!.avatarURL())!
-            self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
-//                if let image = image {
-//                    Async.main(block: { () -> Void in
-//                        UIGraphicsBeginImageContextWithOptions(self.avatarImageView.bounds.size, false, 1.0)
-//                        UIBezierPath.init(roundedRect: self.avatarImageView.bounds, cornerRadius: 3.0).addClip()
-//                        image.drawInRect(self.avatarImageView.bounds)
-//                        let finalImage = UIGraphicsGetImageFromCurrentImageContext()
-//                        self.avatarImageView.image = finalImage
-//                        UIGraphicsEndImageContext()
-//                    })
-//                }
+        willSet(newValue){
+            guard let model = newValue else {
+                return
             }
-            
-            self.memberButton.setTitle(replyModel!.member?.username, forState: .Normal)
-            
-            self.createdTimeLabel.text = V2EXHelper.dateFormat(replyModel!.created!)
-            if let thanks = replyModel!.thanks {
-                self.thanksLabel.text = "\(thanks)"
-            }
-            
-            let width = UIScreen.mainScreen().bounds.size.width - SPACING_BEWTWEEN_COMPONENTS - MARGIN_TO_BOUNDARY * 2 - 50
-            let config = CTFrameParserConfig(width: width, fontSize: 15, lineSpace: 5, textColor: UIColor.blackColor())
-            
-            if !replyModel!.content_rendered!.hasPrefix("<p>") {
-                replyModel?.content_rendered = "<p>\(replyModel!.content_rendered!)</p>"
-            }
-            
-            let key = "indexpath\(self.indexPath!.section)+\(self.indexPath!.row)"
-            
-            var cellHeightCeche = V2EXShareDataManager.shareInstance.cellHeightCeche
-            
-            if let cache = cellHeightCeche[self.topicID!] {
-                if let object = cache[key] {
-                    self.contentLabel.data = object
-                    self.refreshContentLabelHeight(object.height)
-                }
-                else {
-                    let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
-                    self.contentLabel.data = data
-                    self.refreshContentLabelHeight(data.height)
-//                    cache[key] = data
-                    
-                    var c = cache
-                    c[key] = data
-                    cellHeightCeche[self.topicID!] = c
-                }
-            }
-            else {
-                var cache = [String: CoreTextData]()
-                let data = CTFrameParser.parseHTMLString(replyModel!.content_rendered!, config: config)
-                self.contentLabel.data = data
-                self.refreshContentLabelHeight(data.height)
-                
-                cache[key] = data
-                cellHeightCeche[self.topicID!] = cache
+            self.setupModel(model)
+        }
+    }
+    
+    func setupModel(model: TopicReplyModel) {
+        
+        self.createdTimeLabel.text = model.createdText
+        
+        if let thanks = model.thanks {
+            self.thanksLabel.text = "\(thanks)"
+        }
+        
+        self.contentLabel.htmlString = model.content_rendered
+        self.refreshContentLabelHeight(self.contentLabel.data!.height)
+        
+        
+        guard let member = model.member else {
+            return
+        }
+        
+        self.loadAvatarImage(member.avatar_normal!)
+        
+        
+        self.memberButton.setTitle(member.username, forState: .Normal)
+    }
+    
+    func loadAvatarImage(urlString: String) {
+        let url = NSURL(string:urlString)!
+        self.avatarImageView.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
+            if let image = image {
+                Async.main(block: { () -> Void in
+                    self.avatarImageView.image = image.imageByRoundCornerRadius(3)
+                })
             }
         }
     }
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        //        self.setupModel(self.replyModel!)
     }
     
     deinit {
@@ -128,37 +112,29 @@ class TopicReplyTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentLabel.addObserver(self, forKeyPath: "textHeight", options: NSKeyValueObservingOptions.New, context: nil)
         
+        let tap = UITapGestureRecognizer(target: self, action: "tapAvatarImageView:")
+        self.avatarImageView.addGestureRecognizer(tap)
+        self.avatarImageView.userInteractionEnabled = true
+        
         self.UILayout()
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if let _ = change {
-//            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
-//            print("indexpath \(self.indexPath!.row) + \(obj)")
+            //            let obj = change[NSKeyValueChangeNewKey] as! CGFloat
+            //            print("indexpath \(self.indexPath!.row) + \(obj)")
             
             self.refreshContentLabelHeight(self.contentLabel.data!.height)
-            NSNotificationCenter.defaultCenter().postNotificationName(TopicReplyCellContentHasNewHeightNotification, object: self.indexPath)
+            NSNotificationCenter.defaultCenter().postNotificationName(kTopicDetailCellHasNewHeightNotification, object: self.indexPath)
         }
     }
     
     func UILayout() {
-        self.addSubview(self.avatarImageView)
-        self.addSubview(self.memberButton)
-        self.addSubview(self.createdTimeLabel)
-        self.addSubview(self.thanksLabel)
-        self.addSubview(self.contentLabel)
-        
-//        avatarImageView!.backgroundColor = UIColor.redColor()
-//        self.memberButton.backgroundColor = UIColor.greenColor()
-//        self.createdTimeLabel.backgroundColor = UIColor.grayColor()
-//        self.thanksLabel.backgroundColor = UIColor.blueColor()
-//        self.contentLabel.backgroundColor = UIColor.redColor()
-        
-//        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-//        memberButton.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Vertical)
-//        
-//        createdTimeLabel.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
-//        thanksLabel.setContentHuggingPriority(750, forAxis: UILayoutConstraintAxis.Horizontal)
+        self.contentView.addSubview(self.avatarImageView)
+        self.contentView.addSubview(self.memberButton)
+        self.contentView.addSubview(self.createdTimeLabel)
+        self.contentView.addSubview(self.thanksLabel)
+        self.contentView.addSubview(self.contentLabel)
         
         constrain(self.avatarImageView) { v in
             let width: CGFloat = 50
@@ -184,7 +160,7 @@ class TopicReplyTableViewCell: UITableViewCell {
             align(left: v1, v2)
             v1.top == v2.bottom + SPACING_BEWTWEEN_COMPONENTS
             v1.right == v1.superview!.right - MARGIN_TO_BOUNDARY
-//            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
+            //            v1.bottom == v1.superview!.bottom - MARGIN_TO_BOUNDARY
         }
         
         self.refreshContentLabelHeight(15)
@@ -219,13 +195,17 @@ class TopicReplyTableViewCell: UITableViewCell {
         return CGSizeMake(size.width, totalHeight)
     }
     
-    required init?(coder aDecoder: NSCoder) {
-       super.init(coder: aDecoder)
+    func tapAvatarImageView(gesture: UIGestureRecognizer) {
+        self.tapAvatar()
     }
-
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
 }

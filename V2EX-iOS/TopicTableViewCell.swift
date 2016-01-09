@@ -32,14 +32,15 @@ class TopicTableViewCell: UITableViewCell {
         title.translatesAutoresizingMaskIntoConstraints = false
         return title
     }()
-    lazy var node: UILabel = {
-        let node = UILabel()
+    lazy var node: UIButton = {
+        let node = UIButton(type: UIButtonType.Custom)
         
-        node.backgroundColor = UIColor.init(hexString: "#F5F5F5")
+        node.backgroundColor = kListViewHeaderViewBackroundColor
         node.layer.cornerRadius = 3
         node.layer.masksToBounds = true
         
-        node.font = UIFont.systemFontOfSize(self.smallFont)
+        node.titleLabel?.font = UIFont.systemFontOfSize(self.smallFont)
+        node.setTitleColor(UIColor.blackColor(), forState: .Normal)
         node.translatesAutoresizingMaskIntoConstraints = false
         return node
     }()
@@ -85,24 +86,21 @@ class TopicTableViewCell: UITableViewCell {
                 self.avatar.kf_setImageWithURL(url, placeholderImage: nil, optionsInfo: [KingfisherOptionsInfoItem.Options(KingfisherOptions.None)]) { (image, error, cacheType, imageURL) -> () in
                     if let image = image {
                         Async.main(block: { () -> Void in
-                            UIGraphicsBeginImageContextWithOptions(self.avatar.bounds.size, false, 1.0)
-                            UIBezierPath.init(roundedRect: self.avatar.bounds, cornerRadius: 3.0).addClip()
-                            image.drawInRect(self.avatar.bounds)
-                            let finalImage = UIGraphicsGetImageFromCurrentImageContext()
-                            self.avatar.image = finalImage
-                            UIGraphicsEndImageContext()
+                            self.avatar.image = image.imageByRoundCornerRadius(3)
                         })
                     }
                 }
             }
             
             self.title.text = topic!.title
-            self.node.text = topic!.node?.title
+            self.node.setTitle(topic?.node?.title, forState: .Normal)
             self.member.text = topic!.member?.username
             self.lastModified.text = topic!.lastModifiedText()
             setNeedsUpdateConstraints()
         }
     }
+    var tapSendButton: () -> Void = { _ in }
+    var tapAvatar: () -> Void = { _ in }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -119,11 +117,11 @@ class TopicTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.lastModifyMember)
         self.contentView.addSubview(self.replies)
         
-//        title.backgroundColor = UIColor.grayColor()
-//        avatar.backgroundColor = UIColor.redColor()
-//        node.backgroundColor = UIColor.blueColor()
-//        lastModified.backgroundColor = UIColor.greenColor()
-//        member.backgroundColor = UIColor.purpleColor()
+        self.node.addTarget(self, action: "gotoNodeTopics:", forControlEvents: UIControlEvents.TouchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: "tapAvatarImageView:")
+        self.avatar.addGestureRecognizer(tap)
+        self.avatar.userInteractionEnabled = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -155,10 +153,9 @@ class TopicTableViewCell: UITableViewCell {
         }
         
         constrain(self.node, self.member, self.lastModified, self.lastModifyMember, title) {v1, v2, v3, v4, v5 in
+            v1.height == 16
             v1.left == v5.left
             v2.left == v1.right + SPACING_BEWTWEEN_COMPONENTS
-//            v3.left == v2.right + SPACING_BEWTWEEN_COMPONENTS
-//            v4.left == v3.right + SPACING_BEWTWEEN_COMPONENTS
             v3.right == v3.superview!.right - MARGIN_TO_BOUNDARY
             
             v5.bottom == v1.top
@@ -171,6 +168,14 @@ class TopicTableViewCell: UITableViewCell {
     override func updateConstraints() {
         UILayout()
         super.updateConstraints()
+    }
+    
+    func gotoNodeTopics(sender: UIButton) {
+        self.tapSendButton()
+    }
+    
+    func tapAvatarImageView(gesture: UIGestureRecognizer) {
+        self.tapAvatar()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

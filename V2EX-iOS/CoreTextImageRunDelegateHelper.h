@@ -13,5 +13,5 @@
 
 @interface CoreTextImageRunDelegateHelper : NSObject
 
-+ (NSAttributedString *)parseAttributedContentFromDictionary:(UIImage *)image;
++ (NSAttributedString *)parseAttributedContentFromDictionary:(UIImage *)image attributes:(NSDictionary *)attributes;
 @end

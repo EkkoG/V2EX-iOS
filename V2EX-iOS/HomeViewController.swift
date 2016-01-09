@@ -10,78 +10,108 @@ import UIKit
 import Cartography
 import SwiftyJSON
 import Async
+import PullToRefresh
 
-class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+class HomeViewController: BaseViewController {
+    let kHomeTopicsCellIdentifier = "com.cielpy.v2ex.home.cellIdentifier"
+    
     var type: HomeTabs!
-    var topicsTableView: UITableView!
-    var topics: NSArray?
+    
+    lazy var topicsTableView: UITableView = {
+        [unowned self] in
+        let topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
+        topicsTableView.dataSource = self
+        topicsTableView.delegate = self
+        topicsTableView.estimatedRowHeight = 60
+        topicsTableView.rowHeight = UITableViewAutomaticDimension
+        return topicsTableView
+    }()
+    
+    var topics = [TopicModel]()
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.hidden = false
+    }
  
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        print(self.type.title)
         
-        topicsTableView = UITableView(frame: self.view.bounds, style: .Plain)
-        topicsTableView.dataSource = self
-        topicsTableView.delegate = self
-        topicsTableView.estimatedRowHeight = 60
-        topicsTableView.rowHeight = UITableViewAutomaticDimension
-        topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: "cell")
-        self.view.addSubview(topicsTableView)
-        constrain(topicsTableView) { (view) -> () in
-            view.edges == inset(view.superview!.edges, 0, 0, 0, 0)
+        self.setupTableView()
+        
+        self.loadData()
+    }
+    
+    func setupTableView() {
+        self.topicsTableView.registerClass(TopicTableViewCell.self, forCellReuseIdentifier: kHomeTopicsCellIdentifier)
+        self.view.addSubview(self.topicsTableView)
+        constrain(self.topicsTableView) { v1 in
+            v1.edges == inset(v1.superview!.edges, 0, 0, 0, 0)
         }
         
-        print(type.title)
-//        print(V2EXHelper.dateFormat(1448793443))
-        
-        DataManager.loadTabsTopicsDataWithTabsPath(type.path) { (response) -> Void in
-            self.topics = response.data
+        self.topicsTableView.addPullToRefresh(PullToRefresh()) { () -> () in
+            self.loadData()
+        }
+    }
+    
+    func loadData() {
+        DataManager.loadTabsTopicsDataWithTabsPath(self.type.path) { (response) -> Void in
+            guard let data = response.data else {
+                return
+            }
+            self.topics = data
             self.topicsTableView.reloadData()
+            self.topicsTableView.endRefreshing()
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! TopicTableViewCell
-        let topic = topics![indexPath.row] as! TopicModel
-        cell.selectionStyle = .None
-        cell.topic = topic
-//        cell.lastModifyMember.text = topic.last_modified
-        return cell
+    func gotoNodeTopics(node: Node) {
+        let nodeTopics = NodeTopicsViewController()
+        nodeTopics.nodeModel = node
+        self.navigationController!.pushViewController(nodeTopics, animated: true)
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let arr = topics {
-            return arr.count
-        }
-        return 0
-    }
-    
-//    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-//        return 80
-//    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let topic = topics![indexPath.row] as! TopicModel
-        let detail = TopicDetailViewController()
-        detail.topicID = topic.topicID
-        navigationController?.pushViewController(detail, animated: true)
+    func gotoMemberProfile(username: String) {
+        let profile = UserProfileViewController()
+        profile.username = username
+        self.navigationController!.pushViewController(profile, animated: true)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+}
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+extension HomeViewController: UITableViewDataSource {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(kHomeTopicsCellIdentifier, forIndexPath: indexPath) as! TopicTableViewCell
+        let topic = self.topics[indexPath.row]
+        cell.selectionStyle = .None
+        cell.topic = topic
+        cell.tapSendButton = { _ in
+            self.gotoNodeTopics(topic.node!)
+        }
+        
+        cell.tapAvatar = { _ in
+            self.gotoMemberProfile(topic.member!.username!)
+        }
+        return cell
     }
-    */
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.topics.count
+    }
+}
 
+extension HomeViewController: UITableViewDelegate {
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let topic = self.topics[indexPath.row]
+        let detail = TopicDetailViewController()
+        detail.topicID = topic.topicID
+        self.navigationController!.pushViewController(detail, animated: true)
+    }
 }

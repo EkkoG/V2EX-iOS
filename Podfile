@@ -17,6 +17,11 @@ pod 'YYCategories'
 pod 'EZSwiftExtensions'
 pod 'UITableView+FDTemplateLayoutCell', '~> 1.4.beta'
 pod 'NextGrowingTextView'
+pod 'LCTabBarController'
+pod 'NYTPhotoViewer'
+pod 'PullToRefresher'
+pod 'RFQuiltLayout'
+pod 'CryptoSwift'
 
 end
 

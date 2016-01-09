@@ -9,56 +9,91 @@
 import UIKit
 
 class LoginViewController: BaseViewController,LoginViewProtocol {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    
+    lazy var loginView: LoginView = {
+        [unowned self] in
         let loginView = LoginView(frame: self.view.bounds)
         loginView.delegate = self
-        self.view.addSubview(loginView)
+        
+        return loginView
+        }()
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.hidden = false
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.title = "登录"
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "memberSignInSuccessful:", name: kMemberSignInSuccessfulNotification, object: nil)
+        
+        // Do any additional setup after loading the view.
+        self.view.addSubview(self.loginView)
+        self.showUserProfile()
     }
     
     func signInButtonClicked(username: String, password: String) {
-        print(username + "  " + password)
+        //        print(username + "  " + password)
         DataManager.signIn(username, password: password) { (dataResponse) -> Void in
             guard dataResponse.data! == true else {
                 print("登录失败")
                 return
             }
             
-            DataManager.loadUserProfileInfo(username, completion: { (dataResponse) -> Void in
-                guard let profile = dataResponse.data else {
-                    print("登录失败")
-                    return
-                }
-                
-                V2EXShareDataManager.shareInstance.memberProfile = profile
-                
-                NSUserDefaults.standardUserDefaults().setObject(username, forKey: signinedMemberNameKey)
-                
-                let userProfile = UserProfileViewController()
-                userProfile.username = username
-                self.addChildViewController(userProfile)
-                self.view.addSubview(userProfile.view)
-            })
+            self.loadMemberProfile(username)
         }
     }
-
+    
+    func loadMemberProfile(username: String) {
+        DataManager.loadUserProfileInfo(username, completion: { (dataResponse) -> Void in
+            guard let profile = dataResponse.data else {
+                print("登录失败")
+                return
+            }
+            
+            self.loginView.clearMemberInput()
+            V2EXShareDataManager.shareInstance.memberProfile = profile
+            
+            self.showUserProfile()
+            NSUserDefaults.standardUserDefaults().setObject(username, forKey: kSigninedMemberNameKey)
+        })
+    }
+    
+    func memberSignInSuccessful(notification: NSNotification) {
+        self.showUserProfile()
+    }
+    
+    func showUserProfile() {
+        guard let profile = V2EXShareDataManager.shareInstance.memberProfile else {
+            return
+        }
+        
+        let userProfile = UserProfileViewController()
+        userProfile.username = profile.username
+        self.addChildViewController(userProfile)
+        self.view.addSubview(userProfile.view)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
+    
     /*
     // MARK: - Navigation
-
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // Get the new view controller using segue.destinationViewController.
+    // Pass the selected object to the new view controller.
     }
     */
-
+    
 }

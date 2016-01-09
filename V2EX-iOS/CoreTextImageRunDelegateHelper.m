@@ -13,7 +13,7 @@
 
 @implementation CoreTextImageRunDelegateHelper
 
-+ (NSAttributedString *)parseAttributedContentFromDictionary:(UIImage *)image {
++ (NSAttributedString *)parseAttributedContentFromDictionary:(UIImage *)image attributes:(NSDictionary *)attributes {
     CTRunDelegateCallbacks callbacks;
     memset(&callbacks, 0, sizeof(CTRunDelegateCallbacks));
     callbacks.version = kCTRunDelegateVersion1;

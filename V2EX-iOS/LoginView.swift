@@ -43,7 +43,7 @@ class LoginView: UIView {
         self.addSubview(self.passwordTextField)
         
         self.addSubview(self.signInButton)
-        self.signInButton.backgroundColor = UIColor(hexString: "#f2f2f2")
+        self.signInButton.backgroundColor = kListViewHeaderViewBackroundColor
         self.signInButton.setTitle("登录", forState: .Normal)
         self.signInButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
         
@@ -71,6 +71,8 @@ class LoginView: UIView {
                 print("请输入密码")
                 return
             }
+            self.usernameTextField.resignFirstResponder()
+            self.passwordTextField.resignFirstResponder()
             
             delegate.signInButtonClicked(username, password: password)
         }
@@ -99,6 +101,11 @@ class LoginView: UIView {
             v3.top == v2.bottom + SPACING_BEWTWEEN_COMPONENTS
         }
         
+    }
+    
+    func clearMemberInput() {
+        self.usernameTextField.text = nil
+        self.passwordTextField.text = nil
     }
 
     required init?(coder aDecoder: NSCoder) {
