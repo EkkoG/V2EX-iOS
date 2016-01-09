@@ -13,7 +13,6 @@ import Kingfisher
 class CoreTextImageData: NSObject {
     var name: String?
     var image: UIImage?
-    var webImageDownloaded: Bool = false
     var imageURL: String?
     var position: Int?
     var imagePosition: CGRect?

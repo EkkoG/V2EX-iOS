@@ -252,15 +252,15 @@ extension TopicDetailViewController {
         return true
     }
     
-    override func canResignFirstResponder() -> Bool {
-        
-        return true
-    }
-    
-    override func resignFirstResponder() -> Bool {
-        
-        return true
-    }
+//    override func canResignFirstResponder() -> Bool {
+//        
+//        return true
+//    }
+//    
+//    override func resignFirstResponder() -> Bool {
+//        
+//        return true
+//    }
     
     override var inputAccessoryView: UIView? {
         

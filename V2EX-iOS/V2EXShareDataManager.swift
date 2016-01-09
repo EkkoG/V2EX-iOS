@@ -39,19 +39,3 @@ class V2EXShareDataManager: NSObject {
         }
     }
 }
-
-extension V2EXShareDataManager {
-    func getCacheByKey(key: AnyObject) -> [String: CoreTextData] {
-        if let obj = self.cellHeightCeche.objectForKey(key) {
-            return obj as! [String: CoreTextData]
-            
-        }
-        else {
-            return [String: CoreTextData]()
-        }
-    }
-    
-    func updateObjectByKey(key: AnyObject, object: [String: CoreTextData]) {
-        self.cellHeightCeche.setObject(object, forKey: key)
-    }
-}

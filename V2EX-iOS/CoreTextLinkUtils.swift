@@ -9,36 +9,56 @@
 import UIKit
 
 class CoreTextLinkUtils: NSObject {
-    class func touchLinkInView(view: UIView, point: CGPoint, data: CoreTextData) -> CoreTextLinkData? {
-        let textFrame = data.ctFrame
-        let lines = CTFrameGetLines(textFrame) as NSArray
-        if lines.count == 0 {
-            return nil
-        }
-        
-        var origins = [CGPoint](count: lines.count, repeatedValue: CGPointZero)
-        CTFrameGetLineOrigins(textFrame, CFRangeMake(0, 0), &origins)
+    
+    class func flipCoordinate(view: UIView) -> CGAffineTransform {
         var transform = CGAffineTransformMakeTranslation(0, view.bounds.size.height)
         transform = CGAffineTransformScale(transform, 1.0, -1.0)
-        
+        return transform
+    }
+    
+    class func getLineRect(point: CGPoint,line: CTLineRef, transform: CGAffineTransform) -> CGRect {
+        //get line's origin rect
+        let  flippedRect =  self.getLineBounds(line, point: point)
+        //flip the rect
+        let rect = CGRectApplyAffineTransform(flippedRect, transform)
+        return rect
+    }
+    
+    class func convertToCurrentCoordinate(rect: CGRect, point: CGPoint) -> CGPoint {
+        let relativePoint = CGPointMake(point.x - CGRectGetMinX(rect), point.y - CGRectGetMinY(rect))
+        return relativePoint
+    }
+    
+    class func linkHitTest(point: CGPoint, lines: [CTLineRef], origins: [CGPoint], transform: CGAffineTransform, data: CoreTextData) -> CoreTextLinkData? {
         for i in 0..<origins.count {
             let linePoint = origins[i]
-            let line = lines[i] as! CTLineRef
+            let line = lines[i]
             
-            let  flippedRect =  self.getLineBounds(line, point: linePoint)
-            let rect = CGRectApplyAffineTransform(flippedRect, transform)
+            let rect = self.getLineRect(linePoint, line: line, transform: transform)
             
             if CGRectContainsPoint(rect, point) {
-                let relativePoint = CGPointMake(point.x - CGRectGetMinX(rect), point.y - CGRectGetMinY(rect))
+                let relativePoint = self.convertToCurrentCoordinate(rect, point: point)
                 
                 let idx = CTLineGetStringIndexForPosition(line, relativePoint)
-                if let link = self.linkAtIndex(idx, linkArray: data.linkArray!) {
+                if let link = self.linkAtIndex(idx, links: data.linkArray) {
                     return link
                 }
             }
         }
         
         return nil
+    }
+    
+    //http://blog.devtang.com/blog/2015/06/27/using-coretext-2/
+    class func touchLinkInView(view: UIView, point: CGPoint, data: CoreTextData) -> CoreTextLinkData? {
+        //flip coordinate
+        let transform = self.flipCoordinate(view)
+        
+        //get rect of each line
+        let lines = CoreTextHelper.getlinesAndOrigins(data.ctFrame).lines
+        let lineOrigins = CoreTextHelper.getlinesAndOrigins(data.ctFrame).origins
+        
+        return self.linkHitTest(point, lines: lines, origins: lineOrigins, transform: transform, data: data)
     }
     
     class func getLineBounds(line: CTLineRef, point: CGPoint) -> CGRect {
@@ -50,18 +70,14 @@ class CoreTextLinkUtils: NSObject {
         return CGRectMake(point.x, point.y, width, height)
     }
     
-    class func linkAtIndex(i: CFIndex, linkArray: NSArray) -> CoreTextLinkData? {
-        for data in linkArray {
-            if data is CoreTextLinkData {
-                let d = data as! CoreTextLinkData
-                if let range = d.range {
-                    if NSLocationInRange(i, range) {
-                        return d
-                    }
+    class func linkAtIndex(i: CFIndex, links: [CoreTextLinkData]) -> CoreTextLinkData? {
+        for data in links {
+            if let range = data.range {
+                if NSLocationInRange(i, range) {
+                    return data
                 }
             }
         }
         return nil
     }
-
 }

@@ -9,20 +9,14 @@
 import UIKit
 
 class CTFrameParserConfig: NSObject {
-    var width: CGFloat = 200
+    var width: CGFloat? = 200
     var fontSize: CGFloat = 15
     var lineSpace: CGFloat = 5
     var textColor: UIColor = UIColor.blackColor()
 
-    init(width: CGFloat, fontSize: CGFloat, lineSpace: CGFloat, textColor: UIColor) {
-        self.width = width
+    init(fontSize: CGFloat = 15, lineSpace: CGFloat = 5, textColor: UIColor = UIColor.blackColor()) {
         self.fontSize = fontSize
         self.lineSpace = lineSpace
         self.textColor = textColor
-    }
-    
-    class func defaultConfig(width: CGFloat) -> CTFrameParserConfig {
-        let config = CTFrameParserConfig(width: width, fontSize: 15, lineSpace: 5, textColor: UIColor.blackColor())
-        return config
     }
 }
