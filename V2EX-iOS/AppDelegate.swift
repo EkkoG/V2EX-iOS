@@ -17,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
 //        NSUserDefaults.standardUserDefaults().removeObjectForKey(signinedMemberNameKey)
+        let options = BugtagsOptions()
+        options.trackingCrashes = true // 具体可设置的属性请查看 Bugtags.h
+        Bugtags.startWithAppKey("08950829b18ff79043f630ff11256160", invocationEvent: BTGInvocationEventBubble, options: options)
         V2EXShareDataManager.shareInstance.updateData()
         return true
     }
