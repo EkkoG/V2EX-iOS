@@ -6,7 +6,6 @@ use_frameworks!
 target 'V2EX-iOS' do
 
 pod 'Alamofire' , '~> 3.1.3'
-pod 'SQLite.swift', '~> 0.9.1'
 pod 'SwiftyJSON', '~> 2.3.1'
 pod 'Cartography', '~> 0.6.0'
 pod 'Kingfisher', '~> 1.8.2'
