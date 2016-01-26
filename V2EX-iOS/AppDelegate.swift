@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         options.trackingCrashes = true // 具体可设置的属性请查看 Bugtags.h
         Bugtags.startWithAppKey("08950829b18ff79043f630ff11256160", invocationEvent: BTGInvocationEventBubble, options: options)
         V2EXShareDataManager.shareInstance.updateData()
+        
         return true
     }
 

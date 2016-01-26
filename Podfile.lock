@@ -17,7 +17,6 @@ PODS:
   - ObjectMapper (1.0.1)
   - PullToRefresher (1.3.1)
   - RFQuiltLayout (1.1.1)
-  - SQLite.swift (0.9.1)
   - SwiftyJSON (2.3.2)
   - TTTAttributedLabel (1.13.4)
   - UITableView+FDTemplateLayoutCell (1.4)
@@ -40,7 +39,6 @@ DEPENDENCIES:
   - ObjectMapper (~> 1.0.1)
   - PullToRefresher
   - RFQuiltLayout
-  - SQLite.swift (~> 0.9.1)
   - SwiftyJSON (~> 2.3.1)
   - TTTAttributedLabel
   - UITableView+FDTemplateLayoutCell (~> 1.4.beta)
@@ -61,12 +59,11 @@ SPEC CHECKSUMS:
   ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
   PullToRefresher: e17cc032b48148824a77fbf4bce5beb81933071a
   RFQuiltLayout: aa28fc2d4a262fbca7caa43d9d8ef4b4726c8cd4
-  SQLite.swift: b9574f52c058b680e10e70b72e487312e0e4d26f
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
   TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
   UITableView+FDTemplateLayoutCell: 234e1582bcc4e18461af91155123bb96538ed030
   YYCategories: 44fa4213d3d0ebc7fc165f3b56e9f745e2ab8afb
 
-PODFILE CHECKSUM: 3e4836b2ff325c580c37da8f1e6a8e608d827c6c
+PODFILE CHECKSUM: cdf70390b984c05f42f0b61c90486951fe809ab9
 
 COCOAPODS: 1.0.0.beta.2
