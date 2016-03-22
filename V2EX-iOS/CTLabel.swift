@@ -82,7 +82,7 @@ class CTLabel: UIView, UIGestureRecognizerDelegate {
     }
     
     func setupEvents() {
-        let tap = UITapGestureRecognizer(target: self, action: "userTapGestureDetected:")
+        let tap = UITapGestureRecognizer(target: self, action: #selector(userTapGestureDetected(_:)))
         tap.delegate = self
         self.addGestureRecognizer(tap)
         self.userInteractionEnabled = true

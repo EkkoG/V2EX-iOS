@@ -9,7 +9,7 @@
 #import "ZTViewController.h"
 #import "UIView+Extension.h"
 #import "ZTPage.h"
-#import <YYCategories/YYCategories.h>
+#import "YYCategories.h"
 #import "V2EX_iOS-Swift.h"
 
 

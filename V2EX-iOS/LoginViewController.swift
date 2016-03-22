@@ -31,7 +31,7 @@ class LoginViewController: BaseViewController,LoginViewProtocol {
         super.viewDidLoad()
         self.title = "登录"
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "memberSignInSuccessful:", name: kMemberSignInSuccessfulNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(memberSignInSuccessful(_:)), name: kMemberSignInSuccessfulNotification, object: nil)
         
         // Do any additional setup after loading the view.
         self.view.addSubview(self.loginView)

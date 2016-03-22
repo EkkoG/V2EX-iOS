@@ -90,7 +90,7 @@ class CoreTextData: NSObject {
                 
                 let delegateBounds = CGRectOffset(runBounds, colRect.origin.x, colRect.origin.y)
                 imageData?.imagePosition = delegateBounds
-                imageIndex++
+                imageIndex += 1
                 if imageIndex == self.imageArray.count {
                     imageData = nil
                     break

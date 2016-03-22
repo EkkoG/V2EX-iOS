@@ -1,28 +1,35 @@
 PODS:
-  - Alamofire (3.1.4)
-  - AsyncSwift (1.6.4)
-  - Bugtags (1.1.7)
+  - Alamofire (3.1.5)
+  - AsyncSwift (1.7.2)
+  - Bugtags (1.2.1)
   - Cartography (0.6.0)
-  - CryptoSwift (0.2.2)
-  - EZSwiftExtensions (1.0.5)
+  - CryptoSwift (0.2.3)
+  - EZSwiftExtensions (1.2.2)
+  - FLAnimatedImage (1.0.12)
   - Ji (1.2.0):
     - Ji/Ji (= 1.2.0)
   - Ji/Ji (1.2.0):
     - Ji/Ji-libxml
   - Ji/Ji-libxml (1.2.0)
   - Kingfisher (1.8.5)
-  - LCTabBarController (1.2.5)
-  - NextGrowingTextView (0.1.1)
-  - NYTPhotoViewer (0.1.2)
+  - LCTabBarController (1.3.1)
+  - NextGrowingTextView (0.1.3)
+  - NYTPhotoViewer (1.1.0):
+    - NYTPhotoViewer/AnimatedGifSupport (= 1.1.0)
+    - NYTPhotoViewer/Core (= 1.1.0)
+  - NYTPhotoViewer/AnimatedGifSupport (1.1.0):
+    - FLAnimatedImage (~> 1.0.8)
+    - NYTPhotoViewer/Core
+  - NYTPhotoViewer/Core (1.1.0)
   - ObjectMapper (1.0.1)
   - PullToRefresher (1.3.1)
   - RFQuiltLayout (1.1.1)
   - SwiftyJSON (2.3.2)
   - TTTAttributedLabel (1.13.4)
-  - UITableView+FDTemplateLayoutCell (1.4)
-  - YYCategories (0.9.3):
-    - YYCategories/no-arc (= 0.9.3)
-  - YYCategories/no-arc (0.9.3)
+  - UITableView+FDTemplateLayoutCell (1.5.beta)
+  - YYCategories (1.0):
+    - YYCategories/no-arc (= 1.0)
+  - YYCategories/no-arc (1.0)
 
 DEPENDENCIES:
   - Alamofire (~> 3.1.3)
@@ -45,25 +52,26 @@ DEPENDENCIES:
   - YYCategories
 
 SPEC CHECKSUMS:
-  Alamofire: fbc829692f351fa1d8a31dd75fd7f7f56fea31fb
-  AsyncSwift: 3c90beed237324f1b57e1f1c414dc5501985d208
-  Bugtags: 5522fa54c5a4db1d45a3fff3dd9def69e7172ee1
+  Alamofire: 5f730ba29fd113b7ddd71c1e65d0c630acf5d7b0
+  AsyncSwift: 46a78bceb11f0e5bb52747f740d9692ec78d2d7c
+  Bugtags: dacf20b913e9299fe85dc6b41b91242da83ee03c
   Cartography: 70af183a248547694a8cfaa6b989cb7e04589985
-  CryptoSwift: d382228d6301c09474132417878a741c2a2e68cd
-  EZSwiftExtensions: b4369331aa7a0fcfca8bb7d2467567bcd237f083
+  CryptoSwift: b2bf37b8e7cc6d682ef3365cb966bc5ae5174aa5
+  EZSwiftExtensions: eba8bd7bc3768b1e356b4c7de3512c99770c71bc
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Ji: ddebb22f9ac445db6e884b66f78ea74fb135fdb7
   Kingfisher: 780fed0fa82692a3bd59d53329ae2b85cdd354a5
-  LCTabBarController: c857c54abc8e505902e3c92de3b4c22292f7f0f1
-  NextGrowingTextView: 436152a06a65038a31564d466e44b398f2b28de6
-  NYTPhotoViewer: 874a57dd833238b52ab2e8d1c827356c763626c3
+  LCTabBarController: 9f87dcd1c1feb0b6815b7d88c6efc89c0942e8c6
+  NextGrowingTextView: 9d54d204e92798e6e802f63ed65868351c755e95
+  NYTPhotoViewer: e80e8767f3780d2df37c6f72cbab15d6c7232911
   ObjectMapper: 98524bac0dca46c6b3d5ee02cd410fc700ec6ce2
   PullToRefresher: e17cc032b48148824a77fbf4bce5beb81933071a
   RFQuiltLayout: aa28fc2d4a262fbca7caa43d9d8ef4b4726c8cd4
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
   TTTAttributedLabel: 0a2ac7b2dd726d32a070dafb01446026b11e624f
-  UITableView+FDTemplateLayoutCell: 234e1582bcc4e18461af91155123bb96538ed030
-  YYCategories: 44fa4213d3d0ebc7fc165f3b56e9f745e2ab8afb
+  UITableView+FDTemplateLayoutCell: 02b508ab1cb4cea16a8c17ac83d2cd1fd72124f9
+  YYCategories: 08fccb29097e711091d828cdf77a2066ad8ba806
 
 PODFILE CHECKSUM: cdf70390b984c05f42f0b61c90486951fe809ab9
 
-COCOAPODS: 1.0.0.beta.2
+COCOAPODS: 1.0.0.beta.4

@@ -117,9 +117,9 @@ class TopicTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.lastModifyMember)
         self.contentView.addSubview(self.replies)
         
-        self.node.addTarget(self, action: "gotoNodeTopics:", forControlEvents: UIControlEvents.TouchUpInside)
+        self.node.addTarget(self, action: #selector(TopicTableViewCell.gotoNodeTopics(_:)), forControlEvents: UIControlEvents.TouchUpInside)
         
-        let tap = UITapGestureRecognizer(target: self, action: "tapAvatarImageView:")
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImageView(_:)))
         self.avatar.addGestureRecognizer(tap)
         self.avatar.userInteractionEnabled = true
     }

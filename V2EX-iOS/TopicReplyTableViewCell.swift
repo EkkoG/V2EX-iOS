@@ -112,7 +112,7 @@ class TopicReplyTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentLabel.addObserver(self, forKeyPath: "textHeight", options: NSKeyValueObservingOptions.New, context: nil)
         
-        let tap = UITapGestureRecognizer(target: self, action: "tapAvatarImageView:")
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImageView(_:)))
         self.avatarImageView.addGestureRecognizer(tap)
         self.avatarImageView.userInteractionEnabled = true
         

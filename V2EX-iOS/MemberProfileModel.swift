@@ -8,6 +8,7 @@
 
 import UIKit
 import ObjectMapper
+import YYCategories
 
 class MemberProfileModel: NSObject,Mappable {
     var status: String?
@@ -40,7 +41,7 @@ class MemberProfileModel: NSObject,Mappable {
             let date = NSDate(timeIntervalSince1970: NSTimeInterval(self.created!))
             let string = date.stringWithFormat("yyyy-MM-dd HH-mm-ss Z")
             
-            return "加入于 " + string
+            return "加入于 " + string!
         }
     }
     

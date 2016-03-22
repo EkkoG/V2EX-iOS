@@ -9,7 +9,7 @@
 #import "CoreTextImageRunDelegateHelper.h"
 #import <CoreText/CoreText.h>
 #import "V2EX_iOS-Swift.h"
-#import <YYCategories/UIImage+YYAdd.h>
+#import "YYCategories.h"
 
 @implementation CoreTextImageRunDelegateHelper
 

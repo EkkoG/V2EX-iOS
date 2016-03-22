@@ -90,7 +90,7 @@ class CTFrameParser: NSObject {
     class func attributedStringWithTagName(content: String, tagName: TagName) -> NSAttributedString {
         switch tagName {
         case .A:
-            let config = CTFrameParserConfig(textColor:kHTMLATagColor)
+            let config = CTFrameParserConfig(textColor:kHTMLATagColor!)
             let attributes = self.attributesWithConfig(config)
             return NSAttributedString(string: content, attributes: attributes)
         case .BR:

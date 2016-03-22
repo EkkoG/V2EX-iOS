@@ -86,7 +86,7 @@ class UserProfileViewController: BaseViewController {
             //check if is the signin member
             if V2EXShareDataManager.shareInstance.signInStatus().memberName == self.username {
                 self.parentViewController!.title = "个人"
-                let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: "signOut")
+                let signOutItem = UIBarButtonItem(title: "退出", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(signOut))
                 self.parentViewController!.navigationItem.leftBarButtonItem = signOutItem
                 self.tabBarController?.tabBar.hidden = false
             }
@@ -219,9 +219,13 @@ extension UserProfileViewController: UITableViewDelegate {
         if indexPath.section == 0{
             let info = self.memberProfile?.memberSoicalInfo[indexPath.row]
             
-            let sf = SFSafariViewController(URL: NSURL(string: info!.URL!)!)
+            if #available(iOS 9.0, *) {
+                let sf = SFSafariViewController(URL: NSURL(string: info!.URL!)!)
+                self.presentVC(sf)
+            } else {
+                // Fallback on earlier versions
+            }
 //            self.navigationController!.pushViewController(sf, animated: true)
-            self.presentVC(sf)
         }
         
         if indexPath.section == 1 {

@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import YYCategories
 
-public let kHTMLATagColor = UIColor(hexString: "#778087")!
-public let kSeparateLineColor = UIColor(hexString: "#e2e2e2")!
-public let kListViewHeaderViewBackroundColor = UIColor(hexString: "#f2f2f2")!
+public let kHTMLATagColor = UIColor(hexString: "#778087", alpha: 1.0)//UIColor(hexString: "#778087")!
+public let kSeparateLineColor = UIColor(hexString: "#e2e2e2", alpha: 1.0)!
+public let kListViewHeaderViewBackroundColor = UIColor(hexString: "#f2f2f2", alpha: 1.0)!
 
 
 //let HomeTabs = ["最新", "最热", "全部", "R2", "技术", "创意", "好玩", "Apple", "酷工作", "交易", "城市", "问与答", "节点", "关注"]

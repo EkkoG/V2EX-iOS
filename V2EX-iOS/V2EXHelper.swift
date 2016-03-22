@@ -43,7 +43,7 @@ class V2EXHelper: NSObject {
         
         let date = NSDate(timeIntervalSince1970: NSTimeInterval(timeStamp))
         let string = date.stringWithFormat("yyyy-MM-dd HH-mm-ss Z")
-        return string
+        return string!
     }
     
     class func loadLocalFile(fileName: String, type: String) -> String? {

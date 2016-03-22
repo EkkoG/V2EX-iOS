@@ -59,7 +59,7 @@ class InputAccessoryView: UIView {
         sendButton.titleLabel?.font = UIFont.boldSystemFontOfSize(16)
         sendButton.frame = CGRect(x: self.bounds.width - buttonWidth - buttonRight, y: 0, width: buttonWidth, height: self.bounds.height)
         sendButton.autoresizingMask = [.FlexibleLeftMargin, .FlexibleTopMargin]
-        sendButton.addTarget(self, action: "handleSendButton:", forControlEvents: .TouchUpInside)
+        sendButton.addTarget(self, action: #selector(handleSendButton(_:)), forControlEvents: .TouchUpInside)
         self.addSubview(sendButton)
         self.sendButton = sendButton
         

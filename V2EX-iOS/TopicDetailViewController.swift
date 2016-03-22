@@ -55,9 +55,9 @@ class TopicDetailViewController: BaseViewController, UIWebViewDelegate, UIScroll
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseImage:", name: kCTTouchImageNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "chooseLink:", name: kCTTouchLinkNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellContentHasNewHeight:", name: kTopicDetailCellHasNewHeightNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(chooseImage(_:)), name: kCTTouchImageNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(chooseLink(_:)), name: kCTTouchLinkNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(cellContentHasNewHeight(_:)), name: kTopicDetailCellHasNewHeightNotification, object: nil)
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -233,8 +233,12 @@ extension TopicDetailViewController {
             self.gotoMemberProfile(url.memberName!)
         }
         else {
-            let sf = SFSafariViewController(URL: NSURL(string: url.url! as String)!)
-            self.presentVC(sf)
+            if #available(iOS 9.0, *) {
+                let sf = SFSafariViewController(URL: NSURL(string: url.url! as String)!)
+                self.presentVC(sf)
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
     

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYCategories
 
 public let kSigninedMemberNameKey = "com.cielpy.v2ex.SignedMemberNameKey"
 public let kMemberSignInSuccessfulNotification = "com.cielpy.v2ex.MemberSignInSuccessful"
